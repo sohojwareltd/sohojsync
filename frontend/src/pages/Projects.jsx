@@ -521,18 +521,18 @@ const Projects = () => {
       {/* Create/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden flex flex-col">
             {/* Modal Header */}
-            <div className="p-6 border-b border-gray-200">
+            <div className="px-8 py-6 border-b border-gray-200 flex-shrink-0" style={{background: 'rgb(61, 45, 80)'}}>
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-800">
+                <h2 className="text-3xl font-bold text-white">
                   {editingProject ? 'Edit Project' : 'Create New Project'}
                 </h2>
                 <button
                   onClick={closeModal}
-                  className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+                  className="p-2 hover:bg-white hover:bg-opacity-10 rounded-lg transition-colors"
                 >
-                  <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
                   </svg>
                 </button>
@@ -540,196 +540,304 @@ const Projects = () => {
             </div>
 
             {/* Modal Body */}
-            <form onSubmit={handleSubmit} className="p-6 space-y-5" style={{
-              maxHeight: 'calc(90vh - 200px)',
-              overflowY: 'auto'
+            <div className="flex-1 overflow-y-auto px-8 py-6" style={{
+              scrollbarWidth: 'thin',
+              scrollbarColor: '#888 #f1f1f1'
             }}>
               <style>
                 {`
-                  form::-webkit-scrollbar {
+                  .flex-1::-webkit-scrollbar {
                     width: 6px;
                   }
-                  form::-webkit-scrollbar-track {
+                  .flex-1::-webkit-scrollbar-track {
                     background: #f1f1f1;
                     border-radius: 10px;
                   }
-                  form::-webkit-scrollbar-thumb {
+                  .flex-1::-webkit-scrollbar-thumb {
                     background: #888;
                     border-radius: 10px;
                   }
-                  form::-webkit-scrollbar-thumb:hover {
+                  .flex-1::-webkit-scrollbar-thumb:hover {
                     background: #555;
                   }
                   .ql-container {
-                    min-height: 150px;
+                    min-height: 180px;
+                  }
+                  .ql-editor {
+                    min-height: 180px;
                   }
                 `}
               </style>
-
-              {/* Project Name */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Project Name <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={formData.name}
-                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
-                    formErrors.name ? 'border-red-500' : 'border-gray-300'
-                  }`}
-                  placeholder="Enter project name"
-                />
-                {formErrors.name && (
-                  <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>
-                )}
-              </div>
-
-              {/* Description - Rich Text Editor */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Description
-                </label>
-                <ReactQuill 
-                  value={formData.description}
-                  onChange={(value) => setFormData({ ...formData, description: value })}
-                  modules={{
-                    toolbar: [
-                      [{ 'header': [1, 2, 3, false] }],
-                      ['bold', 'italic', 'underline', 'strike'],
-                      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-                      ['link'],
-                      ['clean']
-                    ]
-                  }}
-                  placeholder="Enter project description"
-                  theme="snow"
-                />
-              </div>
-
-              {/* Project Manager */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Project Manager
-                </label>
-                <select
-                  value={formData.project_manager_id}
-                  onChange={(e) => setFormData({ ...formData, project_manager_id: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                >
-                  <option value="">-- Select Project Manager --</option>
-                  {usersForAssignment.project_managers.map(pm => (
-                    <option key={pm.id} value={pm.id}>{pm.name} ({pm.email})</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Client */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Client
-                </label>
-                <select
-                  value={formData.client_id}
-                  onChange={(e) => setFormData({ ...formData, client_id: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                >
-                  <option value="">-- Select Client --</option>
-                  {usersForAssignment.clients.map(client => (
-                    <option key={client.id} value={client.id}>{client.name} ({client.email})</option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Developers */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Developers
-                </label>
-                <div className="border border-gray-300 rounded-lg p-3 max-h-40 overflow-y-auto space-y-2">
-                  {usersForAssignment.developers.length > 0 ? (
-                    usersForAssignment.developers.map(dev => (
-                      <label key={dev.id} className="flex items-center gap-2 cursor-pointer hover:bg-gray-50 p-2 rounded">
-                        <input
-                          type="checkbox"
-                          checked={formData.developer_ids.includes(dev.id)}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setFormData({ ...formData, developer_ids: [...formData.developer_ids, dev.id] });
-                            } else {
-                              setFormData({ ...formData, developer_ids: formData.developer_ids.filter(id => id !== dev.id) });
-                            }
-                          }}
-                          className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
-                        />
-                        <span className="text-sm text-gray-700">{dev.name} ({dev.email})</span>
-                      </label>
-                    ))
-                  ) : (
-                    <p className="text-sm text-gray-500 text-center py-2">No developers available</p>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Row 1: Project Name */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Project Name <span className="text-red-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-base ${
+                      formErrors.name ? 'border-red-500' : 'border-gray-300'
+                    }`}
+                    placeholder="Enter project name"
+                  />
+                  {formErrors.name && (
+                    <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>
                   )}
                 </div>
-              </div>
 
-              {/* Deadline */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Deadline
-                </label>
-                <input
-                  type="date"
-                  value={formData.deadline}
-                  onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                />
-              </div>
-
-              {/* Status */}
-              <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Status
-                </label>
-                <select
-                  value={formData.status}
-                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
-                >
-                  <option value="planning">Planning</option>
-                  <option value="in_progress">In Progress</option>
-                  <option value="review">Review</option>
-                  <option value="completed">Completed</option>
-                  <option value="on_hold">On Hold</option>
-                  <option value="cancelled">Cancelled</option>
-                </select>
-              </div>
-
-              {/* Error Message */}
-              {formErrors.submit && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
-                  {formErrors.submit}
+                {/* Row 2: Description - Rich Text Editor */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Description
+                  </label>
+                  <ReactQuill 
+                    value={formData.description}
+                    onChange={(value) => setFormData({ ...formData, description: value })}
+                    modules={{
+                      toolbar: [
+                        [{ 'header': [1, 2, 3, false] }],
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        ['link'],
+                        ['clean']
+                      ]
+                    }}
+                    placeholder="Enter project description"
+                    theme="snow"
+                  />
                 </div>
-              )}
 
-              {/* Modal Footer */}
-              <div className="flex items-center gap-3 pt-4">
+                {/* Row 3: Project Manager and Client */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Project Manager
+                    </label>
+                    <select
+                      value={formData.project_manager_id}
+                      onChange={(e) => setFormData({ ...formData, project_manager_id: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-base"
+                    >
+                      <option value="">-- Select Project Manager --</option>
+                      {usersForAssignment.project_managers.map(pm => (
+                        <option key={pm.id} value={pm.id}>{pm.name}</option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Client
+                    </label>
+                    <select
+                      value={formData.client_id}
+                      onChange={(e) => setFormData({ ...formData, client_id: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-base"
+                    >
+                      <option value="">-- Select Client --</option>
+                      {usersForAssignment.clients.map(client => (
+                        <option key={client.id} value={client.id}>{client.name}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                {/* Row 4: Developers */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Assign Developers
+                  </label>
+                  
+                  {/* Selected Developers Display */}
+                  {formData.developer_ids.length > 0 && (
+                    <div className="mb-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-sm font-semibold text-purple-900">
+                          {formData.developer_ids.length} Developer{formData.developer_ids.length > 1 ? 's' : ''} Selected
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setFormData({ ...formData, developer_ids: [] })}
+                          className="text-xs text-purple-600 hover:text-purple-800 font-medium"
+                        >
+                          Clear All
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {formData.developer_ids.map(devId => {
+                          const dev = usersForAssignment.developers.find(d => d.id === devId);
+                          return dev ? (
+                            <span key={devId} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-purple-300 rounded-lg text-sm text-gray-700">
+                              <span className="w-2 h-2 bg-purple-600 rounded-full"></span>
+                              {dev.name}
+                              <button
+                                type="button"
+                                onClick={() => setFormData({ ...formData, developer_ids: formData.developer_ids.filter(id => id !== devId) })}
+                                className="ml-1 text-gray-400 hover:text-red-600 transition-colors"
+                              >
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                              </button>
+                            </span>
+                          ) : null;
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Developers Selection List */}
+                  <div className="border border-gray-300 rounded-lg overflow-hidden bg-white">
+                    <div className="max-h-64 overflow-y-auto" style={{
+                      scrollbarWidth: 'thin',
+                      scrollbarColor: '#888 #f1f1f1'
+                    }}>
+                      <style>
+                        {`
+                          .max-h-64::-webkit-scrollbar {
+                            width: 6px;
+                          }
+                          .max-h-64::-webkit-scrollbar-track {
+                            background: #f1f1f1;
+                          }
+                          .max-h-64::-webkit-scrollbar-thumb {
+                            background: #888;
+                            border-radius: 10px;
+                          }
+                        `}
+                      </style>
+                      {usersForAssignment.developers.length > 0 ? (
+                        <div className="divide-y divide-gray-100">
+                          {usersForAssignment.developers.map(dev => {
+                            const isSelected = formData.developer_ids.includes(dev.id);
+                            return (
+                              <label 
+                                key={dev.id} 
+                                className={`flex items-center gap-3 cursor-pointer px-4 py-3 hover:bg-purple-50 transition-colors ${
+                                  isSelected ? 'bg-purple-50' : ''
+                                }`}
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={isSelected}
+                                  onChange={(e) => {
+                                    if (e.target.checked) {
+                                      setFormData({ ...formData, developer_ids: [...formData.developer_ids, dev.id] });
+                                    } else {
+                                      setFormData({ ...formData, developer_ids: formData.developer_ids.filter(id => id !== dev.id) });
+                                    }
+                                  }}
+                                  className="w-5 h-5 text-purple-600 border-gray-300 rounded focus:ring-purple-500 cursor-pointer"
+                                />
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2">
+                                    <span className={`text-sm font-medium ${isSelected ? 'text-purple-900' : 'text-gray-700'}`}>
+                                      {dev.name}
+                                    </span>
+                                    {isSelected && (
+                                      <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                                      </svg>
+                                    )}
+                                  </div>
+                                  <span className="text-xs text-gray-500">{dev.email}</span>
+                                </div>
+                              </label>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <p className="text-sm text-gray-500 text-center py-8">No developers available</p>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Quick Select Options */}
+                  <div className="mt-2 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, developer_ids: usersForAssignment.developers.map(d => d.id) })}
+                      className="text-xs text-purple-600 hover:text-purple-800 font-medium"
+                    >
+                      Select All
+                    </button>
+                    <span className="text-gray-300">|</span>
+                    <button
+                      type="button"
+                      onClick={() => setFormData({ ...formData, developer_ids: [] })}
+                      className="text-xs text-gray-600 hover:text-gray-800 font-medium"
+                    >
+                      Deselect All
+                    </button>
+                  </div>
+                </div>
+
+                {/* Row 5: Deadline and Status */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Deadline
+                    </label>
+                    <input
+                      type="date"
+                      value={formData.deadline}
+                      onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-base"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                      Status
+                    </label>
+                    <select
+                      value={formData.status}
+                      onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-base"
+                    >
+                      <option value="planning">Planning</option>
+                      <option value="in_progress">In Progress</option>
+                      <option value="review">Review</option>
+                      <option value="completed">Completed</option>
+                      <option value="on_hold">On Hold</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Error Message */}
+                {formErrors.submit && (
+                  <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                    {formErrors.submit}
+                  </div>
+                )}
+              </form>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-8 py-6 border-t border-gray-200 bg-gray-50 flex-shrink-0">
+              <div className="flex items-center justify-end gap-4">
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="px-8 py-3 border-2 border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-100 transition-colors text-base"
                   disabled={submitting}
                 >
                   Cancel
                 </button>
                 <button
-                  type="submit"
-                  className="flex-1 px-4 py-3 rounded-lg font-medium text-white shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  onClick={handleSubmit}
+                  className="px-8 py-3 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed text-base"
                   style={{background: 'rgb(155 2 50 / 76%)'}}
                   disabled={submitting}
                 >
                   {submitting ? 'Saving...' : editingProject ? 'Update Project' : 'Create Project'}
                 </button>
               </div>
-            </form>
+            </div>
           </div>
         </div>
       )}
