@@ -35,18 +35,17 @@ class ProjectController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'project_manager_id' => 'nullable|exists:users,id',
             'client_id' => 'nullable|exists:users,id',
             'deadline' => 'nullable|date',
-            'status' => 'nullable|string|in:pending,in_progress,completed,on_hold',
+            'status' => 'nullable|string|in:planning,in_progress,review,completed,on_hold,cancelled',
             'developer_ids' => 'nullable|array',
             'developer_ids.*' => 'exists:users,id',
         ]);
 
         $validated['owner_id'] = $request->user()->id;
-        $validated['title'] = $validated['name'];
 
         $project = Project::create($validated);
 
@@ -64,7 +63,7 @@ class ProjectController extends Controller
                     $developerId,
                     'project_assigned',
                     'New Project Assignment',
-                    "You have been assigned to project: {$project->name}",
+                    "You have been assigned to project: {$project->title}",
                     'Project',
                     $project->id
                 );
@@ -77,7 +76,7 @@ class ProjectController extends Controller
                 $project->project_manager_id,
                 'project_assigned',
                 'New Project Assignment',
-                "You have been assigned as project manager for: {$project->name}",
+                "You have been assigned as project manager for: {$project->title}",
                 'Project',
                 $project->id
             );
@@ -89,7 +88,7 @@ class ProjectController extends Controller
                 $project->client_id,
                 'project_created',
                 'New Project Created',
-                "A new project has been created for you: {$project->name}",
+                "A new project has been created for you: {$project->title}",
                 'Project',
                 $project->id
             );
@@ -111,17 +110,15 @@ class ProjectController extends Controller
         $project = Project::findOrFail($id);
 
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
+            'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'project_manager_id' => 'nullable|exists:users,id',
             'client_id' => 'nullable|exists:users,id',
             'deadline' => 'nullable|date',
-            'status' => 'nullable|string|in:pending,in_progress,completed,on_hold',
+            'status' => 'nullable|string|in:planning,in_progress,review,completed,on_hold,cancelled',
             'developer_ids' => 'nullable|array',
             'developer_ids.*' => 'exists:users,id',
         ]);
-
-        $validated['title'] = $validated['name'];
 
         // Check if project manager changed
         if (isset($validated['project_manager_id']) && $validated['project_manager_id'] != $project->project_manager_id) {
@@ -129,7 +126,7 @@ class ProjectController extends Controller
                 $validated['project_manager_id'],
                 'project_assigned',
                 'New Project Assignment',
-                "You have been assigned as project manager for: {$project->name}",
+                "You have been assigned as project manager for: {$project->title}",
                 'Project',
                 $project->id
             );

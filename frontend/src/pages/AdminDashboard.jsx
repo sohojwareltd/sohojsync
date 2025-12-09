@@ -30,8 +30,9 @@ const AdminDashboard = () => {
         axiosInstance.get('/api/tasks'),
       ]);
 
-      const projects = projectsRes.data;
-      const tasks = tasksRes.data;
+      // Handle paginated response
+      const projects = Array.isArray(projectsRes.data) ? projectsRes.data : (projectsRes.data.data || []);
+      const tasks = Array.isArray(tasksRes.data) ? tasksRes.data : (tasksRes.data.data || []);
 
       setAllProjects(projects);
       setAllTasks(tasks);
@@ -248,13 +249,14 @@ const AdminDashboard = () => {
           </div>
 
           <div className="space-y-3">
-            {allProjects.slice(0, 5).map((project) => (
-              <div
-                key={project.id}
-                className="p-4 border-l-4 border-l-purple-400 bg-white border border-gray-100 rounded-lg hover:shadow-md transition-all cursor-pointer"
-              >
-                <div className="flex items-start justify-between mb-2">
-                  <h3 className="font-medium text-gray-800">{project.name}</h3>
+            {allProjects && allProjects.length > 0 ? (
+              allProjects.slice(0, 5).map((project) => (
+                <div
+                  key={project.id}
+                  className="p-4 border-l-4 border-l-purple-400 bg-white border border-gray-100 rounded-lg hover:shadow-md transition-all cursor-pointer"
+                >
+                  <div className="flex items-start justify-between mb-2">
+                    <h3 className="font-medium text-gray-800">{project.title || project.name}</h3>
                   <span className={`px-2 py-1 rounded text-xs font-medium ${
                     project.status === 'active' 
                       ? 'bg-green-100 text-green-700' 
@@ -269,7 +271,10 @@ const AdminDashboard = () => {
                   <span>📅 {new Date(project.created_at).toLocaleDateString()}</span>
                 </div>
               </div>
-            ))}
+            ))
+            ) : (
+              <p className="text-center text-gray-500 py-4">No projects available</p>
+            )}
           </div>
         </div>
 

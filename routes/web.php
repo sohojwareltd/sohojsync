@@ -14,6 +14,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
+
+    Route::get('projects/{project}/tasks', function ($projectId) {
+        $project = \App\Models\Project::findOrFail($projectId);
+        return Inertia::render('TaskBoard', [
+            'project' => $project,
+        ]);
+    })->name('projects.tasks');
 });
 
 require __DIR__.'/settings.php';

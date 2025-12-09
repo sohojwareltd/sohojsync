@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axiosInstance from '../utils/axiosInstance';
 import Loader from '../components/Loader';
 import ReactQuill from 'react-quill';
@@ -17,7 +17,7 @@ const Projects = () => {
   const [showModal, setShowModal] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [formData, setFormData] = useState({
-    name: '',
+    title: '',
     description: '',
     status: 'planning',
     project_manager_id: '',
@@ -32,6 +32,7 @@ const Projects = () => {
     developers: [],
     clients: []
   });
+  const quillRef = useRef(null);
 
   useEffect(() => {
     fetchProjects();
@@ -61,7 +62,7 @@ const Projects = () => {
   const openCreateModal = () => {
     setEditingProject(null);
     setFormData({ 
-      name: '', 
+      title: '', 
       description: '', 
       status: 'planning',
       project_manager_id: '',
@@ -76,7 +77,7 @@ const Projects = () => {
   const openEditModal = (project) => {
     setEditingProject(project);
     setFormData({
-      name: project.name || project.title,
+      title: project.title || project.name,
       description: project.description || '',
       status: project.status,
       project_manager_id: project.project_manager_id || '',
@@ -92,7 +93,7 @@ const Projects = () => {
     setShowModal(false);
     setEditingProject(null);
     setFormData({ 
-      name: '', 
+      title: '', 
       description: '', 
       status: 'planning',
       project_manager_id: '',
@@ -105,8 +106,8 @@ const Projects = () => {
 
   const validateForm = () => {
     const errors = {};
-    if (!formData.name.trim()) {
-      errors.name = 'Project name is required';
+    if (!formData.title.trim()) {
+      errors.title = 'Project title is required';
     }
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
@@ -136,12 +137,21 @@ const Projects = () => {
     }
   };
 
-  const handleDelete = async (projectId) => {
-    if (!confirm('Are you sure you want to delete this project?')) return;
+  const [deleteModal, setDeleteModal] = useState({ show: false, projectId: null, projectTitle: '' });
 
+  const openDeleteModal = (project) => {
+    setDeleteModal({ show: true, projectId: project.id, projectTitle: project.title || project.name });
+  };
+
+  const closeDeleteModal = () => {
+    setDeleteModal({ show: false, projectId: null, projectTitle: '' });
+  };
+
+  const handleDelete = async () => {
     try {
-      await axiosInstance.delete(`/api/projects/${projectId}`);
+      await axiosInstance.delete(`/api/projects/${deleteModal.projectId}`);
       await fetchProjects();
+      closeDeleteModal();
     } catch (error) {
       console.error('Failed to delete project:', error);
       alert('Failed to delete project. Please try again.');
@@ -344,6 +354,15 @@ const Projects = () => {
                         {new Date(project.created_at).toLocaleDateString()}
                       </span>
                       <div className="flex items-center gap-2">
+                        <a
+                          href={`/projects/${project.id}/tasks`}
+                          className="p-2 hover:bg-purple-100 rounded-lg transition-colors text-purple-600"
+                          title="View Tasks"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                          </svg>
+                        </a>
                         <button 
                           onClick={() => openEditModal(project)}
                           className="p-2 hover:bg-blue-100 rounded-lg transition-colors text-blue-600"
@@ -354,7 +373,7 @@ const Projects = () => {
                           </svg>
                         </button>
                         <button 
-                          onClick={() => handleDelete(project.id)}
+                          onClick={() => openDeleteModal(project)}
                           className="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-600"
                           title="Delete"
                         >
@@ -466,6 +485,15 @@ const Projects = () => {
                           </td>
                           <td className="py-4 px-6">
                             <div className="flex items-center justify-center gap-2">
+                              <a
+                                href={`/projects/${project.id}/tasks`}
+                                className="p-2 hover:bg-purple-100 rounded-lg transition-colors text-purple-600"
+                                title="View Tasks"
+                              >
+                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+                                </svg>
+                              </a>
                               <button 
                                 onClick={() => openEditModal(project)}
                                 className="p-2 hover:bg-blue-100 rounded-lg transition-colors text-blue-600" 
@@ -476,7 +504,7 @@ const Projects = () => {
                                 </svg>
                               </button>
                               <button 
-                                onClick={() => handleDelete(project.id)}
+                                onClick={() => openDeleteModal(project)}
                                 className="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-600" 
                                 title="Delete"
                               >
@@ -569,22 +597,22 @@ const Projects = () => {
                 `}
               </style>
               <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Row 1: Project Name */}
+                {/* Row 1: Project Title */}
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Project Name <span className="text-red-500">*</span>
+                    Project Title <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    value={formData.title}
+                    onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                     className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-base ${
-                      formErrors.name ? 'border-red-500' : 'border-gray-300'
+                      formErrors.title ? 'border-red-500' : 'border-gray-300'
                     }`}
-                    placeholder="Enter project name"
+                    placeholder="Enter project title"
                   />
-                  {formErrors.name && (
-                    <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>
+                  {formErrors.title && (
+                    <p className="text-red-500 text-sm mt-1">{formErrors.title}</p>
                   )}
                 </div>
 
@@ -594,6 +622,7 @@ const Projects = () => {
                     Description
                   </label>
                   <ReactQuill 
+                    ref={quillRef}
                     value={formData.description}
                     onChange={(value) => setFormData({ ...formData, description: value })}
                     modules={{
@@ -781,12 +810,74 @@ const Projects = () => {
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
                       Deadline
                     </label>
-                    <input
-                      type="date"
-                      value={formData.deadline}
-                      onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-base"
-                    />
+                    <div className="relative group">
+                      <style>
+                        {`
+                          input[type="date"]::-webkit-calendar-picker-indicator {
+                            opacity: 0;
+                            position: absolute;
+                            width: 100%;
+                            height: 100%;
+                            cursor: pointer;
+                          }
+                          input[type="date"] {
+                            appearance: none;
+                            -webkit-appearance: none;
+                          }
+                        `}
+                      </style>
+                      <div className="relative">
+                        <input
+                          type="date"
+                          value={formData.deadline}
+                          onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
+                          className="w-full px-4 py-3 pr-12 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-base transition-all hover:border-purple-400 group-hover:shadow-md"
+                          style={{
+                            cursor: 'pointer'
+                          }}
+                          placeholder="Select deadline date"
+                        />
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
+                          <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center group-hover:bg-purple-100 transition-colors">
+                            <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    {formData.deadline && (
+                      <div className="mt-3 p-3 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 rounded-lg">
+                        <div className="flex items-center gap-2">
+                          <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
+                            <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/>
+                            </svg>
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-xs font-medium text-purple-900">Selected Deadline</p>
+                            <p className="text-sm font-semibold text-purple-700">
+                              {new Date(formData.deadline).toLocaleDateString('en-US', { 
+                                weekday: 'long',
+                                year: 'numeric', 
+                                month: 'long', 
+                                day: 'numeric' 
+                              })}
+                            </p>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setFormData({ ...formData, deadline: '' })}
+                            className="p-1.5 hover:bg-white rounded-lg transition-colors"
+                            title="Clear deadline"
+                          >
+                            <svg className="w-4 h-4 text-gray-400 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                            </svg>
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
 
                   <div>
@@ -841,6 +932,74 @@ const Projects = () => {
           </div>
         </div>
       )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteModal.show && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-scale-in">
+            {/* Modal Header */}
+            <div className="px-6 py-6 border-b border-gray-200">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
+                  <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold text-gray-800 mb-1">Delete Project</h3>
+                  <p className="text-sm text-gray-500">This action cannot be undone</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Body */}
+            <div className="px-6 py-6">
+              <p className="text-sm text-gray-600 mb-3">You are about to delete:</p>
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 mb-4">
+                <p className="font-semibold text-gray-900">{deleteModal.projectTitle}</p>
+              </div>
+              <p className="text-xs text-gray-500">
+                All associated data including tasks, members, and files will be permanently deleted.
+              </p>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="px-6 py-4 bg-gray-50 flex items-center justify-end gap-3 border-t border-gray-200">
+              <button
+                onClick={closeDeleteModal}
+                className="px-5 py-2.5 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-100 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleDelete}
+                className="px-5 py-2.5 rounded-lg font-medium text-white transition-colors"
+                style={{background: 'rgb(155 2 50 / 76%)'}}
+              >
+                Delete Project
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style>
+        {`
+          @keyframes scale-in {
+            from {
+              opacity: 0;
+              transform: scale(0.9);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1);
+            }
+          }
+          .animate-scale-in {
+            animation: scale-in 0.2s ease-out;
+          }
+        `}
+      </style>
     </div>
   );
 };

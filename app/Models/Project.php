@@ -77,4 +77,12 @@ class Project extends Model
         return $this->belongsToMany(User::class, 'project_members')
             ->where('role', 'developer');
     }
+
+    /**
+     * Get the workflow statuses for the project.
+     */
+    public function workflowStatuses()
+    {
+        return $this->hasMany(WorkflowStatus::class)->orderBy('order');
+    }
 }

@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->foreignId('project_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->enum('role', ['developer', 'viewer'])->default('developer');
+            $table->enum('role', ['developer', 'manager', 'client', 'viewer'])->default('developer');
             $table->timestamps();
             
             $table->unique(['project_id', 'user_id']);

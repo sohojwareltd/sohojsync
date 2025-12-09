@@ -9,6 +9,8 @@ import ManagerDashboard from '../pages/ManagerDashboard';
 import MemberDashboard from '../pages/MemberDashboard';
 import Projects from '../pages/Projects';
 import Tasks from '../pages/Tasks';
+import TaskBoard from '../pages/TaskBoard';
+import TaskView from '../pages/TaskView';
 import Clients from '../pages/Clients';
 import ActivityLogs from '../pages/ActivityLogs';
 import Employees from '../pages/Employees';
@@ -79,6 +81,8 @@ const AppRouter = () => {
         <Route index element={<Navigate to="/dashboard" replace />} />
         <Route path="dashboard" element={<DashboardRouter />} />
         <Route path="projects" element={<Projects />} />
+        <Route path="projects/:projectId/tasks" element={<TaskBoard />} />
+        <Route path="projects/:projectId/tasks/:taskId" element={<TaskView />} />
         <Route path="tasks" element={<Tasks />} />
         <Route path="clients" element={<Clients />} />
         <Route path="employees" element={<Employees />} />

@@ -3,13 +3,16 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\AuthController;
-use App\Http\Controllers\Api\TaskController;
+use App\Http\Controllers\Api\TaskController as ApiTaskController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\ActivityLogController;
 use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\ReminderController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\TaskController;
+use App\Http\Controllers\WorkflowStatusController;
+use App\Http\Controllers\TaskCommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,12 +44,34 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/projects/{id}', [ProjectController::class, 'update']);
     Route::delete('/projects/{id}', [ProjectController::class, 'destroy']);
     
-    // Task routes
-    Route::get('/tasks', [TaskController::class, 'index']);
-    Route::post('/tasks', [TaskController::class, 'store']);
-    Route::get('/tasks/{id}', [TaskController::class, 'show']);
-    Route::put('/tasks/{id}', [TaskController::class, 'update']);
-    Route::delete('/tasks/{id}', [TaskController::class, 'destroy']);
+    // Task routes (for dashboards - uses simple task model)
+    Route::get('/tasks', [ApiTaskController::class, 'index']);
+    Route::post('/tasks', [ApiTaskController::class, 'store']);
+    Route::get('/tasks/{id}', [ApiTaskController::class, 'show']);
+    Route::put('/tasks/{id}', [ApiTaskController::class, 'update']);
+    Route::delete('/tasks/{id}', [ApiTaskController::class, 'destroy']);
+    
+    // Project Task routes with workflow support (for task board)
+    Route::get('/projects/{project}/tasks', [TaskController::class, 'index']);
+    Route::post('/projects/{project}/tasks', [TaskController::class, 'store']);
+    Route::put('/projects/{project}/tasks/{task}', [TaskController::class, 'update']);
+    Route::delete('/projects/{project}/tasks/{task}', [TaskController::class, 'destroy']);
+    Route::patch('/projects/{project}/tasks/{task}/status', [TaskController::class, 'updateStatus']);
+    Route::post('/projects/{project}/tasks/reorder', [TaskController::class, 'reorder']);
+    
+    // Workflow Status routes
+    Route::get('/projects/{project}/workflow-statuses', [WorkflowStatusController::class, 'index']);
+    Route::post('/projects/{project}/workflow-statuses', [WorkflowStatusController::class, 'store']);
+    Route::put('/projects/{project}/workflow-statuses/{status}', [WorkflowStatusController::class, 'update']);
+    Route::delete('/projects/{project}/workflow-statuses/{status}', [WorkflowStatusController::class, 'destroy']);
+    Route::post('/projects/{project}/workflow-statuses/reorder', [WorkflowStatusController::class, 'reorder']);
+    Route::patch('/projects/{project}/workflow-statuses/{status}/set-default', [WorkflowStatusController::class, 'setDefault']);
+    
+    // Task Comment routes
+    Route::get('/tasks/{task}/comments', [TaskCommentController::class, 'index']);
+    Route::post('/tasks/{task}/comments', [TaskCommentController::class, 'store']);
+    Route::put('/tasks/{task}/comments/{comment}', [TaskCommentController::class, 'update']);
+    Route::delete('/tasks/{task}/comments/{comment}', [TaskCommentController::class, 'destroy']);
     
     // Client routes
     Route::get('/clients', [ClientController::class, 'index']);
