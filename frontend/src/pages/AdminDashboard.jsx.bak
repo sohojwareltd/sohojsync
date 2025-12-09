@@ -1,0 +1,215 @@
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../hooks/useAuth';
+import axiosInstance from '../utils/axiosInstance';
+import Card from '../components/Card';
+import PageHeader from '../components/PageHeader';
+import Loader from '../components/Loader';
+
+/**
+ * Admin Dashboard
+ * Full system overview with all projects, tasks, and users
+ */
+const AdminDashboard = () => {
+  const { user } = useAuth();
+  const [stats, setStats] = useState({
+    totalProjects: 0,
+    totalTasks: 0,
+    openTasks: 0,
+    completedTasks: 0,
+    totalUsers: 3, // We have 3 users seeded
+  });
+  const [allProjects, setAllProjects] = useState([]);
+  const [allTasks, setAllTasks] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchAdminData();
+  }, []);
+
+  const fetchAdminData = async () => {
+    try {
+      const [projectsRes, tasksRes] = await Promise.all([
+        axiosInstance.get('/api/projects'),
+        axiosInstance.get('/api/tasks'),
+      ]);
+
+      const projects = projectsRes.data;
+      const tasks = tasksRes.data;
+
+      setAllProjects(projects);
+      setAllTasks(tasks);
+
+      setStats({
+        totalProjects: projects.length,
+        totalTasks: tasks.length,
+        openTasks: tasks.filter(t => t.status === 'open').length,
+        completedTasks: tasks.filter(t => t.status === 'done').length,
+        totalUsers: 3,
+      });
+    } catch (error) {
+      console.error('Failed to fetch admin data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) {
+    return <Loader />;
+  }
+
+  return (
+    <div>
+      <PageHeader
+        title={`Admin Dashboard - Welcome ${user?.name}!`}
+        subtitle="Complete system overview and management"
+      />
+
+      {/* Admin Stats Grid - 5 cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <Card>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">Total Users</p>
+              <p className="text-3xl font-bold text-purple-600">{stats.totalUsers}</p>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center">
+              <svg className="w-6 h-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+              </svg>
+            </div>
+          </div>
+        </Card>
+
+        <Card>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">All Projects</p>
+              <p className="text-3xl font-bold text-primary">{stats.totalProjects}</p>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-primary bg-opacity-10 flex items-center justify-center">
+              <svg className="w-6 h-6 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+              </svg>
+            </div>
+          </div>
+        </Card>
+
+        <Card>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">All Tasks</p>
+              <p className="text-3xl font-bold text-accent">{stats.totalTasks}</p>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-accent bg-opacity-10 flex items-center justify-center">
+              <svg className="w-6 h-6 text-accent" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+              </svg>
+            </div>
+          </div>
+        </Card>
+
+        <Card>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">Open Tasks</p>
+              <p className="text-3xl font-bold text-orange-500">{stats.openTasks}</p>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
+              <svg className="w-6 h-6 text-orange-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+        </Card>
+
+        <Card>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm text-gray-600 mb-1">Completed</p>
+              <p className="text-3xl font-bold text-green-600">{stats.completedTasks}</p>
+            </div>
+            <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
+              <svg className="w-6 h-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* All Projects Overview */}
+        <div>
+          <h3 className="text-xl font-semibold mb-4">All Projects</h3>
+          <div className="space-y-3">
+            {allProjects.length > 0 ? (
+              allProjects.slice(0, 5).map(project => (
+                <Card key={project.id}>
+                  <h4 className="font-semibold text-lg mb-2">{project.title}</h4>
+                  <p className="text-sm text-gray-600 mb-2">{project.description}</p>
+                  <div className="flex items-center justify-between text-xs text-gray-500">
+                    <span>Owner ID: {project.owner_id}</span>
+                    <span>{new Date(project.created_at).toLocaleDateString()}</span>
+                  </div>
+                </Card>
+              ))
+            ) : (
+              <Card className="text-center py-8 bg-highlight">
+                <p className="text-gray-600">No projects in system</p>
+              </Card>
+            )}
+          </div>
+        </div>
+
+        {/* Recent Tasks */}
+        <div>
+          <h3 className="text-xl font-semibold mb-4">Recent Tasks</h3>
+          <div className="space-y-3">
+            {allTasks.length > 0 ? (
+              allTasks.slice(0, 5).map(task => (
+                <Card key={task.id} className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <h4 className="font-medium">{task.title}</h4>
+                    <p className="text-sm text-gray-600">{task.project?.title}</p>
+                  </div>
+                  <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                    task.status === 'done' 
+                      ? 'bg-green-100 text-green-800' 
+                      : 'bg-orange-100 text-orange-800'
+                  }`}>
+                    {task.status === 'done' ? 'Done' : 'Open'}
+                  </span>
+                </Card>
+              ))
+            ) : (
+              <Card className="text-center py-8 bg-highlight">
+                <p className="text-gray-600">No tasks in system</p>
+              </Card>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Admin Actions */}
+      <div className="mt-8">
+        <Card className="bg-gradient-to-r from-primary to-accent text-white">
+          <h3 className="text-xl font-semibold mb-2">Admin Controls</h3>
+          <p className="mb-4">You have full system access as an administrator</p>
+          <div className="flex gap-3">
+            <button className="px-4 py-2 bg-white text-primary rounded-lg font-medium hover:bg-opacity-90">
+              Manage Users
+            </button>
+            <button className="px-4 py-2 bg-white text-primary rounded-lg font-medium hover:bg-opacity-90">
+              System Settings
+            </button>
+            <button className="px-4 py-2 bg-white text-primary rounded-lg font-medium hover:bg-opacity-90">
+              View Reports
+            </button>
+          </div>
+        </Card>
+      </div>
+    </div>
+  );
+};
+
+export default AdminDashboard;
