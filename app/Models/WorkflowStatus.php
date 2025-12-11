@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Log;
 
 class WorkflowStatus extends Model
 {
@@ -62,5 +63,25 @@ class WorkflowStatus extends Model
     public function scopeOrdered($query)
     {
         return $query->orderBy('order');
+    }
+
+    /**
+     * Retrieve the model for a bound value.
+     * This ensures the status belongs to the project when route model binding.
+     */
+    public function resolveRouteBinding($value, $field = null)
+    {
+        // Get the project ID from the route parameter
+        $projectParam = request()->route('project');
+        
+        // If project parameter is an object (already resolved by route model binding), get its ID
+        // Otherwise, use it directly as the ID
+        $projectId = is_object($projectParam) ? $projectParam->id : $projectParam;
+        
+        // Find the status that belongs to the specified project
+        // Using self:: for static context
+        return self::where('id', $value)
+            ->where('project_id', $projectId)
+            ->firstOrFail();
     }
 }

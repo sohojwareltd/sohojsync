@@ -11,6 +11,7 @@ import Projects from '../pages/Projects';
 import Tasks from '../pages/Tasks';
 import TaskBoard from '../pages/TaskBoard';
 import TaskView from '../pages/TaskView';
+import Calendar from '../pages/Calendar';
 import Clients from '../pages/Clients';
 import ActivityLogs from '../pages/ActivityLogs';
 import Employees from '../pages/Employees';
@@ -84,6 +85,7 @@ const AppRouter = () => {
         <Route path="projects/:projectId/tasks" element={<TaskBoard />} />
         <Route path="projects/:projectId/tasks/:taskId" element={<TaskView />} />
         <Route path="tasks" element={<Tasks />} />
+        <Route path="calendar" element={<Calendar />} />
         <Route path="clients" element={<Clients />} />
         <Route path="employees" element={<Employees />} />
         <Route path="activity-logs" element={<ActivityLogs />} />

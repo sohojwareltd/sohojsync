@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { BarChart, Bar, LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import axiosInstance from '../utils/axiosInstance';
 import Loader from '../components/Loader';
 
@@ -138,24 +139,81 @@ const ActivityLogs = () => {
 
       {/* Statistics Cards */}
       {statistics && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-xl p-5 shadow-md border-l-4 border-purple-500">
-            <p className="text-sm text-gray-600 mb-1">Total Activities</p>
-            <p className="text-3xl font-bold text-purple-600">{statistics.total_activities}</p>
+        <>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="bg-white rounded-xl p-5 shadow-md border-l-4 border-purple-500">
+              <p className="text-sm text-gray-600 mb-1">Total Activities</p>
+              <p className="text-3xl font-bold text-purple-600">{statistics.total_activities}</p>
+            </div>
+            <div className="bg-white rounded-xl p-5 shadow-md border-l-4 border-emerald-500">
+              <p className="text-sm text-gray-600 mb-1">Today's Activities</p>
+              <p className="text-3xl font-bold text-emerald-600">{statistics.today_activities}</p>
+            </div>
+            <div className="bg-white rounded-xl p-5 shadow-md border-l-4 border-blue-500">
+              <p className="text-sm text-gray-600 mb-1">Active Users</p>
+              <p className="text-3xl font-bold text-blue-600">{statistics.by_role?.length || 0}</p>
+            </div>
+            <div className="bg-white rounded-xl p-5 shadow-md border-l-4 border-rose-500">
+              <p className="text-sm text-gray-600 mb-1">Action Types</p>
+              <p className="text-3xl font-bold text-rose-600">{statistics.by_action?.length || 0}</p>
+            </div>
           </div>
-          <div className="bg-white rounded-xl p-5 shadow-md border-l-4 border-emerald-500">
-            <p className="text-sm text-gray-600 mb-1">Today's Activities</p>
-            <p className="text-3xl font-bold text-emerald-600">{statistics.today_activities}</p>
+
+          {/* Charts Section */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Activities by Action - Bar Chart */}
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+              <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+                </svg>
+                Activities by Action Type
+              </h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={statistics.by_action || []}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="action" tick={{fill: '#666'}} />
+                  <YAxis tick={{fill: '#666'}} />
+                  <Tooltip 
+                    contentStyle={{backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px'}}
+                    cursor={{fill: 'rgba(139, 92, 246, 0.1)'}}
+                  />
+                  <Bar dataKey="count" fill="#8B5CF6" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+
+            {/* Activities by Role - Pie Chart */}
+            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+              <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
+                <svg className="w-5 h-5 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                </svg>
+                Activities by User Role
+              </h3>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={statistics.by_role || []}
+                    dataKey="count"
+                    nameKey="role"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    label={(entry) => `${entry.role}: ${entry.count}`}
+                  >
+                    {(statistics.by_role || []).map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={['#8B5CF6', '#F25292', '#7C3AED', '#EC4899', '#A855F7'][index % 5]} />
+                    ))}
+                  </Pie>
+                  <Tooltip 
+                    contentStyle={{backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px'}}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
           </div>
-          <div className="bg-white rounded-xl p-5 shadow-md border-l-4 border-blue-500">
-            <p className="text-sm text-gray-600 mb-1">Active Users</p>
-            <p className="text-3xl font-bold text-blue-600">{statistics.by_role?.length || 0}</p>
-          </div>
-          <div className="bg-white rounded-xl p-5 shadow-md border-l-4 border-rose-500">
-            <p className="text-sm text-gray-600 mb-1">Action Types</p>
-            <p className="text-3xl font-bold text-rose-600">{statistics.by_action?.length || 0}</p>
-          </div>
-        </div>
+        </>
       )}
 
       {/* Filters */}
@@ -368,20 +426,95 @@ const ActivityLogs = () => {
 
             {/* Action Breakdown */}
             <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-lg font-bold text-gray-800 mb-3">Action Breakdown</h3>
-              <div className="flex flex-wrap gap-2">
-                {Object.entries(userStats.byAction).map(([action, count]) => (
-                  <div
-                    key={action}
-                    className={`px-3 py-1.5 rounded-lg ${getActionBadgeColor(action)} flex items-center gap-2`}
-                  >
-                    <span className="font-medium capitalize">{action}</span>
-                    <span className="bg-white bg-opacity-50 px-2 py-0.5 rounded text-xs font-bold">
-                      {count}
-                    </span>
-                  </div>
-                ))}
+              <h3 className="text-lg font-bold text-gray-800 mb-4">Action Breakdown</h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Action Pie Chart */}
+                <div>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <PieChart>
+                      <Pie
+                        data={Object.entries(userStats.byAction).map(([action, count]) => ({
+                          name: action,
+                          value: count
+                        }))}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        outerRadius={70}
+                        label={(entry) => `${entry.name}: ${entry.value}`}
+                        labelLine={false}
+                      >
+                        {Object.keys(userStats.byAction).map((action, index) => {
+                          const colors = {
+                            'create': '#10B981',
+                            'update': '#3B82F6', 
+                            'delete': '#EF4444',
+                            'view': '#6B7280',
+                            'login': '#8B5CF6',
+                            'logout': '#F97316'
+                          };
+                          return <Cell key={`cell-${index}`} fill={colors[action] || '#F25292'} />;
+                        })}
+                      </Pie>
+                      <Tooltip contentStyle={{backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px'}} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+
+                {/* Action Badges */}
+                <div className="flex flex-wrap gap-2 content-center">
+                  {Object.entries(userStats.byAction).map(([action, count]) => (
+                    <div
+                      key={action}
+                      className={`px-3 py-1.5 rounded-lg ${getActionBadgeColor(action)} flex items-center gap-2`}
+                    >
+                      <span className="font-medium capitalize">{action}</span>
+                      <span className="bg-white bg-opacity-50 px-2 py-0.5 rounded text-xs font-bold">
+                        {count}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
+            </div>
+
+            {/* Activity Timeline Chart */}
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-bold text-gray-800 mb-4">Activity Timeline (Last 7 Days)</h3>
+              <ResponsiveContainer width="100%" height={250}>
+                <LineChart data={(() => {
+                  // Group logs by date for last 7 days
+                  const last7Days = [];
+                  for (let i = 6; i >= 0; i--) {
+                    const date = new Date();
+                    date.setDate(date.getDate() - i);
+                    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    const count = userLogs.filter(log => {
+                      const logDate = new Date(log.created_at).toDateString();
+                      return logDate === date.toDateString();
+                    }).length;
+                    last7Days.push({ date: dateStr, activities: count });
+                  }
+                  return last7Days;
+                })()}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
+                  <XAxis dataKey="date" tick={{fill: '#666', fontSize: 12}} />
+                  <YAxis tick={{fill: '#666', fontSize: 12}} />
+                  <Tooltip 
+                    contentStyle={{backgroundColor: '#fff', border: '1px solid #e5e7eb', borderRadius: '8px'}}
+                    cursor={{stroke: '#8B5CF6', strokeWidth: 2}}
+                  />
+                  <Line 
+                    type="monotone" 
+                    dataKey="activities" 
+                    stroke="#8B5CF6" 
+                    strokeWidth={3}
+                    dot={{fill: '#F25292', r: 5}}
+                    activeDot={{r: 7, fill: '#F25292'}}
+                  />
+                </LineChart>
+              </ResponsiveContainer>
             </div>
 
             {/* Activity Timeline */}

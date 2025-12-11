@@ -13,6 +13,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\WorkflowStatusController;
 use App\Http\Controllers\TaskCommentController;
+use App\Http\Controllers\CalendarEventController;
 
 /*
 |--------------------------------------------------------------------------
@@ -109,4 +110,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::patch('/notifications/{id}/mark-read', [NotificationController::class, 'markAsRead']);
     Route::patch('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead']);
     Route::delete('/notifications/{id}', [NotificationController::class, 'destroy']);
+    
+    // Calendar Event routes
+    Route::get('/calendar-events', [CalendarEventController::class, 'index']);
+    Route::post('/calendar-events', [CalendarEventController::class, 'store']);
+    Route::get('/calendar-events/{calendarEvent}', [CalendarEventController::class, 'show']);
+    Route::put('/calendar-events/{calendarEvent}', [CalendarEventController::class, 'update']);
+    Route::delete('/calendar-events/{calendarEvent}', [CalendarEventController::class, 'destroy']);
 });

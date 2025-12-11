@@ -21,6 +21,9 @@ const TaskBoard = () => {
   const [loading, setLoading] = useState(true);
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
+  const [showStatusModal, setShowStatusModal] = useState(false);
+  const [editingStatus, setEditingStatus] = useState(null);
+  const [statusForm, setStatusForm] = useState({ name: '', color: '#8B5CF6', order: 0 });
 
   // Task form state
   const [taskForm, setTaskForm] = useState({
@@ -166,6 +169,79 @@ const TaskBoard = () => {
     }
   };
 
+  const openStatusModal = (status = null) => {
+    if (status) {
+      setEditingStatus(status);
+      setStatusForm({ name: status.name, color: status.color, order: status.order });
+    } else {
+      setEditingStatus(null);
+      setStatusForm({ name: '', color: '#8B5CF6', order: workflowStatuses.length });
+    }
+    setShowStatusModal(true);
+  };
+
+  const closeStatusModal = () => {
+    setShowStatusModal(false);
+    setEditingStatus(null);
+  };
+
+  const handleSubmitStatus = async (e) => {
+    e.preventDefault();
+
+    try {
+      if (editingStatus) {
+        const response = await axiosInstance.put(`/api/projects/${projectId}/workflow-statuses/${editingStatus.id}`, statusForm);
+        console.log('Update response:', response.data);
+      } else {
+        const response = await axiosInstance.post(`/api/projects/${projectId}/workflow-statuses`, statusForm);
+        console.log('Create response:', response.data);
+      }
+
+      // Close modal first
+      closeStatusModal();
+      
+      // Force refresh data
+      await fetchData();
+      
+      // Show success message
+      alert('Status saved successfully!');
+    } catch (error) {
+      console.error('Error saving status:', error);
+      console.error('Error response:', error.response);
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || error.response?.data?.errors?.color?.[0] || 'Failed to save status. Please try again.';
+      alert('Error: ' + errorMessage);
+    }
+  };
+
+  const handleDeleteStatus = async (statusId) => {
+    const tasksInStatus = getTasksForStatus(statusId);
+    if (tasksInStatus.length > 0) {
+      alert(`Cannot delete status with ${tasksInStatus.length} task(s). Please move or delete tasks first.`);
+      return;
+    }
+
+    if (!window.confirm('Are you sure you want to delete this status?')) return;
+
+    try {
+      const response = await axiosInstance.delete(`/api/projects/${projectId}/workflow-statuses/${statusId}`);
+      console.log('Delete response:', response.data);
+      
+      // Close modal first
+      closeStatusModal();
+      
+      // Force refresh data
+      await fetchData();
+      
+      // Show success message
+      alert('Status deleted successfully!');
+    } catch (error) {
+      console.error('Error deleting status:', error);
+      console.error('Error response:', error.response);
+      const errorMessage = error.response?.data?.message || error.response?.data?.error || 'Failed to delete status. Please try again.';
+      alert('Error: ' + errorMessage);
+    }
+  };
+
   const getPriorityColor = (priority) => {
     switch (priority) {
       case 'urgent': return 'bg-red-100 text-red-800';
@@ -203,57 +279,82 @@ const TaskBoard = () => {
   }
 
   return (
-    <div className="flex flex-col overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100" style={{ height: '88vh' }}>
+    <div className="flex flex-col overflow-hidden bg-white" style={{ height: '88vh' }}>
       {/* Header - Fixed */}
-      <div className="flex-shrink-0 bg-white shadow-sm border-b border-gray-200 px-6 py-3">
+      <div className="flex-shrink-0 bg-white shadow-sm border-b p-3" style={{borderColor: '#e5e7eb'}}>
         <div className="flex justify-between items-center">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => navigate('/projects')}
-              className="p-2 hover:bg-purple-50 rounded-lg transition-all duration-200 group"
+              className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
               title="Back to Projects"
             >
-              <svg className="w-5 h-5 text-gray-600 group-hover:text-purple-600 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
               </svg>
             </button>
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">{project.title}</h1>
-              <p className="text-sm text-gray-500 mt-0.5">Task Board - {tasks.length} tasks</p>
+              <h1 className="text-base font-semibold text-gray-800">{project.title}</h1>
+              <p className="text-sm text-gray-600">Task Board - {tasks.length} tasks</p>
             </div>
           </div>
-          <button
-            onClick={() => openTaskModal()}
-            className="px-5 py-2.5 rounded-lg font-medium text-white hover:shadow-lg transition-all duration-200 transform hover:scale-105"
-            style={{ backgroundColor: 'rgb(61, 45, 80)' }}
-          >
-            <span className="flex items-center gap-2">
-              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => openStatusModal()}
+              className="px-3 py-2 rounded-lg text-sm font-medium border hover:bg-gray-50 transition-all flex items-center gap-1.5"
+              style={{ borderColor: '#e5e7eb', color: '#6b7280' }}
+              title="Customize Statuses"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              New Task
-            </span>
-          </button>
+              Statuses
+            </button>
+            <button
+              onClick={() => openTaskModal()}
+              className="px-3 py-2 rounded-lg text-sm font-medium text-white hover:shadow-md transition-all"
+              style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}
+            >
+              <span className="flex items-center gap-1.5">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                New Task
+              </span>
+            </button>
+          </div>
         </div>
       </div>
 
       {/* Kanban Board - Scrollable */}
-      <div className="flex-1 overflow-hidden px-6 py-3">
+      <div className="flex-1 overflow-hidden p-3">
         <DragDropContext onDragEnd={handleDragEnd}>
-          <div className="flex gap-4 h-full overflow-x-auto custom-scrollbar">
+          <div className="flex gap-3 h-full overflow-x-auto custom-scrollbar">
             {workflowStatuses.map(status => (
               <div key={status.id} className="flex-shrink-0 w-80 flex flex-col h-full">
-                <div className="bg-white rounded-lg shadow-md flex flex-col h-full overflow-hidden border border-gray-300">
+                <div className="bg-white rounded-lg shadow-sm flex flex-col h-full overflow-hidden border" style={{borderColor: '#e5e7eb'}}>
                   {/* Column Header */}
-                  <div
-                    className="px-4 py-3 flex-shrink-0"
-                    style={{ backgroundColor: status.color }}
-                  >
+                  <div className="px-3 py-2 flex-shrink-0 border-b" style={{borderColor: '#e5e7eb'}}>
                     <div className="flex justify-between items-center">
-                      <h3 className="font-bold text-white text-sm uppercase tracking-wide">{status.name}</h3>
-                      <span className="bg-white bg-opacity-30 text-white px-2.5 py-1 rounded-full text-xs font-semibold">
-                        {getTasksForStatus(status.id).length}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <div className="w-2 h-2 rounded-full" style={{ backgroundColor: status.color }}></div>
+                        <h3 className="font-semibold text-gray-800 text-sm">{status.name}</h3>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs font-medium">
+                          {getTasksForStatus(status.id).length}
+                        </span>
+                        <button
+                          onClick={() => openStatusModal(status)}
+                          className="p-1 hover:bg-gray-100 rounded transition-colors"
+                          title="Edit Status"
+                        >
+                          <svg className="w-3 h-3 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
                   </div>
 
@@ -263,9 +364,9 @@ const TaskBoard = () => {
                       <div
                         ref={provided.innerRef}
                         {...provided.droppableProps}
-                        className={`flex-1 overflow-y-auto custom-scrollbar p-3 ${
-                          snapshot.isDraggingOver ? 'bg-purple-50' : 'bg-gray-50'
-                        } transition-colors duration-200`}
+                        className={`flex-1 overflow-y-auto custom-scrollbar p-2 ${
+                          snapshot.isDraggingOver ? 'bg-gray-50' : 'bg-white'
+                        } transition-colors`}
                         style={{ minHeight: '100px' }}
                       >
                         {getTasksForStatus(status.id).map((task, index) => (
@@ -279,47 +380,48 @@ const TaskBoard = () => {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className={`bg-white rounded-lg p-3.5 mb-2.5 cursor-pointer transition-all duration-200 ${
+                                className={`bg-white rounded-lg p-3 mb-2 cursor-pointer transition-all ${
                                   snapshot.isDragging 
-                                    ? 'shadow-2xl border-2 border-purple-500 rotate-2 scale-105' 
-                                    : 'border border-gray-200 shadow-sm hover:shadow-md hover:border-purple-300'
+                                    ? 'shadow-lg border' 
+                                    : 'border hover:shadow-md'
                                 }`}
+                                style={{...provided.draggableProps.style, borderColor: snapshot.isDragging ? 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' : '#e5e7eb'}}
                                 onClick={() => navigate(`/projects/${projectId}/tasks/${task.id}`)}
                               >
                                 {/* Task Header */}
-                                <div className="flex items-start justify-between mb-3">
-                                  <span className="text-xs font-semibold text-gray-400 tracking-wider">
+                                <div className="flex items-start justify-between mb-2">
+                                  <span className="text-xs font-medium text-gray-500">
                                     #{task.id}
                                   </span>
                                   <div className="flex items-center gap-1">
                                     <span
-                                      className={`text-xs px-2.5 py-1 rounded-full font-semibold ${getPriorityColor(
-                                        task.priority
-                                      )}`}
+                                      className="text-xs px-2 py-0.5 rounded font-medium text-white"
+                                      style={{background: task.priority === 'low' ? 'rgb(107, 114, 128)' : '#F25292'}}
                                     >
                                       {task.priority.toUpperCase()}
                                     </span>
                                   </div>
                                 </div>
 
-                                {/* Task Title */}
-                                <h4 className="font-semibold text-gray-900 mb-3 line-clamp-2 leading-snug">
+                                {/* Title */}
+                                <h4 className="text-sm font-semibold text-gray-800 mb-2 line-clamp-2">
                                   {task.title}
                                 </h4>
 
                                 {/* Labels */}
                                 {task.labels && task.labels.length > 0 && (
-                                  <div className="flex flex-wrap gap-1.5 mb-3">
+                                  <div className="flex flex-wrap gap-1 mb-2">
                                     {task.labels.slice(0, 3).map((label, idx) => (
                                       <span
                                         key={idx}
-                                        className="text-xs bg-gradient-to-r from-purple-100 to-purple-50 text-purple-700 px-2.5 py-1 rounded-full font-medium"
+                                        className="text-xs text-white px-2 py-0.5 rounded font-medium"
+                                        style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}
                                       >
                                         {label}
                                       </span>
                                     ))}
                                     {task.labels.length > 3 && (
-                                      <span className="text-xs bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full font-medium">
+                                      <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded font-medium">
                                         +{task.labels.length - 3}
                                       </span>
                                     )}
@@ -327,27 +429,27 @@ const TaskBoard = () => {
                                 )}
 
                                 {/* Task Footer */}
-                                <div className="flex items-center justify-between pt-3 border-t border-gray-100">
+                                <div className="flex items-center justify-between pt-2 border-t" style={{borderColor: '#e5e7eb'}}>
                                   <div className="flex -space-x-2">
                                     {task.assigned_users && task.assigned_users.slice(0, 3).map(user => (
                                       <div
                                         key={user.id}
-                                        className="w-8 h-8 rounded-full flex items-center justify-center text-white text-xs font-bold border-2 border-white shadow-sm"
-                                        style={{ backgroundColor: 'rgb(61, 45, 80)' }}
+                                        className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-semibold border-2 border-white"
+                                        style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}
                                         title={user.name}
                                       >
                                         {user.name.charAt(0).toUpperCase()}
                                       </div>
                                     ))}
                                     {task.assigned_users && task.assigned_users.length > 3 && (
-                                      <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 text-xs font-bold border-2 border-white shadow-sm">
+                                      <div className="w-6 h-6 rounded-full bg-gray-200 flex items-center justify-center text-gray-700 text-xs font-semibold border-2 border-white">
                                         +{task.assigned_users.length - 3}
                                       </div>
                                     )}
                                   </div>
                                   {task.due_date && (
                                     <div className="flex items-center gap-1 text-xs text-gray-500">
-                                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                                       </svg>
                                       <span className="font-medium">
@@ -376,15 +478,15 @@ const TaskBoard = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="px-6 py-4 border-b" style={{ backgroundColor: 'rgb(61, 45, 80)' }}>
-              <h2 className="text-2xl font-bold text-white">
+            <div className="px-4 py-3 border-b" style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)', borderColor: '#e5e7eb' }}>
+              <h2 className="text-base font-semibold text-white">
                 {editingTask ? 'Edit Task' : 'Create New Task'}
               </h2>
             </div>
 
             {/* Modal Body */}
-            <form onSubmit={handleSubmitTask} className="p-6">
-              <div className="space-y-4">
+            <form onSubmit={handleSubmitTask} className="p-4">
+              <div className="space-y-3">
                 {/* Title */}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -394,7 +496,8 @@ const TaskBoard = () => {
                     type="text"
                     value={taskForm.title}
                     onChange={e => setTaskForm({ ...taskForm, title: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-1"
+                    style={{borderColor: '#e5e7eb'}}
                     required
                   />
                 </div>
@@ -522,7 +625,7 @@ const TaskBoard = () => {
                             />
                             <div
                               className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0"
-                              style={{ backgroundColor: 'rgb(61, 45, 80)' }}
+                              style={{ backgroundColor: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}
                             >
                               {user.name.charAt(0).toUpperCase()}
                             </div>
@@ -553,7 +656,7 @@ const TaskBoard = () => {
                       type="button"
                       onClick={() => handleDeleteTask(editingTask.id)}
                       className="px-4 py-2 rounded-lg font-medium text-white hover:opacity-90 transition-opacity"
-                      style={{ backgroundColor: 'rgb(155, 2, 50, 0.76)' }}
+                      style={{ background: 'rgb(220, 38, 38)' }}
                     >
                       Delete Task
                     </button>
@@ -570,9 +673,130 @@ const TaskBoard = () => {
                   <button
                     type="submit"
                     className="px-4 py-2 rounded-lg font-medium text-white hover:opacity-90 transition-opacity"
-                    style={{ backgroundColor: 'rgb(61, 45, 80)' }}
+                    style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}
                   >
                     {editingTask ? 'Update Task' : 'Create Task'}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Status Customization Modal */}
+      {showStatusModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-4 text-white rounded-t-lg" style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}>
+              <h2 className="text-lg font-semibold">
+                {editingStatus ? 'Edit Status' : 'Add New Status'}
+              </h2>
+              <p className="text-sm text-purple-100 mt-1">
+                {editingStatus ? 'Update workflow status details' : 'Create a new workflow status for tasks'}
+              </p>
+            </div>
+
+            <form onSubmit={handleSubmitStatus} className="p-6">
+              <div className="space-y-4">
+                {/* Status Name */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Status Name *
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    value={statusForm.name}
+                    onChange={e => setStatusForm({ ...statusForm, name: e.target.value })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-purple-500 focus:border-purple-500"
+                    placeholder="e.g., In Progress, Done"
+                  />
+                </div>
+
+                {/* Status Color */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Status Color *
+                  </label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="color"
+                      value={statusForm.color}
+                      onChange={e => setStatusForm({ ...statusForm, color: e.target.value })}
+                      className="h-10 w-20 border border-gray-300 rounded-lg cursor-pointer"
+                    />
+                    <input
+                      type="text"
+                      value={statusForm.color}
+                      onChange={e => setStatusForm({ ...statusForm, color: e.target.value })}
+                      className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-purple-500 focus:border-purple-500"
+                      placeholder="#8B5CF6"
+                    />
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">This color will appear as an indicator on the status column</p>
+                </div>
+
+                {/* Order */}
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Display Order
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    value={statusForm.order}
+                    onChange={e => setStatusForm({ ...statusForm, order: parseInt(e.target.value) || 0 })}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-1 focus:ring-purple-500 focus:border-purple-500"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Lower numbers appear first on the board</p>
+                </div>
+
+                {/* Preview */}
+                <div className="bg-gray-50 rounded-lg p-3 border border-gray-200">
+                  <p className="text-xs font-medium text-gray-600 mb-2">Preview:</p>
+                  <div className="bg-white rounded-lg p-2 border border-gray-200">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full" style={{ backgroundColor: statusForm.color }}></div>
+                      <span className="text-sm font-semibold text-gray-800">
+                        {statusForm.name || 'Status Name'}
+                      </span>
+                      <span className="ml-auto bg-gray-100 text-gray-700 px-2 py-0.5 rounded text-xs font-medium">
+                        0
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Modal Footer */}
+              <div className="flex justify-between items-center mt-6 pt-4 border-t">
+                <div>
+                  {editingStatus && (
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteStatus(editingStatus.id)}
+                      className="px-4 py-2 rounded-lg text-sm font-medium text-white hover:opacity-90 transition-opacity"
+                      style={{ background: 'rgb(220, 38, 38)' }}
+                    >
+                      Delete Status
+                    </button>
+                  )}
+                </div>
+                <div className="flex space-x-3">
+                  <button
+                    type="button"
+                    onClick={closeStatusModal}
+                    className="px-4 py-2 bg-gray-300 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-400"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-4 py-2 rounded-lg text-sm font-medium text-white hover:opacity-90 transition-opacity"
+                    style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}
+                  >
+                    {editingStatus ? 'Update Status' : 'Create Status'}
                   </button>
                 </div>
               </div>

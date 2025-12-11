@@ -446,7 +446,7 @@ const Employees = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            <div className="p-6 border-b border-gray-700" style={{background: 'rgb(61, 45, 80)', color: '#fff'}}>
+            <div className="p-6 border-b border-gray-700" style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)', color: '#fff'}}>
               <h2 className="text-2xl font-bold text-white">
                 {selectedEmployee ? 'Edit Employee' : 'Add New Employee'}
               </h2>
