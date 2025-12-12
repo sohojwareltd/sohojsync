@@ -28,8 +28,8 @@ const Dashboard = () => {
   const fetchDashboardData = async () => {
     try {
       const [projectsRes, tasksRes] = await Promise.all([
-        axiosInstance.get('/api/projects'),
-        axiosInstance.get('/api/tasks'),
+        axiosInstance.get('/projects'),
+        axiosInstance.get('/tasks'),
       ]);
 
       const projects = projectsRes.data;

@@ -16,14 +16,15 @@ class ChatController extends Controller
         $user = $request->user();
         
         $rooms = ChatRoom::with(['users', 'messages' => function($query) {
-                $query->latest()->limit(1);
+                $query->with('user')->latest()->limit(1);
             }])
             ->whereHas('users', function($query) use ($user) {
                 $query->where('user_id', $user->id);
             })
+            ->latest('updated_at')
             ->get()
             ->map(function($room) use ($user) {
-                $unreadCount = ChatMessage::where('chat_room_id', $room->id)
+                $unreadCount = ChatMessage::where('room_id', $room->id)
                     ->where('user_id', '!=', $user->id)
                     ->whereDoesntHave('reads', function($query) use ($user) {
                         $query->where('user_id', $user->id);
@@ -42,9 +43,29 @@ class ChatController extends Controller
                 $room->last_message = $room->messages->first();
                 
                 return $room;
-            });
+            })
+            ->sortByDesc(function($room) {
+                return $room->last_message?->created_at ?? $room->created_at;
+            })
+            ->values();
         
-        return response()->json($rooms);
+        // Get all messages from group chats where the user participated
+        $groupRoomIds = ChatRoom::where('type', 'group')
+            ->whereHas('users', function($query) use ($user) {
+                $query->where('user_id', $user->id);
+            })
+            ->pluck('id');
+        
+        $groupChatMessages = ChatMessage::whereIn('room_id', $groupRoomIds)
+            ->with('user')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->groupBy('user_id');
+        
+        return response()->json([
+            'rooms' => $rooms,
+            'groupChatMessages' => $groupChatMessages
+        ]);
     }
     
     public function getMessages(Request $request, $roomId)
@@ -57,7 +78,7 @@ class ChatController extends Controller
         })->findOrFail($roomId);
         
         $messages = ChatMessage::with('user')
-            ->where('chat_room_id', $roomId)
+            ->where('room_id', $roomId)
             ->orderBy('created_at', 'asc')
             ->get();
         
@@ -88,7 +109,7 @@ class ChatController extends Controller
         }
         
         $message = ChatMessage::create([
-            'chat_room_id' => $roomId,
+            'room_id' => $roomId,
             'user_id' => $user->id,
             'message' => $validated['message'] ?? null,
             'type' => $validated['type'],
@@ -147,7 +168,7 @@ class ChatController extends Controller
         $user = $request->user();
         
         // Get all unread messages in this room
-        $messages = ChatMessage::where('chat_room_id', $roomId)
+        $messages = ChatMessage::where('room_id', $roomId)
             ->where('user_id', '!=', $user->id)
             ->whereDoesntHave('reads', function($query) use ($user) {
                 $query->where('user_id', $user->id);
@@ -199,15 +220,13 @@ class ChatController extends Controller
     public function getTeamMembers(Request $request)
     {
         $user = $request->user();
-        
-        // Get all users from projects that the current user is part of
-        $teamMembers = User::whereHas('projects', function($query) use ($user) {
-            $query->whereIn('project_id', $user->projects->pluck('id'));
-        })
-        ->where('id', '!=', $user->id)
-        ->select('id', 'name', 'email')
-        ->get();
-        
+
+        // Show everyone (clients, employees, managers, etc.) except the current user
+        $teamMembers = User::where('id', '!=', $user->id)
+            ->select('id', 'name', 'email', 'role')
+            ->orderBy('name')
+            ->get();
+
         return response()->json($teamMembers);
     }
 }

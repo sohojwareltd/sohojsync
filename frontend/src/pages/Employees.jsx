@@ -44,7 +44,7 @@ const Employees = () => {
 
   const fetchEmployees = async () => {
     try {
-      const response = await axiosInstance.get('/api/employees');
+      const response = await axiosInstance.get('/employees');
       setEmployees(response.data);
     } catch (error) {
       console.error('Failed to fetch employees:', error);
@@ -55,7 +55,7 @@ const Employees = () => {
 
   const fetchStatistics = async () => {
     try {
-      const response = await axiosInstance.get('/api/employees/statistics');
+      const response = await axiosInstance.get('/employees/statistics');
       setStatistics(response.data);
     } catch (error) {
       console.error('Failed to fetch statistics:', error);
@@ -79,13 +79,13 @@ const Employees = () => {
       });
 
       if (selectedEmployee) {
-        await axiosInstance.post(`/api/employees/${selectedEmployee.id}`, formDataToSend, {
+        await axiosInstance.post(`/employees/${selectedEmployee.id}`, formDataToSend, {
           headers: { 'Content-Type': 'multipart/form-data' },
           params: { _method: 'PUT' }
         });
         showAlert('Employee updated successfully!');
       } else {
-        const response = await axiosInstance.post('/api/employees', formDataToSend, {
+        const response = await axiosInstance.post('/employees', formDataToSend, {
           headers: { 'Content-Type': 'multipart/form-data' }
         });
         showAlert(`Employee created! Password: ${response.data.password} (Also sent to email)`, 'success', 10000);
@@ -105,7 +105,7 @@ const Employees = () => {
     }
 
     try {
-      await axiosInstance.delete(`/api/employees/${employee.id}`);
+      await axiosInstance.delete(`/employees/${employee.id}`);
       showAlert('Employee deleted successfully!');
       fetchEmployees();
       fetchStatistics();

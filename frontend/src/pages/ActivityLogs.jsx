@@ -35,7 +35,7 @@ const ActivityLogs = () => {
         if (value) params.append(key, value);
       });
       
-      const response = await axiosInstance.get(`/api/activity-logs?${params}`);
+      const response = await axiosInstance.get(`/activity-logs?${params}`);
       setLogs(response.data.data || []);
     } catch (error) {
       console.error('Failed to fetch activity logs:', error);
@@ -46,7 +46,7 @@ const ActivityLogs = () => {
 
   const fetchStatistics = async () => {
     try {
-      const response = await axiosInstance.get('/api/activity-logs/statistics');
+      const response = await axiosInstance.get('/activity-logs/statistics');
       setStatistics(response.data);
     } catch (error) {
       console.error('Failed to fetch statistics:', error);
@@ -58,7 +58,7 @@ const ActivityLogs = () => {
       setLoading(true);
       
       // Fetch user-specific logs
-      const logsResponse = await axiosInstance.get(`/api/activity-logs?user_id=${userId}`);
+      const logsResponse = await axiosInstance.get(`/activity-logs?user_id=${userId}`);
       const userLogsData = logsResponse.data.data || [];
       setUserLogs(userLogsData);
 

@@ -42,6 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/projects', [ProjectController::class, 'store']);
     Route::get('/projects/statistics', [ProjectController::class, 'statistics']);
     Route::get('/projects/users-for-assignment', [ProjectController::class, 'getUsersForAssignment']);
+    Route::post('/projects/upload-attachment', [ProjectController::class, 'uploadAttachment']);
     Route::get('/projects/{id}', [ProjectController::class, 'show']);
     Route::put('/projects/{id}', [ProjectController::class, 'update']);
     Route::delete('/projects/{id}', [ProjectController::class, 'destroy']);
@@ -128,4 +129,9 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/chat/online-status', [ChatController::class, 'updateOnlineStatus']);
     Route::get('/chat/online-users', [ChatController::class, 'getOnlineUsers']);
     Route::get('/chat/team-members', [ChatController::class, 'getTeamMembers']);
+    
+    // User routes
+    Route::get('/users/{id}', [AuthController::class, 'getUserById']);
+    Route::get('/users/{id}/projects', [ProjectController::class, 'getUserProjects']);
+    Route::get('/users/{id}/tasks', [ApiTaskController::class, 'getUserTasks']);
 });

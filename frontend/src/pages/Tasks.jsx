@@ -18,7 +18,7 @@ const Tasks = () => {
 
   const fetchTasks = async () => {
     try {
-      const response = await axiosInstance.get('/api/tasks');
+      const response = await axiosInstance.get('/tasks');
       const tasksData = Array.isArray(response.data) ? response.data : (response.data.data || []);
       setTasks(tasksData);
     } catch (error) {

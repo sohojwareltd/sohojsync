@@ -136,4 +136,23 @@ class TaskController extends Controller
 
         return response()->noContent();
     }
+
+    /**
+     * Get tasks for a specific user
+     * 
+     * @param int $userId
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getUserTasks($userId)
+    {
+        $tasks = Task::where('assigned_to', $userId)
+            ->with(['project', 'assignments.user'])
+            ->orderBy('created_at', 'desc')
+            ->get();
+
+        return response()->json([
+            'data' => $tasks
+        ]);
+    }
 }
+

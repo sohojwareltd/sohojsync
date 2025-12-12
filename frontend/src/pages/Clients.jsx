@@ -30,7 +30,7 @@ const Clients = () => {
 
   const fetchClients = async () => {
     try {
-      const response = await axiosInstance.get('/api/clients');
+      const response = await axiosInstance.get('/clients');
       setClients(response.data);
     } catch (error) {
       console.error('Failed to fetch clients:', error);
@@ -99,9 +99,9 @@ const Clients = () => {
     setSubmitting(true);
     try {
       if (editingClient) {
-        await axiosInstance.put(`/api/clients/${editingClient.id}`, formData);
+        await axiosInstance.put(`/clients/${editingClient.id}`, formData);
       } else {
-        await axiosInstance.post('/api/clients', formData);
+        await axiosInstance.post('/clients', formData);
       }
       await fetchClients();
       closeModal();
@@ -118,7 +118,7 @@ const Clients = () => {
     if (!confirm('Are you sure you want to delete this client?')) return;
 
     try {
-      await axiosInstance.delete(`/api/clients/${clientId}`);
+      await axiosInstance.delete(`/clients/${clientId}`);
       await fetchClients();
     } catch (error) {
       console.error('Failed to delete client:', error);

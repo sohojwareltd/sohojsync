@@ -8,12 +8,21 @@ use App\Models\ProjectMember;
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 
 class ProjectController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Project::with(['owner', 'projectManager', 'client', 'members.user']);
+        $query = Project::with(['owner', 'projectManager', 'client', 'members.user'])
+            ->withCount([
+                'tasks',
+                'tasks as completed_tasks_count' => function ($query) {
+                    $query->where('status', 'completed');
+                }
+            ]);
+        
+        // Note: Attachments loaded separately per project to avoid N+1
 
         // Filter by user role
         $user = $request->user();
@@ -101,6 +110,13 @@ class ProjectController extends Controller
     {
         $project = Project::with(['owner', 'projectManager', 'client', 'members.user', 'tasks'])
             ->findOrFail($id);
+
+        // Get attachments
+        $attachments = DB::table('project_attachments')
+            ->where('project_id', $id)
+            ->get();
+        
+        $project->attachments = $attachments;
 
         return response()->json($project);
     }
@@ -222,6 +238,62 @@ class ProjectController extends Controller
         ]);
     }
 
+    public function uploadAttachment(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|max:10240', // 10MB max
+            'project_id' => 'required|exists:projects,id',
+            'file_name' => 'nullable|string|max:255'
+        ]);
+
+        $project = Project::findOrFail($request->project_id);
+
+        // Check authorization
+        if ($project->owner_id !== $request->user()->id && 
+            $project->project_manager_id !== $request->user()->id &&
+            !$request->user()->hasRole('admin')) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        try {
+            $file = $request->file('file');
+            $originalName = $request->file_name ?? $file->getClientOriginalName();
+            
+            // Store file
+            $path = $file->store('project-attachments/' . $project->id, 'public');
+            
+            // Create database record if table exists
+            $attachmentsTableExists = Schema::hasTable('project_attachments');
+            
+            if ($attachmentsTableExists) {
+                DB::table('project_attachments')->insert([
+                    'project_id' => $project->id,
+                    'file_name' => $originalName,
+                    'file_path' => $path,
+                    'file_size' => $file->getSize(),
+                    'file_type' => $file->getClientMimeType(),
+                    'uploaded_by' => $request->user()->id,
+                    'created_at' => now(),
+                    'updated_at' => now()
+                ]);
+            }
+
+            return response()->json([
+                'success' => true,
+                'message' => 'File uploaded successfully',
+                'file' => [
+                    'name' => $originalName,
+                    'path' => $path,
+                    'size' => $file->getSize()
+                ]
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => 'File upload failed: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
     private function createNotification($userId, $type, $title, $message, $relatedType, $relatedId)
     {
         Notification::create([
@@ -231,6 +303,21 @@ class ProjectController extends Controller
             'message' => $message,
             'related_type' => $relatedType,
             'related_id' => $relatedId,
+        ]);
+    }
+
+    public function getUserProjects($userId)
+    {
+        $projects = Project::where(function ($query) use ($userId) {
+            $query->where('project_manager_id', $userId)
+                  ->orWhere('owner_id', $userId)
+                  ->orWhereHas('members', function ($q) use ($userId) {
+                      $q->where('user_id', $userId);
+                  });
+        })->with(['client', 'project_manager', 'members.user'])->get();
+
+        return response()->json([
+            'data' => $projects
         ]);
     }
 }

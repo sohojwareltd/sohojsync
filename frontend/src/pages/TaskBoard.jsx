@@ -44,10 +44,10 @@ const TaskBoard = () => {
   const fetchData = async () => {
     try {
       const [projectRes, statusesRes, tasksRes, usersRes] = await Promise.all([
-        axiosInstance.get(`/api/projects/${projectId}`),
-        axiosInstance.get(`/api/projects/${projectId}/workflow-statuses`),
-        axiosInstance.get(`/api/projects/${projectId}/tasks`),
-        axiosInstance.get('/api/projects/users-for-assignment'),
+        axiosInstance.get(`/projects/${projectId}`),
+        axiosInstance.get(`/projects/${projectId}/workflow-statuses`),
+        axiosInstance.get(`/projects/${projectId}/tasks`),
+        axiosInstance.get('/projects/users-for-assignment'),
       ]);
 
       setProject(projectRes.data);
@@ -94,7 +94,7 @@ const TaskBoard = () => {
 
     // Update on server
     try {
-      await axiosInstance.patch(`/api/projects/${projectId}/tasks/${taskId}/status`, {
+      await axiosInstance.patch(`/projects/${projectId}/tasks/${taskId}/status`, {
         workflow_status_id: newStatusId,
         order: destination.index,
       });
@@ -143,9 +143,9 @@ const TaskBoard = () => {
 
     try {
       if (editingTask) {
-        await axiosInstance.put(`/api/projects/${projectId}/tasks/${editingTask.id}`, taskForm);
+        await axiosInstance.put(`/projects/${projectId}/tasks/${editingTask.id}`, taskForm);
       } else {
-        await axiosInstance.post(`/api/projects/${projectId}/tasks`, taskForm);
+        await axiosInstance.post(`/projects/${projectId}/tasks`, taskForm);
       }
 
       closeTaskModal();
@@ -160,7 +160,7 @@ const TaskBoard = () => {
     if (!window.confirm('Are you sure you want to delete this task?')) return;
 
     try {
-      await axiosInstance.delete(`/api/projects/${projectId}/tasks/${taskId}`);
+      await axiosInstance.delete(`/projects/${projectId}/tasks/${taskId}`);
       closeTaskModal();
       fetchData();
     } catch (error) {
@@ -190,10 +190,10 @@ const TaskBoard = () => {
 
     try {
       if (editingStatus) {
-        const response = await axiosInstance.put(`/api/projects/${projectId}/workflow-statuses/${editingStatus.id}`, statusForm);
+        const response = await axiosInstance.put(`/projects/${projectId}/workflow-statuses/${editingStatus.id}`, statusForm);
         console.log('Update response:', response.data);
       } else {
-        const response = await axiosInstance.post(`/api/projects/${projectId}/workflow-statuses`, statusForm);
+        const response = await axiosInstance.post(`/projects/${projectId}/workflow-statuses`, statusForm);
         console.log('Create response:', response.data);
       }
 
@@ -223,7 +223,7 @@ const TaskBoard = () => {
     if (!window.confirm('Are you sure you want to delete this status?')) return;
 
     try {
-      const response = await axiosInstance.delete(`/api/projects/${projectId}/workflow-statuses/${statusId}`);
+      const response = await axiosInstance.delete(`/projects/${projectId}/workflow-statuses/${statusId}`);
       console.log('Delete response:', response.data);
       
       // Close modal first

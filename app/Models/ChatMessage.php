@@ -48,4 +48,14 @@ class ChatMessage extends Model
         return $this->belongsToMany(User::class, 'chat_message_reads', 'message_id', 'user_id')
             ->withTimestamps();
     }
+
+    /**
+     * Get read records for this message
+     */
+    public function reads()
+    {
+        return $this->belongsToMany(User::class, 'chat_message_reads', 'message_id', 'user_id')
+            ->withPivot('read_at')
+            ->withTimestamps();
+    }
 }

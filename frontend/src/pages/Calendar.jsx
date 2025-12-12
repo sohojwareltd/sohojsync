@@ -33,12 +33,12 @@ const Calendar = () => {
   const fetchCalendarData = async () => {
     try {
       // Fetch tasks
-      const tasksRes = await axiosInstance.get('/api/tasks');
+      const tasksRes = await axiosInstance.get('/tasks');
       setTasks(tasksRes.data);
 
       // Fetch custom events (you'll need to create this endpoint)
       try {
-        const eventsRes = await axiosInstance.get('/api/calendar-events');
+        const eventsRes = await axiosInstance.get('/calendar-events');
         setCustomEvents(eventsRes.data);
       } catch (error) {
         console.log('Calendar events endpoint not ready yet');
@@ -125,7 +125,7 @@ const Calendar = () => {
     
     try {
       // Create custom event (you'll need to create this endpoint)
-      const response = await axiosInstance.post('/api/calendar-events', eventForm);
+      const response = await axiosInstance.post('/calendar-events', eventForm);
       
       setCustomEvents([...customEvents, response.data]);
       combineEvents(tasks, [...customEvents, response.data]);

@@ -21,7 +21,7 @@ const TaskView = () => {
 
   const fetchTask = async () => {
     try {
-      const response = await axiosInstance.get(`/api/projects/${projectId}/tasks`);
+      const response = await axiosInstance.get(`/projects/${projectId}/tasks`);
       const foundTask = response.data.find(t => t.id === parseInt(taskId));
       setTask(foundTask);
       // Set project members from task's assigned users
@@ -37,7 +37,7 @@ const TaskView = () => {
 
   const fetchComments = async () => {
     try {
-      const response = await axiosInstance.get(`/api/tasks/${taskId}/comments`);
+      const response = await axiosInstance.get(`/tasks/${taskId}/comments`);
       setComments(response.data);
     } catch (error) {
       console.error('Error fetching comments:', error);
@@ -57,7 +57,7 @@ const TaskView = () => {
         mentions.push(parseInt(match[2]));
       }
 
-      await axiosInstance.post(`/api/tasks/${taskId}/comments`, {
+      await axiosInstance.post(`/tasks/${taskId}/comments`, {
         content: newComment,
         parent_id: replyTo,
         mentions: mentions,
@@ -75,7 +75,7 @@ const TaskView = () => {
     if (!confirm('Delete this comment?')) return;
 
     try {
-      await axiosInstance.delete(`/api/tasks/${taskId}/comments/${commentId}`);
+      await axiosInstance.delete(`/tasks/${taskId}/comments/${commentId}`);
       fetchComments();
     } catch (error) {
       console.error('Error deleting comment:', error);

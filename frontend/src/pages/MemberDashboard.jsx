@@ -27,7 +27,7 @@ const MemberDashboard = () => {
 
   const fetchMemberData = async () => {
     try {
-      const tasksRes = await axiosInstance.get('/api/tasks');
+      const tasksRes = await axiosInstance.get('/tasks');
       const allTasks = tasksRes.data;
 
       // Filter only tasks assigned to this member

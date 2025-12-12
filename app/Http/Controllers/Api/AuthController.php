@@ -114,4 +114,12 @@ class AuthController extends Controller
 
         return response()->noContent();
     }
+
+    public function getUserById($id)
+    {
+        $user = User::findOrFail($id);
+        return response()->json([
+            'data' => $user
+        ]);
+    }
 }

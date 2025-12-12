@@ -37,7 +37,7 @@ const NotificationDropdown = () => {
 
   const fetchUnreadCount = async () => {
     try {
-      const response = await axiosInstance.get('/api/notifications/unread-count');
+      const response = await axiosInstance.get('/notifications/unread-count');
       setUnreadCount(response.data.count);
     } catch (error) {
       console.error('Failed to fetch unread count:', error);
@@ -47,7 +47,7 @@ const NotificationDropdown = () => {
   const fetchNotifications = async () => {
     setLoading(true);
     try {
-      const response = await axiosInstance.get('/api/notifications');
+      const response = await axiosInstance.get('/notifications');
       setNotifications(response.data.data || response.data);
     } catch (error) {
       console.error('Failed to fetch notifications:', error);
@@ -58,7 +58,7 @@ const NotificationDropdown = () => {
 
   const markAsRead = async (id) => {
     try {
-      await axiosInstance.patch(`/api/notifications/${id}/mark-read`);
+      await axiosInstance.patch(`/notifications/${id}/mark-read`);
       setNotifications(notifications.map(n => 
         n.id === id ? { ...n, is_read: true, read_at: new Date() } : n
       ));
@@ -70,7 +70,7 @@ const NotificationDropdown = () => {
 
   const markAllAsRead = async () => {
     try {
-      await axiosInstance.patch('/api/notifications/mark-all-read');
+      await axiosInstance.patch('/notifications/mark-all-read');
       setNotifications(notifications.map(n => ({ ...n, is_read: true, read_at: new Date() })));
       setUnreadCount(0);
     } catch (error) {

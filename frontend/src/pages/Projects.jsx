@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 import Loader from '../components/Loader';
 import ReactQuill from 'react-quill';
@@ -9,6 +10,7 @@ import 'react-quill/dist/quill.snow.css';
  * Modern design with CRUD operations
  */
 const Projects = () => {
+  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('grid');
@@ -23,7 +25,9 @@ const Projects = () => {
     project_manager_id: '',
     client_id: '',
     developer_ids: [],
-    deadline: ''
+    deadline: '',
+    attachments: [],
+    existingAttachments: []
   });
   const [formErrors, setFormErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -32,7 +36,8 @@ const Projects = () => {
     developers: [],
     clients: []
   });
-  const quillRef = useRef(null);
+  const [uploadProgress, setUploadProgress] = useState({});
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     fetchProjects();
@@ -41,7 +46,7 @@ const Projects = () => {
 
   const fetchProjects = async () => {
     try {
-      const response = await axiosInstance.get('/api/projects');
+      const response = await axiosInstance.get('/projects');
       setProjects(response.data.data || response.data);
     } catch (error) {
       console.error('Failed to fetch projects:', error);
@@ -52,7 +57,7 @@ const Projects = () => {
 
   const fetchUsersForAssignment = async () => {
     try {
-      const response = await axiosInstance.get('/api/projects/users-for-assignment');
+      const response = await axiosInstance.get('/projects/users-for-assignment');
       setUsersForAssignment(response.data);
     } catch (error) {
       console.error('Failed to fetch users for assignment:', error);
@@ -68,25 +73,40 @@ const Projects = () => {
       project_manager_id: '',
       client_id: '',
       developer_ids: [],
-      deadline: ''
+      deadline: '',
+      attachments: [],
+      existingAttachments: []
     });
     setFormErrors({});
+    setUploadProgress({});
     setShowModal(true);
   };
 
-  const openEditModal = (project) => {
-    setEditingProject(project);
-    setFormData({
-      title: project.title || project.name,
-      description: project.description || '',
-      status: project.status,
-      project_manager_id: project.project_manager_id || '',
-      client_id: project.client_id || '',
-      developer_ids: project.members?.map(m => m.user_id) || [],
-      deadline: project.deadline || ''
-    });
-    setFormErrors({});
-    setShowModal(true);
+  const openEditModal = async (project) => {
+    // Fetch full project details including attachments
+    try {
+      const response = await axiosInstance.get(`/projects/${project.id}`);
+      const fullProject = response.data;
+      
+      setEditingProject(fullProject);
+      setFormData({
+        title: fullProject.title || fullProject.name,
+        description: fullProject.description || '',
+        status: fullProject.status,
+        project_manager_id: fullProject.project_manager_id || '',
+        client_id: fullProject.client_id || '',
+        developer_ids: fullProject.members?.map(m => m.user_id) || [],
+        deadline: fullProject.deadline || '',
+        attachments: [], // New attachments to upload
+        existingAttachments: fullProject.attachments || [] // Existing attachments from DB
+      });
+      setFormErrors({});
+      setUploadProgress({});
+      setShowModal(true);
+    } catch (error) {
+      console.error('Error fetching project details:', error);
+      alert('Failed to load project details');
+    }
   };
 
   const closeModal = () => {
@@ -99,9 +119,12 @@ const Projects = () => {
       project_manager_id: '',
       client_id: '',
       developer_ids: [],
-      deadline: ''
+      deadline: '',
+      attachments: [],
+      existingAttachments: []
     });
     setFormErrors({});
+    setUploadProgress({});
   };
 
   const validateForm = () => {
@@ -113,6 +136,71 @@ const Projects = () => {
     return Object.keys(errors).length === 0;
   };
 
+  const handleFileSelect = (e) => {
+    const files = Array.from(e.target.files);
+    files.forEach(file => {
+      // Validate file size (max 10MB)
+      if (file.size > 10 * 1024 * 1024) {
+        alert(`File ${file.name} is too large. Maximum size is 10MB.`);
+        return;
+      }
+
+      // Add file to attachments
+      const fileObj = {
+        id: Date.now() + Math.random(),
+        file: file,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        uploaded: false,
+        progress: 0
+      };
+      setFormData(prev => ({ ...prev, attachments: [...prev.attachments, fileObj] }));
+    });
+
+    // Reset input
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const removeAttachment = (fileId) => {
+    setFormData(prev => ({
+      ...prev,
+      attachments: prev.attachments.filter(a => a.id !== fileId)
+    }));
+  };
+
+  const getFileIcon = (fileType) => {
+    if (fileType.startsWith('image/')) {
+      return (
+        <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/>
+        </svg>
+      );
+    }
+    if (fileType.includes('pdf')) {
+      return (
+        <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
+          <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
+        </svg>
+      );
+    }
+    return (
+      <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
+      </svg>
+    );
+  };
+
+  const formatFileSize = (bytes) => {
+    if (bytes === 0) return '0 Bytes';
+    const k = 1024;
+    const sizes = ['Bytes', 'KB', 'MB'];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -120,13 +208,59 @@ const Projects = () => {
 
     setSubmitting(true);
     try {
+      let projectData = { ...formData };
+      delete projectData.attachments;
+
+      let projectResponse;
       if (editingProject) {
         // Update existing project
-        await axiosInstance.put(`/api/projects/${editingProject.id}`, formData);
+        projectResponse = await axiosInstance.put(`/projects/${editingProject.id}`, projectData);
       } else {
         // Create new project
-        await axiosInstance.post('/api/projects', formData);
+        projectResponse = await axiosInstance.post('/projects', projectData);
       }
+
+      const newProjectId = projectResponse.data.data?.id || projectResponse.data.id;
+
+      // Upload attachments
+      if (formData.attachments && formData.attachments.length > 0) {
+        console.log('Starting file uploads, count:', formData.attachments.length);
+        for (const attachment of formData.attachments) {
+          console.log('Processing attachment:', attachment.name, 'Has file:', !!attachment.file);
+          // Only upload if it has a file object and hasn't been uploaded yet
+          if (attachment.file && !attachment.uploaded) {
+            const attachmentFormData = new FormData();
+            attachmentFormData.append('file', attachment.file);
+            attachmentFormData.append('project_id', newProjectId);
+            attachmentFormData.append('file_name', attachment.name);
+
+            console.log('Uploading file:', attachment.name, 'to project:', newProjectId);
+
+            try {
+              const uploadResponse = await axiosInstance.post('/projects/upload-attachment', attachmentFormData, {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                },
+                onUploadProgress: (progressEvent) => {
+                  const progress = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+                  setUploadProgress(prev => ({
+                    ...prev,
+                    [attachment.id]: progress
+                  }));
+                }
+              });
+              console.log('File uploaded successfully:', uploadResponse.data);
+            } catch (error) {
+              console.error(`Failed to upload ${attachment.name}:`, error);
+              console.error('Error response:', error.response?.data);
+              alert(`Failed to upload file: ${attachment.name}`);
+            }
+          }
+        }
+      } else {
+        console.log('No attachments to upload');
+      }
+
       await fetchProjects();
       closeModal();
     } catch (error) {
@@ -149,7 +283,7 @@ const Projects = () => {
 
   const handleDelete = async () => {
     try {
-      await axiosInstance.delete(`/api/projects/${deleteModal.projectId}`);
+      await axiosInstance.delete(`/projects/${deleteModal.projectId}`);
       await fetchProjects();
       closeDeleteModal();
     } catch (error) {
@@ -272,61 +406,133 @@ const Projects = () => {
                 return (
                   <div
                     key={project.id}
-                    className="bg-white border rounded-lg p-3 hover:shadow-md transition-all cursor-pointer group"
+                    className="bg-white border rounded-lg hover:shadow-lg transition-all cursor-pointer group"
                     style={{borderColor: '#e5e7eb', borderTopColor: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)', borderTopWidth: '3px'}}
+                    onClick={() => navigate(`/projects/${project.id}`)}
                   >
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}>
-                          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
-                          </svg>
+                    <div className="p-3">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}>
+                            <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
+                            </svg>
+                          </div>
                         </div>
+                        <span className="px-2 py-0.5 rounded text-xs font-medium text-white" style={{background: project.status === 'completed' ? 'rgb(107, 114, 128)' : '#F25292'}}>
+                          {project.status.replace('_', ' ')}
+                        </span>
                       </div>
-                      <span className="px-2 py-0.5 rounded text-xs font-medium text-white" style={{background: project.status === 'completed' ? 'rgb(107, 114, 128)' : '#F25292'}}>
-                        {project.status.replace('_', ' ')}
-                      </span>
-                    </div>
-                    
-                    <h3 className="text-base font-semibold text-gray-800 mb-2">
-                      {project.name || project.title}
-                    </h3>
-                    
-                    {/* Assignment Info */}
-                    <div className="space-y-1 mb-3 text-sm text-gray-600">
+                      
+                      <h3 className="text-base font-semibold text-gray-800 mb-2">
+                        {project.name || project.title}
+                      </h3>
+                      
+                      {/* Description */}
+                      {project.description && (
+                        <div 
+                          className="text-xs text-gray-600 mb-3 line-clamp-2" 
+                          dangerouslySetInnerHTML={{
+                            __html: project.description.substring(0, 120) + (project.description.length > 120 ? '...' : '')
+                          }}
+                        />
+                      )}
+                      
+                      {/* Progress Bar */}
+                      {project.tasks_count !== undefined && (
+                        <div className="mb-3">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs font-semibold text-gray-700">Progress</span>
+                            <span className="text-xs font-bold text-purple-600">
+                              {project.tasks_count > 0 ? Math.round((project.completed_tasks_count / project.tasks_count) * 100) : 0}%
+                            </span>
+                          </div>
+                          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                            <div 
+                              className="bg-gradient-to-r from-purple-500 to-purple-600 h-full transition-all duration-500"
+                              style={{ width: `${project.tasks_count > 0 ? (project.completed_tasks_count / project.tasks_count) * 100 : 0}%` }}
+                            ></div>
+                          </div>
+                          <p className="text-xs text-gray-500 mt-1">
+                            {project.completed_tasks_count || 0} of {project.tasks_count || 0} tasks completed
+                          </p>
+                        </div>
+                      )}
+                      
+                      {/* Project Manager Highlight */}
                       {project.project_manager && (
-                        <div className="flex items-center gap-1">
-                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
-                          </svg>
-                          <span>PM: {project.project_manager.name}</span>
+                        <div 
+                          className="mb-3 p-2 rounded-lg border border-purple-200 bg-purple-50 cursor-pointer hover:bg-purple-100 transition-colors"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/users/${project.project_manager.id}/analytics`);
+                          }}
+                        >
+                          <div className="flex items-center gap-2">
+                            <div className="w-5 h-5 rounded-full bg-purple-600 flex items-center justify-center text-white text-xs font-bold">
+                              {project.project_manager.name?.charAt(0).toUpperCase()}
+                            </div>
+                            <div className="flex-1">
+                              <p className="text-xs font-semibold text-purple-900">PM: {project.project_manager.name}</p>
+                              <p className="text-xs text-purple-700">{project.project_manager.email}</p>
+                            </div>
+                            <svg className="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                            </svg>
+                          </div>
                         </div>
                       )}
-                      {project.client && (
-                        <div className="flex items-center gap-1">
-                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"/>
-                          </svg>
-                          <span>Client: {project.client.name}</span>
-                        </div>
-                      )}
-                      {project.members && project.members.length > 0 && (
-                        <div className="flex items-center gap-1">
-                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
-                          </svg>
-                          <span>{project.members.length} Developer{project.members.length > 1 ? 's' : ''}</span>
-                        </div>
-                      )}
+                      
+                      {/* Deadline Highlight */}
                       {project.deadline && (
-                        <div className="flex items-center gap-1">
-                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
-                          </svg>
-                          <span>Deadline: {new Date(project.deadline).toLocaleDateString()}</span>
+                        <div className="mb-3 p-2 rounded-lg border border-blue-200 bg-blue-50">
+                          <div className="flex items-center gap-2">
+                            <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
+                            </svg>
+                            <div className="flex-1">
+                              <p className="text-xs font-semibold text-blue-900">Deadline</p>
+                              <p className="text-xs text-blue-700">{new Date(project.deadline).toLocaleDateString()}</p>
+                            </div>
+                          </div>
                         </div>
                       )}
-                    </div>
+                      
+                      {/* Assignment Info */}
+                      <div className="space-y-1 mb-3 text-sm text-gray-600">
+                        {project.project_manager && (
+                          <div className="flex items-center gap-1">
+                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                            </svg>
+                            <span>PM: {project.project_manager.name}</span>
+                          </div>
+                        )}
+                        {project.client && (
+                          <div className="flex items-center gap-1">
+                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"/>
+                            </svg>
+                            <span>Client: {project.client.name}</span>
+                          </div>
+                        )}
+                        {project.members && project.members.length > 0 && (
+                          <div className="flex items-center gap-1">
+                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+                            </svg>
+                            <span>{project.members.length} Developer{project.members.length > 1 ? 's' : ''}</span>
+                          </div>
+                        )}
+                        {project.deadline && (
+                          <div className="flex items-center gap-1">
+                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
+                            </svg>
+                            <span>Deadline: {new Date(project.deadline).toLocaleDateString()}</span>
+                          </div>
+                        )}
+                      </div>
                     
                     <div className="flex items-center justify-between pt-2 border-t" style={{borderColor: '#e5e7eb'}}>
                       <span className="text-sm text-gray-500 flex items-center gap-1">
@@ -336,6 +542,15 @@ const Projects = () => {
                         {new Date(project.created_at).toLocaleDateString()}
                       </span>
                       <div className="flex items-center gap-1">
+                        <a
+                          href={`/projects/${project.id}`}
+                          className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+                          title="View Details"
+                        >
+                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                          </svg>
+                        </a>
                         <a
                           href={`/projects/${project.id}/tasks`}
                           className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
@@ -450,6 +665,15 @@ const Projects = () => {
                           </td>
                           <td className="py-3 px-4">
                             <div className="flex items-center justify-center gap-1">
+                              <a
+                                href={`/projects/${project.id}`}
+                                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+                                title="View Details"
+                              >
+                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                                </svg>
+                              </a>
                               <a
                                 href={`/projects/${project.id}/tasks`}
                                 className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
@@ -587,7 +811,6 @@ const Projects = () => {
                     Description
                   </label>
                   <ReactQuill 
-                    ref={quillRef}
                     value={formData.description}
                     onChange={(value) => setFormData({ ...formData, description: value })}
                     modules={{
@@ -769,7 +992,121 @@ const Projects = () => {
                   </div>
                 </div>
 
-                {/* Row 5: Deadline and Status */}
+                {/* Row 5: File Attachments */}
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                    Project Attachments
+                  </label>
+                  
+                  {/* Upload Area */}
+                  <div 
+                    className="border-2 border-dashed border-purple-300 rounded-xl p-6 text-center cursor-pointer hover:border-purple-500 hover:bg-purple-50 transition-all"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      multiple
+                      onChange={handleFileSelect}
+                      className="hidden"
+                      accept="*/*"
+                    />
+                    <svg className="w-12 h-12 text-purple-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    <p className="text-sm font-medium text-gray-700">Click to upload or drag and drop</p>
+                    <p className="text-xs text-gray-500 mt-1">PNG, JPG, PDF or any file up to 10MB</p>
+                  </div>
+
+                  {/* Existing Attachments (from database) */}
+                  {formData.existingAttachments && formData.existingAttachments.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-semibold text-gray-700">
+                          📎 {formData.existingAttachments.length} Existing File{formData.existingAttachments.length > 1 ? 's' : ''}
+                        </span>
+                      </div>
+
+                      <div className="space-y-2 max-h-48 overflow-y-auto bg-blue-50 p-3 rounded-lg border border-blue-200">
+                        {formData.existingAttachments.map((attachment) => (
+                          <div key={attachment.id} className="bg-white border border-blue-200 rounded-lg p-3 flex items-center gap-3">
+                            <div className="flex-shrink-0">
+                              {getFileIcon(attachment.file_type)}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-800 truncate">{attachment.file_name}</p>
+                              <p className="text-xs text-gray-500">{formatFileSize(attachment.file_size)}</p>
+                              <p className="text-xs text-blue-600 mt-0.5">Uploaded</p>
+                            </div>
+                            <a
+                              href={`/storage/${attachment.file_path}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex-shrink-0 p-1.5 text-blue-600 hover:text-blue-800 transition-colors"
+                              title="Download file"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                              </svg>
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Attached Files List */}
+                  {formData.attachments && formData.attachments.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-sm font-semibold text-gray-700">
+                          📤 {formData.attachments.length} New File{formData.attachments.length > 1 ? 's' : ''} to Upload
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => setFormData({ ...formData, attachments: [] })}
+                          className="text-xs text-red-600 hover:text-red-800 font-medium"
+                        >
+                          Remove All
+                        </button>
+                      </div>
+
+                      <div className="space-y-2 max-h-48 overflow-y-auto bg-gray-50 p-3 rounded-lg">
+                        {formData.attachments.map((attachment) => (
+                          <div key={attachment.id} className="bg-white border border-gray-200 rounded-lg p-3 flex items-center gap-3 hover:shadow-sm transition-shadow">
+                            <div className="flex-shrink-0">
+                              {getFileIcon(attachment.type)}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium text-gray-800 truncate">{attachment.name}</p>
+                              <p className="text-xs text-gray-500">{formatFileSize(attachment.size)}</p>
+                              {uploadProgress[attachment.id] && uploadProgress[attachment.id] < 100 && (
+                                <div className="mt-1 w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
+                                  <div 
+                                    className="bg-purple-500 h-full transition-all"
+                                    style={{ width: `${uploadProgress[attachment.id]}%` }}
+                                  ></div>
+                                </div>
+                              )}
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => removeAttachment(attachment.id)}
+                              className="flex-shrink-0 p-1.5 text-gray-400 hover:text-red-600 transition-colors"
+                              title="Remove file"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                              </svg>
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Row 6: Deadline and Status */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-sm font-semibold text-gray-700 mb-2">
@@ -944,6 +1281,8 @@ const Projects = () => {
                 Delete Project
               </button>
             </div>
+          </div>
+        </div>
           </div>
         </div>
       )}

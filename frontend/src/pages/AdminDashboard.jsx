@@ -26,8 +26,8 @@ const AdminDashboard = () => {
   const fetchAdminData = async () => {
     try {
       const [projectsRes, tasksRes] = await Promise.all([
-        axiosInstance.get('/api/projects'),
-        axiosInstance.get('/api/tasks'),
+        axiosInstance.get('/projects'),
+        axiosInstance.get('/tasks'),
       ]);
 
       // Handle paginated response
