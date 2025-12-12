@@ -1,6 +1,7 @@
 import axios from 'axios';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
+const API_PREFIX = '/api';
 
 /**
  * Axios instance configured for Laravel Sanctum authentication
@@ -8,7 +9,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
  * - Automatically includes credentials (cookies) with every request
  */
 const axiosInstance = axios.create({
-  baseURL: API_URL,
+  baseURL: API_URL + API_PREFIX,
   withCredentials: true, // Important: enables cookie-based authentication
   headers: {
     'Content-Type': 'application/json',
@@ -18,12 +19,11 @@ const axiosInstance = axios.create({
 
 /**
  * Ensure CSRF cookie is set before login/register
- * This function should be called before any state-changing operations
- * that require CSRF protection.
+ * Sanctum exposes this route without the /api prefix, so call it on the raw API URL.
  */
 export const ensureCsrf = async () => {
   try {
-    await axiosInstance.get('/sanctum/csrf-cookie');
+    await axios.get(`${API_URL}/sanctum/csrf-cookie`, { withCredentials: true });
   } catch (error) {
     console.error('Failed to fetch CSRF cookie:', error);
     throw error;

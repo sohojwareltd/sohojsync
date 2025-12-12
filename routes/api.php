@@ -14,6 +14,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\WorkflowStatusController;
 use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\CalendarEventController;
+use App\Http\Controllers\ChatController;
 
 /*
 |--------------------------------------------------------------------------
@@ -117,4 +118,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/calendar-events/{calendarEvent}', [CalendarEventController::class, 'show']);
     Route::put('/calendar-events/{calendarEvent}', [CalendarEventController::class, 'update']);
     Route::delete('/calendar-events/{calendarEvent}', [CalendarEventController::class, 'destroy']);
+    
+    // Chat routes
+    Route::get('/chat/rooms', [ChatController::class, 'getRooms']);
+    Route::get('/chat/rooms/{roomId}/messages', [ChatController::class, 'getMessages']);
+    Route::post('/chat/rooms/{roomId}/messages', [ChatController::class, 'sendMessage']);
+    Route::post('/chat/rooms', [ChatController::class, 'createRoom']);
+    Route::post('/chat/rooms/{roomId}/mark-read', [ChatController::class, 'markAsRead']);
+    Route::post('/chat/online-status', [ChatController::class, 'updateOnlineStatus']);
+    Route::get('/chat/online-users', [ChatController::class, 'getOnlineUsers']);
+    Route::get('/chat/team-members', [ChatController::class, 'getTeamMembers']);
 });

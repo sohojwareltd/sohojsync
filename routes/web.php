@@ -21,6 +21,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
             'project' => $project,
         ]);
     })->name('projects.tasks');
+    
+    Route::get('chat', function () {
+        return Inertia::render('Chat');
+    })->name('chat');
 });
 
 require __DIR__.'/settings.php';

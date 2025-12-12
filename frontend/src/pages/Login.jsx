@@ -22,6 +22,11 @@ const Login = () => {
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
 
+  const fillDemo = (email) => {
+    setFormData({ email, password: 'password', remember: false });
+    setErrors({});
+  };
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData(prev => ({
@@ -136,17 +141,17 @@ const Login = () => {
             <p className="text-xs font-medium text-gray-500 mb-3 uppercase tracking-wide">Demo Accounts</p>
             
             <div className="space-y-2">
-              <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+              <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer" onClick={() => fillDemo('admin@example.com')}>
                 <p className="text-xs font-semibold text-gray-700 mb-1">👑 Admin</p>
                 <p className="text-xs text-gray-600">admin@example.com • password</p>
               </div>
 
-              <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+              <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer" onClick={() => fillDemo('manager@example.com')}>
                 <p className="text-xs font-semibold text-gray-700 mb-1">👔 Manager</p>
                 <p className="text-xs text-gray-600">manager@example.com • password</p>
               </div>
 
-              <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer">
+              <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer" onClick={() => fillDemo('member@example.com')}>
                 <p className="text-xs font-semibold text-gray-700 mb-1">👤 Member</p>
                 <p className="text-xs text-gray-600">member@example.com • password</p>
               </div>

@@ -15,6 +15,7 @@ import Calendar from '../pages/Calendar';
 import Clients from '../pages/Clients';
 import ActivityLogs from '../pages/ActivityLogs';
 import Employees from '../pages/Employees';
+import Chat from '../pages/Chat';
 import Settings from '../pages/Settings';
 
 /**
@@ -89,6 +90,7 @@ const AppRouter = () => {
         <Route path="clients" element={<Clients />} />
         <Route path="employees" element={<Employees />} />
         <Route path="activity-logs" element={<ActivityLogs />} />
+        <Route path="chat" element={<Chat />} />
         <Route path="settings" element={<Settings />} />
       </Route>
 

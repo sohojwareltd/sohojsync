@@ -20,7 +20,7 @@ export const AuthProvider = ({ children }) => {
    */
   const fetchUser = async () => {
     try {
-      const response = await axiosInstance.get('/api/me');
+      const response = await axiosInstance.get('/me');
       setUser(response.data);
     } catch (error) {
       // User is not authenticated
@@ -40,7 +40,7 @@ export const AuthProvider = ({ children }) => {
       await ensureCsrf();
       
       // Attempt login
-      const response = await axiosInstance.post('/api/login', credentials);
+      const response = await axiosInstance.post('/login', credentials);
       setUser(response.data);
       
       return { success: true };
@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }) => {
       await ensureCsrf();
       
       // Attempt registration
-      const response = await axiosInstance.post('/api/register', data);
+      const response = await axiosInstance.post('/register', data);
       setUser(response.data);
       
       return { success: true };
@@ -81,7 +81,7 @@ export const AuthProvider = ({ children }) => {
    */
   const logout = async () => {
     try {
-      await axiosInstance.post('/api/logout');
+      await axiosInstance.post('/logout');
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
