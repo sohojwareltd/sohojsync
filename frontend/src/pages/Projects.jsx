@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 import Loader from '../components/Loader';
 import ReactQuill from 'react-quill';
@@ -10,7 +9,6 @@ import 'react-quill/dist/quill.snow.css';
  * Modern design with CRUD operations
  */
 const Projects = () => {
-  const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('grid');
@@ -406,133 +404,61 @@ const Projects = () => {
                 return (
                   <div
                     key={project.id}
-                    className="bg-white border rounded-lg hover:shadow-lg transition-all cursor-pointer group"
+                    className="bg-white border rounded-lg p-3 hover:shadow-md transition-all cursor-pointer group"
                     style={{borderColor: '#e5e7eb', borderTopColor: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)', borderTopWidth: '3px'}}
-                    onClick={() => navigate(`/projects/${project.id}`)}
                   >
-                    <div className="p-3">
-                      <div className="flex items-start justify-between mb-2">
-                        <div className="flex items-center gap-2">
-                          <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}>
-                            <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
-                            </svg>
-                          </div>
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}>
+                          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
+                          </svg>
                         </div>
-                        <span className="px-2 py-0.5 rounded text-xs font-medium text-white" style={{background: project.status === 'completed' ? 'rgb(107, 114, 128)' : '#F25292'}}>
-                          {project.status.replace('_', ' ')}
-                        </span>
                       </div>
-                      
-                      <h3 className="text-base font-semibold text-gray-800 mb-2">
-                        {project.name || project.title}
-                      </h3>
-                      
-                      {/* Description */}
-                      {project.description && (
-                        <div 
-                          className="text-xs text-gray-600 mb-3 line-clamp-2" 
-                          dangerouslySetInnerHTML={{
-                            __html: project.description.substring(0, 120) + (project.description.length > 120 ? '...' : '')
-                          }}
-                        />
-                      )}
-                      
-                      {/* Progress Bar */}
-                      {project.tasks_count !== undefined && (
-                        <div className="mb-3">
-                          <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs font-semibold text-gray-700">Progress</span>
-                            <span className="text-xs font-bold text-purple-600">
-                              {project.tasks_count > 0 ? Math.round((project.completed_tasks_count / project.tasks_count) * 100) : 0}%
-                            </span>
-                          </div>
-                          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                            <div 
-                              className="bg-gradient-to-r from-purple-500 to-purple-600 h-full transition-all duration-500"
-                              style={{ width: `${project.tasks_count > 0 ? (project.completed_tasks_count / project.tasks_count) * 100 : 0}%` }}
-                            ></div>
-                          </div>
-                          <p className="text-xs text-gray-500 mt-1">
-                            {project.completed_tasks_count || 0} of {project.tasks_count || 0} tasks completed
-                          </p>
-                        </div>
-                      )}
-                      
-                      {/* Project Manager Highlight */}
+                      <span className="px-2 py-0.5 rounded text-xs font-medium text-white" style={{background: project.status === 'completed' ? 'rgb(107, 114, 128)' : '#F25292'}}>
+                        {project.status.replace('_', ' ')}
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-base font-semibold text-gray-800 mb-2">
+                      {project.name || project.title}
+                    </h3>
+                    
+                    {/* Assignment Info */}
+                    <div className="space-y-1 mb-3 text-sm text-gray-600">
                       {project.project_manager && (
-                        <div 
-                          className="mb-3 p-2 rounded-lg border border-purple-200 bg-purple-50 cursor-pointer hover:bg-purple-100 transition-colors"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            navigate(`/users/${project.project_manager.id}/analytics`);
-                          }}
-                        >
-                          <div className="flex items-center gap-2">
-                            <div className="w-5 h-5 rounded-full bg-purple-600 flex items-center justify-center text-white text-xs font-bold">
-                              {project.project_manager.name?.charAt(0).toUpperCase()}
-                            </div>
-                            <div className="flex-1">
-                              <p className="text-xs font-semibold text-purple-900">PM: {project.project_manager.name}</p>
-                              <p className="text-xs text-purple-700">{project.project_manager.email}</p>
-                            </div>
-                            <svg className="w-3 h-3 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                            </svg>
-                          </div>
+                        <div className="flex items-center gap-1">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                          </svg>
+                          <span>PM: {project.project_manager.name}</span>
                         </div>
                       )}
-                      
-                      {/* Deadline Highlight */}
+                      {project.client && (
+                        <div className="flex items-center gap-1">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"/>
+                          </svg>
+                          <span>Client: {project.client.name}</span>
+                        </div>
+                      )}
+                      {project.members && project.members.length > 0 && (
+                        <div className="flex items-center gap-1">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+                          </svg>
+                          <span>{project.members.length} Developer{project.members.length > 1 ? 's' : ''}</span>
+                        </div>
+                      )}
                       {project.deadline && (
-                        <div className="mb-3 p-2 rounded-lg border border-blue-200 bg-blue-50">
-                          <div className="flex items-center gap-2">
-                            <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
-                            </svg>
-                            <div className="flex-1">
-                              <p className="text-xs font-semibold text-blue-900">Deadline</p>
-                              <p className="text-xs text-blue-700">{new Date(project.deadline).toLocaleDateString()}</p>
-                            </div>
-                          </div>
+                        <div className="flex items-center gap-1">
+                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
+                          </svg>
+                          <span>Deadline: {new Date(project.deadline).toLocaleDateString()}</span>
                         </div>
                       )}
-                      
-                      {/* Assignment Info */}
-                      <div className="space-y-1 mb-3 text-sm text-gray-600">
-                        {project.project_manager && (
-                          <div className="flex items-center gap-1">
-                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
-                            </svg>
-                            <span>PM: {project.project_manager.name}</span>
-                          </div>
-                        )}
-                        {project.client && (
-                          <div className="flex items-center gap-1">
-                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"/>
-                            </svg>
-                            <span>Client: {project.client.name}</span>
-                          </div>
-                        )}
-                        {project.members && project.members.length > 0 && (
-                          <div className="flex items-center gap-1">
-                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
-                            </svg>
-                            <span>{project.members.length} Developer{project.members.length > 1 ? 's' : ''}</span>
-                          </div>
-                        )}
-                        {project.deadline && (
-                          <div className="flex items-center gap-1">
-                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
-                            </svg>
-                            <span>Deadline: {new Date(project.deadline).toLocaleDateString()}</span>
-                          </div>
-                        )}
-                      </div>
+                    </div>
                     
                     <div className="flex items-center justify-between pt-2 border-t" style={{borderColor: '#e5e7eb'}}>
                       <span className="text-sm text-gray-500 flex items-center gap-1">
@@ -1281,8 +1207,6 @@ const Projects = () => {
                 Delete Project
               </button>
             </div>
-          </div>
-        </div>
           </div>
         </div>
       )}
