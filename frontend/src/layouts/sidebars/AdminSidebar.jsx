@@ -63,7 +63,7 @@ const AdminSidebar = () => {
       <div className="h-16 flex items-center justify-between px-4 border-b" style={{borderColor: '#e5e7eb'}}>
         {!collapsed && (
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background: '#59569D'}}>
               <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
               </svg>
@@ -72,7 +72,7 @@ const AdminSidebar = () => {
           </div>
         )}
         {collapsed && (
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center mx-auto" style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}>
+          <div className="w-8 h-8 rounded-lg flex items-center justify-center mx-auto" style={{background: '#59569D'}}>
             <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
               <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
             </svg>
@@ -103,7 +103,7 @@ const AdminSidebar = () => {
               )
             }
             style={({ isActive }) => isActive ? {
-              background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'
+              background: '#59569D'
             } : {}}
           >
             {({ isActive }) => (
@@ -119,7 +119,7 @@ const AdminSidebar = () => {
       {!collapsed && (
         <div className="p-3 border-t" style={{borderColor: '#e5e7eb'}}>
           <div className="flex items-center gap-2 p-2 rounded-lg bg-gray-50">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold" style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}>
+            <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold" style={{background: '#59569D'}}>
               {user?.name?.[0]?.toUpperCase() || 'A'}
             </div>
             <div className="flex-1 min-w-0">

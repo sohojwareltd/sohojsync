@@ -53,7 +53,7 @@ const Tasks = () => {
           {user?.role !== 'developer' && (
             <button 
               className="px-3 py-2 rounded-lg text-sm font-medium text-white shadow-sm hover:shadow-md transition-all flex items-center gap-1.5" 
-              style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}
+              style={{background: '#59569D'}}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
@@ -91,7 +91,7 @@ const Tasks = () => {
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 filter === 'all' ? 'text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
               }`}
-              style={filter === 'all' ? {background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'} : {}}
+              style={filter === 'all' ? {background: '#59569D'} : {}}
             >
               All ({tasks.length})
             </button>
@@ -100,7 +100,7 @@ const Tasks = () => {
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 filter === 'open' ? 'text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
               }`}
-              style={filter === 'open' ? {background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'} : {}}
+              style={filter === 'open' ? {background: '#59569D'} : {}}
             >
               Open ({tasks.filter(t => t.status === 'open').length})
             </button>
@@ -109,7 +109,7 @@ const Tasks = () => {
               className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                 filter === 'done' ? 'text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
               }`}
-              style={filter === 'done' ? {background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'} : {}}
+              style={filter === 'done' ? {background: '#59569D'} : {}}
             >
               Done ({tasks.filter(t => t.status === 'done').length})
             </button>
@@ -124,7 +124,7 @@ const Tasks = () => {
             <div
               key={task.id}
               className="bg-white border rounded-lg p-3 hover:shadow-md transition-all"
-              style={{borderColor: '#e5e7eb', borderLeftColor: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)', borderLeftWidth: '3px'}}
+              style={{borderColor: '#e5e7eb', borderLeftColor: '#59569D', borderLeftWidth: '3px'}}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
@@ -196,7 +196,7 @@ const Tasks = () => {
           {filter === 'all' && (
             <button 
               className="px-3 py-2 rounded-lg text-sm font-medium text-white shadow-sm hover:shadow-md transition-all" 
-              style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}
+              style={{background: '#59569D'}}
             >
               + Create Task
             </button>

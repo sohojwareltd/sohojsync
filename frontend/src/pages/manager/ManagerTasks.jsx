@@ -50,7 +50,7 @@ const ManagerTasks = () => {
           </div>
           <button 
             className="px-3 py-2 rounded-lg text-sm font-medium text-white shadow-sm hover:shadow-md transition-all flex items-center gap-1.5" 
-            style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}
+            style={{background: '#59569D'}}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
@@ -87,7 +87,7 @@ const ManagerTasks = () => {
                 className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
                   filter === status ? 'text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
                 }`}
-                style={filter === status ? {background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'} : {}}
+                style={filter === status ? {background: '#59569D'} : {}}
               >
                 {status === 'all' ? `All (${tasks.length})` : status.replace('_', ' ').charAt(0).toUpperCase() + status.slice(1)}
               </button>

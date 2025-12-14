@@ -57,7 +57,17 @@ const RoleRoute = ({ allowed, children }) => {
   if (!user) return <Navigate to="/login" replace />;
   const roles = Array.isArray(allowed) ? allowed : [allowed];
   if (!roles.includes(user.role)) {
-    return <Navigate to="/dashboard" replace />;
+    // Redirect to user's own role-based dashboard
+    const getRolePrefix = (role) => {
+      switch (role) {
+        case 'admin': return '/admin';
+        case 'project_manager': return '/manager';
+        case 'developer': return '/developer';
+        case 'client': return '/client';
+        default: return '/admin';
+      }
+    };
+    return <Navigate to={`${getRolePrefix(user.role)}/dashboard`} replace />;
   }
   return children;
 };

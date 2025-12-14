@@ -47,7 +47,7 @@ export const AuthProvider = ({ children }) => {
       const response = await axiosInstance.post('/login', credentials);
       setUser(response.data);
       
-      return { success: true };
+      return { success: true, user: response.data };
     } catch (error) {
       console.error('Login error:', error);
       return { 

@@ -144,7 +144,7 @@ const Clients = () => {
           <button 
             onClick={openCreateModal}
             className="px-6 py-3 rounded-xl font-medium text-white shadow-md hover:shadow-lg transition-all flex items-center gap-2" 
-            style={{background: 'rgb(155 2 50 / 76%)'}}
+            style={{background: '#59569D'}}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
@@ -209,23 +209,21 @@ const Clients = () => {
           {/* Grid View */}
           {viewMode === 'grid' && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredClients.map((client, idx) => {
-                const borderColors = ['border-t-purple-500', 'border-t-pink-500', 'border-t-indigo-500'];
-                const iconBgColors = ['bg-purple-50', 'bg-pink-50', 'bg-indigo-50'];
-                const iconTextColors = ['text-purple-600', 'text-pink-600', 'text-indigo-600'];
-                
+              {filteredClients.map((client) => {
                 return (
                   <div
                     key={client.id}
-                    className={`bg-white border border-gray-200 border-t-4 ${borderColors[idx % 3]} rounded-xl p-6 hover:shadow-xl transition-all group`}
+                    className={"bg-white border border-gray-200 rounded-xl p-6 hover:shadow-xl transition-all group"}
+                    style={{ borderTopWidth: '4px', borderTopColor: '#59569D' }}
                   >
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex items-center gap-3">
-                        <div className={`w-12 h-12 rounded-full ${iconBgColors[idx % 3]} flex items-center justify-center text-lg font-bold ${iconTextColors[idx % 3]} group-hover:scale-110 transition-transform`}>
+                        <div className={"w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold group-hover:scale-110 transition-transform"}
+                             style={{ background: '#59569D20', color: '#59569D' }}>
                           {client.user?.name?.charAt(0).toUpperCase()}
                         </div>
                         <div>
-                          <h3 className="text-lg font-bold text-gray-800 group-hover:text-purple-600 transition-colors">
+                          <h3 className="text-lg font-bold text-gray-800 group-hover:text-gray-900 transition-colors">
                             {client.user?.name}
                           </h3>
                           <p className="text-xs text-gray-500">{client.user?.email}</p>
@@ -286,16 +284,13 @@ const Clients = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
-                    {filteredClients.map((client, idx) => {
-                      const rowColors = ['hover:bg-purple-50', 'hover:bg-pink-50', 'hover:bg-indigo-50'];
-                      const borderColors = ['border-l-purple-500', 'border-l-pink-500', 'border-l-indigo-500'];
-                      
+                    {filteredClients.map((client) => {
                       return (
                         <tr 
                           key={client.id} 
-                          className={`${rowColors[idx % 3]} transition-colors group`}
+                          className={`transition-colors group hover:bg-gray-50`}
                         >
-                          <td className={`py-4 px-6 border-l-4 ${borderColors[idx % 3]}`}>
+                          <td className={`py-4 px-6 border-l-4`} style={{ borderLeftColor: '#59569D' }}>
                             <div>
                               <p className="font-semibold text-gray-800">{client.user?.name}</p>
                               <p className="text-sm text-gray-500">{client.user?.email}</p>
@@ -347,8 +342,8 @@ const Clients = () => {
         </>
       ) : (
         <div className="bg-white rounded-xl p-16 text-center shadow-sm border border-gray-100">
-          <div className="w-20 h-20 bg-purple-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-10 h-10 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4" style={{background: '#59569D20'}}>
+            <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{color: '#59569D'}}>
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
           </div>
@@ -359,7 +354,7 @@ const Clients = () => {
           <button 
             onClick={openCreateModal}
             className="px-6 py-3 rounded-xl font-medium text-white shadow-md hover:shadow-lg transition-all" 
-            style={{background: 'rgb(155 2 50 / 76%)'}}
+            style={{background: '#59569D'}}
           >
             + Create Client
           </button>

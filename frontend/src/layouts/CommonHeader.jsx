@@ -55,7 +55,7 @@ const CommonHeader = ({ pageTitle }) => {
               <p className="text-xs font-medium text-gray-800 text-right">{user?.name}</p>
               <p className="text-xs text-right capitalize text-gray-500">{user?.role}</p>
             </div>
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-semibold cursor-pointer" style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}>
+            <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-xs font-semibold cursor-pointer" style={{background: '#59569D'}}>
               {getInitials(user?.name || '')}
             </div>
           </div>

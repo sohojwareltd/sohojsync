@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Seed core demo data first
         // Create Admin user
         $admin = User::firstOrCreate(
             ['email' => 'admin@example.com'],
@@ -323,5 +324,11 @@ class DatabaseSeeder extends Seeder
                 ]
             );
         }
+
+        // Demo project with manager, 3 developers, and client
+        $this->call(ProjectDemoSeeder::class);
+
+        // Finally, generate realistic tasks across existing projects
+        $this->call(TaskSeeder::class);
     }
 }

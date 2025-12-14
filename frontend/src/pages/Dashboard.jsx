@@ -64,9 +64,9 @@ const Dashboard = () => {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-        <div className="bg-white border rounded-lg p-3 shadow-sm" style={{borderColor: '#e5e7eb', borderTopColor: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)', borderTopWidth: '3px'}}>
+        <div className="bg-white border rounded-lg p-3 shadow-sm" style={{borderColor: '#e5e7eb', borderTopColor: '#59569D', borderTopWidth: '3px'}}>
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}>
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: '#59569D'}}>
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
               </svg>
@@ -76,9 +76,9 @@ const Dashboard = () => {
           <p className="text-xl font-bold text-gray-900">{stats.totalProjects}</p>
         </div>
 
-        <div className="bg-white border rounded-lg p-3 shadow-sm" style={{borderColor: '#e5e7eb', borderTopColor: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)', borderTopWidth: '3px'}}>
+        <div className="bg-white border rounded-lg p-3 shadow-sm" style={{borderColor: '#e5e7eb', borderTopColor: '#59569D', borderTopWidth: '3px'}}>
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}>
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: '#59569D'}}>
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
@@ -88,9 +88,9 @@ const Dashboard = () => {
           <p className="text-xl font-bold text-gray-900">{stats.totalTasks}</p>
         </div>
 
-        <div className="bg-white border rounded-lg p-3 shadow-sm" style={{borderColor: '#e5e7eb', borderTopColor: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)', borderTopWidth: '3px'}}>
+        <div className="bg-white border rounded-lg p-3 shadow-sm" style={{borderColor: '#e5e7eb', borderTopColor: '#59569D', borderTopWidth: '3px'}}>
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}>
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: '#59569D'}}>
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -100,9 +100,9 @@ const Dashboard = () => {
           <p className="text-xl font-bold text-gray-900">{stats.openTasks}</p>
         </div>
 
-        <div className="bg-white border rounded-lg p-3 shadow-sm" style={{borderColor: '#e5e7eb', borderTopColor: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)', borderTopWidth: '3px'}}>
+        <div className="bg-white border rounded-lg p-3 shadow-sm" style={{borderColor: '#e5e7eb', borderTopColor: '#59569D', borderTopWidth: '3px'}}>
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}>
+            <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: '#59569D'}}>
               <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -180,7 +180,7 @@ const Dashboard = () => {
                         ? 'text-gray-700 hover:bg-gray-50' 
                         : 'text-gray-300'
                     }`}
-                    style={isToday ? {background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'} : {}}
+                    style={isToday ? {background: '#59569D'} : {}}
                   >
                     {isCurrentMonth ? day : ''}
                   </div>

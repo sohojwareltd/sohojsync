@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import axiosInstance from '../utils/axiosInstance';
 import Loader from '../components/Loader';
 import { FilePond, registerPlugin } from 'react-filepond';
@@ -12,6 +14,7 @@ registerPlugin(FilePondPluginFileValidateType, FilePondPluginFileValidateSize);
  * Employees Page - Manage developers and project managers
  */
 const Employees = () => {
+  const APP_URL = import.meta.env.VITE_APP_URL || '';
   const [employees, setEmployees] = useState([]);
   const [statistics, setStatistics] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -21,6 +24,8 @@ const Employees = () => {
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
   const [searchQuery, setSearchQuery] = useState('');
   const [alert, setAlert] = useState(null);
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -159,6 +164,25 @@ const Employees = () => {
     setShowProfileModal(true);
   };
 
+  const goToUserDetails = (employee) => {
+    const role = employee?.user?.role || '';
+    const type = role === 'project_manager' ? 'project-manager' : role;
+    const userId = employee?.user?.id;
+    const viewerRole = user?.role;
+    const prefix = viewerRole === 'admin'
+      ? '/admin'
+      : viewerRole === 'project_manager'
+      ? '/manager'
+      : viewerRole === 'developer'
+      ? '/developer'
+      : viewerRole === 'client'
+      ? '/client'
+      : '';
+    if (userId) {
+      navigate(`${prefix}/users/${type}/${userId}`);
+    }
+  };
+
   const closeModal = () => {
     setShowModal(false);
     setShowProfileModal(false);
@@ -203,7 +227,7 @@ const Employees = () => {
           <button
             onClick={openCreateModal}
             className="px-6 py-2.5 rounded-lg text-white font-medium transition-colors shadow-md hover:shadow-lg"
-            style={{background: 'rgb(155 2 50 / 76%)'}}
+            style={{background: '#59569D'}}
           >
             + Add Employee
           </button>
@@ -213,19 +237,19 @@ const Employees = () => {
       {/* Statistics Cards */}
       {statistics && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-xl p-5 shadow-md border-l-4 border-gray-700">
+          <div className="bg-white rounded-xl p-5 shadow-md border-l-4" style={{borderLeftColor: '#59569D'}}>
             <p className="text-sm text-gray-600 mb-1">Total Employees</p>
             <p className="text-3xl font-bold text-gray-800">{statistics.total_employees}</p>
           </div>
-          <div className="bg-white rounded-xl p-5 shadow-md border-l-4 border-gray-700">
+          <div className="bg-white rounded-xl p-5 shadow-md border-l-4" style={{borderLeftColor: '#59569D'}}>
             <p className="text-sm text-gray-600 mb-1">Developers</p>
             <p className="text-3xl font-bold text-gray-800">{statistics.developers}</p>
           </div>
-          <div className="bg-white rounded-xl p-5 shadow-md border-l-4 border-gray-700">
+          <div className="bg-white rounded-xl p-5 shadow-md border-l-4" style={{borderLeftColor: '#59569D'}}>
             <p className="text-sm text-gray-600 mb-1">Project Managers</p>
             <p className="text-3xl font-bold text-gray-800">{statistics.project_managers}</p>
           </div>
-          <div className="bg-white rounded-xl p-5 shadow-md border-l-4 border-gray-700">
+          <div className="bg-white rounded-xl p-5 shadow-md border-l-4" style={{borderLeftColor: '#59569D'}}>
             <p className="text-sm text-gray-600 mb-1">Avg Performance</p>
             <p className="text-3xl font-bold text-gray-800">{Math.round(statistics.avg_performance)}%</p>
           </div>
@@ -281,23 +305,22 @@ const Employees = () => {
       {viewMode === 'grid' && (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredEmployees.map((employee, idx) => {
-            const borderColors = ['border-t-gray-700', 'border-t-gray-600', 'border-t-gray-500'];
-            
             return (
               <div
                 key={employee.id}
-                className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow border-t-4 ${borderColors[idx % 3]} overflow-hidden`}
+                className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow border-t-4 overflow-hidden`}
+                style={{borderTopColor: '#59569D'}}
               >
                 <div className="p-5">
                   <div className="flex items-center gap-3 mb-4">
                     {employee.profile_image ? (
                       <img
-                        src={`/storage/${employee.profile_image}`}
+                        src={`${APP_URL}/storage/${employee.profile_image}`}
                         alt={employee.user.name}
                         className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
                       />
                     ) : (
-                      <div className="w-12 h-12 rounded-full bg-gray-700 flex items-center justify-center text-white font-bold text-lg">
+                      <div className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold text-lg" style={{background: '#59569D'}}>
                         {employee.user.name.charAt(0).toUpperCase()}
                       </div>
                     )}
@@ -334,7 +357,7 @@ const Employees = () => {
 
                   <div className="flex gap-2 pt-4 border-t border-gray-100">
                     <button
-                      onClick={() => openProfileModal(employee)}
+                      onClick={() => goToUserDetails(employee)}
                       className="flex-1 px-3 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors text-sm font-medium"
                     >
                       Profile
@@ -376,20 +399,18 @@ const Employees = () => {
               </thead>
               <tbody className="divide-y divide-gray-100">
                 {filteredEmployees.map((employee, idx) => {
-                  const borderColors = ['border-l-gray-700', 'border-l-gray-600', 'border-l-gray-500'];
-                  
                   return (
-                    <tr key={employee.id} className={`hover:bg-gray-50 transition-colors border-l-4 ${borderColors[idx % 3]}`}>
+                    <tr key={employee.id} className={`hover:bg-gray-50 transition-colors border-l-4`} style={{borderLeftColor: '#59569D'}}>
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
                           {employee.profile_image ? (
                             <img
-                              src={`/storage/${employee.profile_image}`}
+                              src={`${APP_URL}/storage/${employee.profile_image}`}
                               alt={employee.user.name}
                               className="w-10 h-10 rounded-full object-cover border-2 border-gray-200"
                             />
                           ) : (
-                            <div className="w-10 h-10 rounded-full bg-gray-700 flex items-center justify-center text-white font-bold">
+                            <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold" style={{background: '#59569D'}}>
                               {employee.user.name.charAt(0).toUpperCase()}
                             </div>
                           )}
@@ -414,7 +435,7 @@ const Employees = () => {
                       <td className="py-4 px-6 text-right">
                         <div className="flex gap-2 justify-end">
                           <button
-                            onClick={() => openProfileModal(employee)}
+                            onClick={() => goToUserDetails(employee)}
                             className="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
                           >
                             Profile
@@ -446,7 +467,7 @@ const Employees = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden">
-            <div className="p-6 border-b border-gray-700" style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)', color: '#fff'}}>
+            <div className="p-6 border-b border-gray-700" style={{background: '#59569D', color: '#fff'}}>
               <h2 className="text-2xl font-bold text-white">
                 {selectedEmployee ? 'Edit Employee' : 'Add New Employee'}
               </h2>
@@ -644,7 +665,7 @@ const Employees = () => {
                 <button
                   type="submit"
                   className="flex-1 px-6 py-2.5 rounded-lg text-white font-medium transition-colors"
-                  style={{background: 'rgb(155 2 50 / 76%)'}}
+                  style={{background: '#59569D'}}
                 >
                   {selectedEmployee ? 'Update' : 'Create'}
                 </button>
@@ -662,7 +683,7 @@ const Employees = () => {
               <div className="flex items-center gap-4">
                 {selectedEmployee.profile_image ? (
                   <img
-                    src={`/storage/${selectedEmployee.profile_image}`}
+                    src={`${APP_URL}/storage/${selectedEmployee.profile_image}`}
                     alt={selectedEmployee.user.name}
                     className="w-16 h-16 rounded-full object-cover border-2 border-gray-600"
                   />
@@ -769,8 +790,8 @@ const Employees = () => {
 
       {filteredEmployees.length === 0 && (
         <div className="bg-white rounded-xl p-12 text-center">
-          <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{background: '#59569D20'}}>
+            <svg className="w-8 h-8" style={{color: '#59569D'}} fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
           </div>

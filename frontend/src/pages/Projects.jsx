@@ -384,7 +384,7 @@ const Projects = () => {
           <button 
             onClick={openCreateModal}
             className="px-3 py-2 rounded-lg text-xs font-medium text-white shadow-sm hover:shadow-md transition-all flex items-center gap-1.5" 
-            style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}
+            style={{background: '#59569D'}}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
@@ -442,7 +442,7 @@ const Projects = () => {
                     ? 'text-white shadow-sm'
                     : 'text-gray-600 hover:text-gray-800'
                 }`}
-                style={viewMode === 'grid' ? {background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'} : {}}
+                style={viewMode === 'grid' ? {background: '#59569D'} : {}}
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
@@ -455,7 +455,7 @@ const Projects = () => {
                     ? 'text-white shadow-sm'
                     : 'text-gray-600 hover:text-gray-800'
                 }`}
-                style={viewMode === 'table' ? {background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'} : {}}
+                style={viewMode === 'table' ? {background: '#59569D'} : {}}
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"/>
@@ -481,11 +481,11 @@ const Projects = () => {
                     key={project.id}
                     href={`${rolePrefix}/projects/${project.id}`}
                     className="bg-white border rounded-lg p-3 hover:shadow-lg transition-all cursor-pointer group block"
-                    style={{borderColor: '#e5e7eb', borderTopColor: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)', borderTopWidth: '3px'}}
+                    style={{borderColor: '#e5e7eb', borderTopColor: '#59569D', borderTopWidth: '3px'}}
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}>
+                        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: '#59569D'}}>
                           <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
                           </svg>
@@ -660,9 +660,9 @@ const Projects = () => {
                           onClick={() => window.location.href = `${rolePrefix}/projects/${project.id}`}
                           style={{cursor: 'pointer'}}
                         >
-                          <td className="py-3 px-4 border-l-2" style={{borderLeftColor: 'rgb(139, 92, 246)'}}>
+                          <td className="py-3 px-4 border-l-2" style={{borderLeftColor: '#59569D'}}>
                             <div className="flex items-center gap-2">
-                              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}>
+                              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: '#59569D'}}>
                                 <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                                   <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
                                 </svg>
@@ -831,7 +831,7 @@ const Projects = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden flex flex-col">
             {/* Modal Header */}
-            <div className="px-8 py-6 border-b border-gray-200 flex-shrink-0" style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}>
+            <div className="px-8 py-6 border-b border-gray-200 flex-shrink-0" style={{background: '#59569D'}}>
               <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-bold text-white">
                   {editingProject ? 'Edit Project' : 'Create New Project'}
@@ -1130,7 +1130,7 @@ const Projects = () => {
                               <p className="text-xs text-blue-600 mt-0.5">Uploaded</p>
                             </div>
                             <a
-                              href={`/storage/${attachment.file_path}`}
+                              href={`${import.meta.env.VITE_APP_URL || ''}/storage/${attachment.file_path}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="flex-shrink-0 p-1.5 text-blue-600 hover:text-blue-800 transition-colors"

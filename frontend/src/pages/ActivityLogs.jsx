@@ -112,7 +112,8 @@ const ActivityLogs = () => {
   };
 
   const getRoleBadgeColor = (role) => {
-    switch (role) {
+    const r = role || 'unknown';
+    switch (r) {
       case 'admin': return 'bg-red-100 text-red-700';
       case 'project_manager': return 'bg-blue-100 text-blue-700';
       case 'developer': return 'bg-green-100 text-green-700';
@@ -200,10 +201,10 @@ const ActivityLogs = () => {
                     cx="50%"
                     cy="50%"
                     outerRadius={100}
-                    label={(entry) => `${entry.role}: ${entry.count}`}
+                    label={(entry) => `${(entry.role || 'unknown').replace('_',' ')}: ${entry.count || 0}`}
                   >
                     {(statistics.by_role || []).map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={['#8B5CF6', '#F25292', '#7C3AED', '#EC4899', '#A855F7'][index % 5]} />
+                      <Cell key={`cell-${index}`} fill={['#59569D', '#7B78B3', '#A19FD1', '#C7C5E4', '#DDDCEE'][index % 5]} />
                     ))}
                   </Pie>
                   <Tooltip 
@@ -316,8 +317,8 @@ const ActivityLogs = () => {
                         </div>
                       </td>
                       <td className="py-4 px-6">
-                        <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${getRoleBadgeColor(log.user_role)}`}>
-                          {log.user_role?.replace('_', ' ')}
+                        <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${getRoleBadgeColor(log.user_role || log.user?.role)}`}>
+                          {(log.user_role || log.user?.role || 'unknown').replace('_', ' ')}
                         </span>
                       </td>
                       <td className="py-4 px-6">

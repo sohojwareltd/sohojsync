@@ -170,7 +170,7 @@ const Calendar = () => {
         <button
           onClick={() => setShowEventModal(true)}
           className="px-4 py-2 text-white rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center gap-2"
-          style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}
+          style={{background: '#59569D'}}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -229,7 +229,7 @@ const Calendar = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="p-4 text-white rounded-t-lg" style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}>
+            <div className="p-4 text-white rounded-t-lg" style={{ background: '#59569D' }}>
               <div className="flex items-center justify-between">
                 <h2 className="text-xl font-bold">Create Event</h2>
                 <button
@@ -391,7 +391,7 @@ const Calendar = () => {
                 <button
                   type="submit"
                   className="flex-1 px-4 py-2 rounded-lg text-white font-medium hover:opacity-90 transition-opacity"
-                  style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}
+                  style={{ background: '#59569D' }}
                 >
                   Create Event
                 </button>

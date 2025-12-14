@@ -75,7 +75,7 @@ class Project extends Model
     public function developers()
     {
         return $this->belongsToMany(User::class, 'project_members')
-            ->where('role', 'developer');
+            ->where('users.role', 'developer');
     }
 
     /**

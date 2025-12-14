@@ -174,10 +174,18 @@ export default function Chat() {
             
             const response = await axiosInstance.get(`/chat/rooms/${roomId}/messages`);
             setMessages(response.data.messages);
-            await axiosInstance.post(`/chat/rooms/${roomId}/mark-read`);
+            // Mark as read on server, then refresh rooms to sync unread counters
+            try {
+                await axiosInstance.post(`/chat/rooms/${roomId}/mark-read`);
+            } catch (e) {
+                console.error('Mark-read failed:', e);
+            }
+            // Optimistically zero unread in local state
             setRooms(prev => prev.map(room => 
                 room.id === roomId ? { ...room, unread_count: 0 } : room
             ));
+            // Hard refresh rooms list to ensure server unread counts are cleared
+            await loadRooms();
         } catch (error) {
             console.error('Failed to load messages:', error);
             // If room doesn't exist (virtual room), just show empty message list
@@ -273,7 +281,7 @@ export default function Chat() {
         return colors[userId % colors.length];
     };
 
-    const renderMessageWithMentions = (text) => {
+    const renderMessageWithMentions = (text, isOwn = false) => {
         const parts = text.split(/(@\w+)/);
         return parts.map((part, idx) => {
             if (part.startsWith('@')) {
@@ -281,7 +289,7 @@ export default function Chat() {
                 const mentionedUser = teamMembers.find(m => m.name.includes(mentionedName) || m.name.split(' ')[0] === mentionedName);
                 if (mentionedUser) {
                     return (
-                        <span key={idx} className={`font-bold px-2 py-1 rounded-lg mx-0.5 inline-block ${getColorForUser(mentionedUser.id)}`}>
+                        <span key={idx} className="font-bold">
                             @{mentionedUser.name.split(' ')[0]}
                         </span>
                     );
@@ -418,20 +426,19 @@ export default function Chat() {
             {/* Sidebar */}
             <div className={`${
                 showSidebar ? 'translate-x-0' : '-translate-x-full'
-            } lg:translate-x-0 fixed lg:relative z-20 w-80 lg:w-72 bg-white border-r border-gray-200 flex flex-col transition-transform duration-300 h-full`}>
-                <div className="px-4 py-4 bg-blue-600 shadow-md">
+            } lg:translate-x-0 fixed lg:relative z-20 w-80 lg:w-72 bg-white border-r border-gray-100 flex flex-col transition-transform duration-300 h-full`}>
+                <div className="px-4 py-3.5 bg-[#59569D] border-b border-white/10">
                     <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-2">
-                            <div className="p-2 bg-white/20 rounded-lg">
-                                <MessageCircle className="w-5 h-5 text-white" />
-                            </div>
-                            <h2 className="text-base font-bold text-white">
+                        <div className="flex items-center space-x-2.5">
+                            <MessageCircle className="w-5 h-5 text-white" />
+                            <h2 className="text-base font-semibold text-white">
                                 Messages
                             </h2>
                         </div>
                         <button
                             onClick={() => setShowNewChat(true)}
-                            className="p-1.5 hover:bg-white/10 rounded-lg transition-colors"
+                            className="p-1.5 hover:bg-white/20 rounded-lg transition-colors"
+                            title="New Chat"
                         >
                             <Plus className="w-5 h-5 text-white" />
                         </button>
@@ -444,9 +451,10 @@ export default function Chat() {
                             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-gray-400"></div>
                         </div>
                     ) : rooms.length === 0 ? (
-                        <div className="flex flex-col items-center justify-center h-full text-gray-500">
-                            <MessageCircle className="w-10 h-10 mb-2 opacity-50" />
-                            <p className="text-xs">No conversations yet</p>
+                        <div className="flex flex-col items-center justify-center h-full text-gray-400">
+                            <MessageCircle className="w-12 h-12 mb-3 text-[#59569D] opacity-30" />
+                            <p className="text-sm font-medium">No conversations yet</p>
+                            <p className="text-xs mt-1">Start a new chat to begin</p>
                         </div>
                     ) : (
                         rooms.map(room => (
@@ -467,21 +475,29 @@ export default function Chat() {
                                         }
                                     } else {
                                         setCurrentRoom(room);
+                                        // Immediately mark as read for UX, then refresh rooms
+                                        try {
+                                            await axiosInstance.post(`/chat/rooms/${room.id}/mark-read`);
+                                        } catch (err) {
+                                            console.error('Mark-read on open failed:', err);
+                                        }
+                                        setRooms(prev => prev.map(r => r.id === room.id ? { ...r, unread_count: 0 } : r));
+                                        await loadRooms();
                                     }
                                     setShowSidebar(false);
                                 }}
-                                className={`w-full px-4 py-3 flex items-start space-x-3 transition-all ${
+                                className={`w-full px-4 py-3 flex items-start space-x-3 transition-all border-l-4 ${
                                     currentRoom?.id === room.id 
-                                        ? 'bg-gradient-to-r from-gray-100 to-gray-50 border-l-4 border-gray-700 shadow-sm' 
-                                        : 'hover:bg-gray-50'
+                                        ? 'bg-[#59569D]/5 border-[#59569D]' 
+                                        : 'border-transparent hover:bg-gray-50'
                                 }`}
                             >
                                 <div className="relative flex-shrink-0">
-                                    <div className="w-10 h-10 rounded-full bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center text-white font-semibold text-sm">
+                                    <div className="w-11 h-11 rounded-full bg-[#59569D] flex items-center justify-center text-white font-semibold text-sm shadow-sm">
                                         {room.display_name?.charAt(0)?.toUpperCase() || '?'}
                                     </div>
                                     {!room.is_virtual && isUserOnline(room.users?.[0]?.id) && (
-                                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full" />
+                                        <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-400 border-2 border-white rounded-full" />
                                     )}
                                 </div>
                                 <div className="flex-1 min-w-0 text-left">
@@ -515,7 +531,7 @@ export default function Chat() {
                                                 <span className="italic text-gray-400">Start a conversation...</span>
                                             )}
                                         </p>
-                                        {room.unread_count > 0 && (
+                                        {room.unread_count > 0 && currentRoom?.id !== room.id && (
                                             <span className="ml-2 px-2 py-0.5 bg-red-500 text-white text-[10px] rounded-full font-semibold min-w-[20px] text-center flex-shrink-0">
                                                 {room.unread_count > 99 ? '99+' : room.unread_count}
                                             </span>
@@ -530,7 +546,7 @@ export default function Chat() {
 
             {currentRoom ? (
                 <div className="flex-1 flex flex-col bg-white">
-                    <div className="px-4 py-4 bg-purple-600 shadow-md">
+                    <div className="px-4 py-3.5 bg-[#59569D] border-b border-white/10">
                         <div className="flex items-center space-x-3">
                             <button
                                 onClick={() => setShowSidebar(true)}
@@ -548,12 +564,12 @@ export default function Chat() {
                                             <>
                                                 {otherUser?.profile_image ? (
                                                     <img 
-                                                        src={`/storage/${otherUser.profile_image}`} 
+                                                        src={`${import.meta.env.VITE_APP_URL || ''}/storage/${otherUser.profile_image}`} 
                                                         alt={otherUser.name}
                                                         className="w-10 h-10 rounded-full object-cover border-2 border-white/40 flex-shrink-0"
                                                     />
                                                 ) : (
-                                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0 ${getColorForUser(otherUser?.id).split(' ')[0]}`}>
+                                                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-white font-semibold flex-shrink-0 shadow-sm border-2 border-white/30">
                                                         {otherUser?.name?.charAt(0)?.toUpperCase() || '?'}
                                                     </div>
                                                 )}
@@ -571,16 +587,16 @@ export default function Chat() {
                                 </>
                             ) : (
                                 <>
-                                    <div className="p-2 bg-white/20 rounded-lg">
+                                    <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center border-2 border-white/30">
                                         <MessageCircle className="w-5 h-5 text-white" />
                                     </div>
                                     <div className="flex-1 min-w-0">
-                                        <h2 className="text-sm font-bold text-white truncate">
+                                        <h2 className="text-sm font-semibold text-white truncate">
                                             {currentRoom.display_name}
                                         </h2>
                                         {currentRoom.type === 'group' && currentRoom.users && (
-                                            <p className="text-xs text-gray-200">
-                                                👥 {currentRoom.users.length} members
+                                            <p className="text-xs text-white/80">
+                                                {currentRoom.users.length} members
                                             </p>
                                         )}
                                     </div>
@@ -591,7 +607,7 @@ export default function Chat() {
 
                     <div className="flex-1 overflow-y-auto p-3 space-y-2">
                         {messages.map(message => {
-                            const isOwn = message.user_id === window.Laravel?.user?.id;
+                            const isOwn = message.user_id === user?.id;
                             return (
                                 <div
                                     key={message.id}
@@ -604,21 +620,21 @@ export default function Chat() {
                                             </p>
                                         )}
                                         <div
-                                            className={`px-3 py-2 text-sm ${
+                                            className={`px-3.5 py-2.5 text-sm ${
                                                 isOwn
-                                                    ? 'bg-purple-600 text-white rounded-2xl rounded-br-sm shadow-sm'
-                                                    : 'bg-gray-100 text-gray-900 rounded-2xl rounded-bl-sm'
+                                                    ? 'bg-[#F25292] text-white rounded-2xl rounded-br-sm shadow-sm'
+                                                    : 'bg-gray-50 text-gray-900 rounded-2xl rounded-bl-sm border border-gray-100'
                                             }`}
                                         >
                                             {message.type === 'image' ? (
                                                 <img
-                                                    src={`/storage/${message.file_path}`}
+                                                    src={`${import.meta.env.VITE_APP_URL || ''}/storage/${message.file_path}`}
                                                     alt="Shared image"
                                                     className="rounded-lg max-w-full"
                                                 />
                                             ) : message.type === 'file' ? (
                                                 <a
-                                                    href={`/storage/${message.file_path}`}
+                                                    href={`${import.meta.env.VITE_APP_URL || ''}/storage/${message.file_path}`}
                                                     download
                                                     className="flex items-center space-x-2 hover:underline text-xs"
                                                 >
@@ -626,8 +642,8 @@ export default function Chat() {
                                                     <span>{message.message}</span>
                                                 </a>
                                             ) : (
-                                                <p className="whitespace-pre-wrap break-words">
-                                                    {renderMessageWithMentions(message.message)}
+                                                <p className={`whitespace-pre-wrap break-words ${isOwn ? 'text-white' : ''}`}>
+                                                    {renderMessageWithMentions(message.message, isOwn)}
                                                 </p>
                                             )}
                                         </div>
@@ -641,7 +657,7 @@ export default function Chat() {
                         <div ref={messagesEndRef} />
                     </div>
 
-                    <form onSubmit={sendMessage} className="px-4 py-3 bg-white border-t border-gray-200">
+                    <form onSubmit={sendMessage} className="px-4 py-3 bg-white border-t border-gray-100">
                         <div className="flex items-center space-x-2 relative">
                             <input
                                 type="file"
@@ -652,23 +668,24 @@ export default function Chat() {
                             <button
                                 type="button"
                                 onClick={() => fileInputRef.current?.click()}
-                                className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex-shrink-0"
+                                className="p-2 hover:bg-[#59569D]/10 text-[#59569D] rounded-lg transition-colors flex-shrink-0"
+                                title="Attach file"
                             >
-                                <Paperclip className="w-5 h-5 text-gray-600" />
+                                <Paperclip className="w-5 h-5" />
                             </button>
                             <div className="flex-1 relative">
                                 <input
                                     type="text"
                                     value={newMessage}
                                     onChange={handleMessageChange}
-                                    placeholder="Type a message... (use @ to mention)"
-                                    className="w-full px-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-gray-300 focus:bg-white transition-all"
+                                    placeholder="Type a message..."
+                                    className="w-full px-4 py-2.5 text-sm bg-gray-50 border border-gray-200 rounded-full focus:outline-none focus:ring-2 focus:ring-[#59569D]/30 focus:border-[#59569D] focus:bg-white transition-all"
                                 />
                                 
                                 {/* Mention dropdown */}
                                 {showMentions && mentions.length > 0 && (
-                                    <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border-2 border-gray-300 rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto">
-                                        <div className="px-3 py-2 bg-gradient-to-r from-gray-700 to-gray-800 text-white text-xs font-semibold rounded-t-lg">
+                                    <div className="absolute bottom-full left-0 right-0 mb-2 bg-white border border-gray-200 rounded-xl shadow-xl z-50 max-h-48 overflow-y-auto">
+                                        <div className="px-3 py-2 bg-[#59569D] text-white text-xs font-semibold rounded-t-lg">
                                             Group Members
                                         </div>
                                         {mentions.map((member, idx) => (
@@ -697,7 +714,8 @@ export default function Chat() {
                             <button
                                 type="submit"
                                 disabled={!newMessage.trim()}
-                                className="p-2.5 bg-gradient-to-r from-gray-700 to-gray-800 text-white rounded-full hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                                className="p-2.5 bg-[#59569D] text-white rounded-full hover:bg-[#59569D]/90 hover:shadow-md transition-all disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+                                title="Send message"
                             >
                                 <Send className="w-5 h-5" />
                             </button>
@@ -705,13 +723,15 @@ export default function Chat() {
                     </form>
                 </div>
             ) : (
-                <div className="flex-1 flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50">
+                <div className="flex-1 flex items-center justify-center bg-gray-50">
                     <div className="text-center">
-                        <MessageCircle className="w-16 h-16 text-purple-300 mx-auto mb-4" />
-                        <h3 className="text-xl font-semibold text-gray-600 mb-2">
+                        <div className="w-20 h-20 mx-auto mb-4 rounded-full bg-[#59569D]/10 flex items-center justify-center">
+                            <MessageCircle className="w-10 h-10 text-[#59569D]" />
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-700 mb-1.5">
                             Select a conversation
                         </h3>
-                        <p className="text-gray-500">
+                        <p className="text-sm text-gray-500">
                             Choose a chat from the list to start messaging
                         </p>
                     </div>
@@ -720,19 +740,20 @@ export default function Chat() {
 
             {showNewChat && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-lg p-6 w-full max-w-md">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-lg font-semibold">New Chat</h3>
+                    <div className="bg-white rounded-lg shadow-2xl w-full max-w-md">
+                        <div className="flex items-center justify-between px-6 py-4 bg-[#59569D] rounded-t-lg">
+                            <h3 className="text-lg font-semibold text-white">New Chat</h3>
                             <button
                                 onClick={() => setShowNewChat(false)}
-                                className="text-gray-500 hover:text-gray-700"
+                                className="text-white/80 hover:text-white transition-colors"
                             >
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
+                        <div className="p-6">
 
                         <div className="mb-4">
-                            <label className="flex items-center space-x-2 mb-2">
+                            <label className="flex items-center space-x-2.5 mb-2 cursor-pointer">
                                 <input
                                     type="radio"
                                     value="direct"
@@ -741,19 +762,19 @@ export default function Chat() {
                                         setChatType(e.target.value);
                                         setSelectedUsers([]);
                                     }}
-                                    className="text-purple-600"
+                                    className="text-[#59569D] focus:ring-[#59569D]"
                                 />
-                                <span>Direct Message</span>
+                                <span className="text-sm font-medium text-gray-700">Direct Message</span>
                             </label>
-                            <label className="flex items-center space-x-2">
+                            <label className="flex items-center space-x-2.5 cursor-pointer">
                                 <input
                                     type="radio"
                                     value="group"
                                     checked={chatType === 'group'}
                                     onChange={(e) => setChatType(e.target.value)}
-                                    className="text-purple-600"
+                                    className="text-[#59569D] focus:ring-[#59569D]"
                                 />
-                                <span>Group Chat</span>
+                                <span className="text-sm font-medium text-gray-700">Group Chat</span>
                             </label>
                         </div>
 
@@ -763,7 +784,7 @@ export default function Chat() {
                                 value={groupName}
                                 onChange={(e) => setGroupName(e.target.value)}
                                 placeholder="Group name"
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg mb-4 focus:ring-2 focus:ring-purple-500"
+                                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-[#59569D]/30 focus:border-[#59569D]"
                             />
                         )}
 
@@ -773,15 +794,15 @@ export default function Chat() {
                                 value={searchQuery}
                                 onChange={(e) => setSearchQuery(e.target.value)}
                                 placeholder="Search team members..."
-                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500"
+                                className="w-full px-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#59569D]/30 focus:border-[#59569D]"
                             />
                         </div>
 
-                        <div className="max-h-64 overflow-y-auto mb-4 space-y-2">
+                        <div className="max-h-64 overflow-y-auto mb-4 border border-gray-200 rounded-lg">
                             {filteredTeamMembers.map(member => (
                                 <label
                                     key={member.id}
-                                    className="flex items-center space-x-3 p-2 hover:bg-purple-50 rounded-lg cursor-pointer"
+                                    className="flex items-center space-x-3 px-3 py-2.5 hover:bg-[#59569D]/5 cursor-pointer border-b border-gray-100 last:border-b-0"
                                 >
                                     <input
                                         type={chatType === 'direct' ? 'radio' : 'checkbox'}
@@ -797,15 +818,17 @@ export default function Chat() {
                                                 );
                                             }
                                         }}
-                                        className="text-purple-600"
+                                        className="text-[#59569D] focus:ring-[#59569D]"
                                     />
-                                    <UserCircle className="w-8 h-8 text-gray-400" />
-                                    <div className="flex-1">
-                                        <p className="font-medium">{member.name}</p>
-                                        <p className="text-sm text-gray-500">{member.email}</p>
+                                    <div className="w-8 h-8 rounded-full bg-[#59569D] flex items-center justify-center text-white text-sm font-semibold flex-shrink-0">
+                                        {member.name?.charAt(0)?.toUpperCase() || '?'}
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-gray-900 truncate">{member.name}</p>
+                                        <p className="text-xs text-gray-500 truncate">{member.email}</p>
                                     </div>
                                     {isUserOnline(member.id) && (
-                                        <Circle className="w-3 h-3 text-green-500 fill-current" />
+                                        <Circle className="w-2.5 h-2.5 text-green-400 fill-current flex-shrink-0" />
                                     )}
                                 </label>
                             ))}
@@ -814,17 +837,18 @@ export default function Chat() {
                         <div className="flex justify-end space-x-2">
                             <button
                                 onClick={() => setShowNewChat(false)}
-                                className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                                className="px-4 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={createNewChat}
                                 disabled={selectedUsers.length === 0 || (chatType === 'group' && !groupName)}
-                                className="px-4 py-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-lg hover:shadow-lg disabled:opacity-50"
+                                className="px-4 py-2 text-sm bg-[#59569D] text-white rounded-lg hover:bg-[#59569D]/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Create
+                                Create Chat
                             </button>
+                        </div>
                         </div>
                     </div>
                 </div>

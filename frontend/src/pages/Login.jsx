@@ -49,7 +49,20 @@ const Login = () => {
     setLoading(false);
 
     if (result.success) {
-      navigate('/dashboard');
+      // Redirect based on user role
+      const user = result.user;
+      let rolePrefix = '/admin';
+      
+      if (user.role === 'project_manager') {
+        rolePrefix = '/manager';
+      } else if (user.role === 'developer') {
+        rolePrefix = '/developer';
+      } else if (user.role === 'client') {
+        rolePrefix = '/client';
+      }
+      
+      // Use window.location for immediate redirect to ensure state is updated
+      window.location.href = `${rolePrefix}/dashboard`;
     } else {
       setErrors({ general: result.error });
     }
@@ -154,6 +167,11 @@ const Login = () => {
               <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer" onClick={() => fillDemo('member@example.com')}>
                 <p className="text-xs font-semibold text-gray-700 mb-1">👤 Member</p>
                 <p className="text-xs text-gray-600">member@example.com • password</p>
+              </div>
+
+              <div className="p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer" onClick={() => fillDemo('demo.client@sohojsync.com')}>
+                <p className="text-xs font-semibold text-gray-700 mb-1">💼 Client</p>
+                <p className="text-xs text-gray-600">demo.client@sohojsync.com • password</p>
               </div>
             </div>
           </div>

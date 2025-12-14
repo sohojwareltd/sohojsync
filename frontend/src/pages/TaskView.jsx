@@ -159,7 +159,7 @@ const TaskView = () => {
             {/* Task Details Card */}
             <div className="bg-gray-50 rounded-lg p-4">
               <h2 className="text-sm font-semibold mb-3 text-gray-900 flex items-center gap-2">
-                <svg className="w-4 h-4" style={{ color: 'rgb(139, 92, 246)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" style={{ color: '#59569D' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
                 Description
@@ -175,18 +175,18 @@ const TaskView = () => {
             {/* Comments Section */}
             <div className="bg-gray-50 rounded-lg p-4">
               <h2 className="text-sm font-semibold mb-4 text-gray-900 flex items-center gap-2">
-                <svg className="w-4 h-4" style={{ color: 'rgb(139, 92, 246)' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4" style={{ color: '#59569D' }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
                 </svg>
                 Comments
-                <span className="ml-1 px-2 py-0.5 text-white text-xs font-medium rounded-full" style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}>{comments.length}</span>
+                <span className="ml-1 px-2 py-0.5 text-white text-xs font-medium rounded-full" style={{ background: '#59569D' }}>{comments.length}</span>
               </h2>
 
               {/* Comment Form */}
               <form onSubmit={handleCommentSubmit} className="mb-4 pb-4">
                 {replyTo && (
                   <div className="mb-2 flex items-center gap-2 text-xs">
-                    <span style={{ color: 'rgb(139, 92, 246)' }}>Replying to comment</span>
+                    <span style={{ color: '#59569D' }}>Replying to comment</span>
                     <button
                       type="button"
                       onClick={() => setReplyTo(null)}
@@ -227,7 +227,7 @@ const TaskView = () => {
                         >
                           <div
                             className="w-5 h-5 rounded-full flex items-center justify-center text-white text-xs"
-                            style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}
+                            style={{ background: '#59569D' }}
                           >
                             {member.name?.charAt(0).toUpperCase()}
                           </div>
@@ -242,14 +242,14 @@ const TaskView = () => {
                     type="button"
                     onClick={() => setShowMentions(!showMentions)}
                     className="text-xs hover:opacity-80 transition-opacity"
-                    style={{ color: 'rgb(139, 92, 246)' }}
+                    style={{ color: '#59569D' }}
                   >
                     @ Mention
                   </button>
                   <button
                     type="submit"
                     className="px-4 py-2 rounded-lg text-sm font-medium text-white hover:opacity-90 transition-opacity"
-                    style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}
+                    style={{ background: '#59569D' }}
                   >
                     Post Comment
                   </button>
@@ -263,7 +263,7 @@ const TaskView = () => {
                     <div className="flex items-start gap-2">
                       <div
                         className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-medium flex-shrink-0"
-                        style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}
+                        style={{ background: '#59569D' }}
                       >
                         {comment.user?.name.charAt(0).toUpperCase()}
                       </div>
@@ -287,7 +287,7 @@ const TaskView = () => {
                           <button
                             onClick={() => setReplyTo(comment.id)}
                             className="hover:opacity-80 transition-opacity font-medium"
-                            style={{ color: 'rgb(139, 92, 246)' }}
+                            style={{ color: '#59569D' }}
                           >
                             Reply
                           </button>
@@ -306,7 +306,7 @@ const TaskView = () => {
                               <div key={reply.id} className="bg-gray-50 rounded-lg p-2 flex items-start gap-2">
                                 <div
                                   className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-medium"
-                                  style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}
+                                  style={{ background: '#59569D' }}
                                 >
                                   {reply.user?.name.charAt(0).toUpperCase()}
                                 </div>
@@ -390,7 +390,7 @@ const TaskView = () => {
                   <div key={user.id} className="flex items-center gap-2">
                     <div
                       className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-medium"
-                      style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}
+                      style={{ background: '#59569D' }}
                     >
                       {user.name.charAt(0).toUpperCase()}
                     </div>
@@ -401,7 +401,7 @@ const TaskView = () => {
             </div>
 
             {/* Labels */}
-            {task.labels && task.labels.length > 0 && (
+            {Array.isArray(task.labels) && task.labels.length > 0 && (
               <div className="bg-gray-50 rounded-lg p-3">
                 <h3 className="font-semibold text-xs text-gray-500 uppercase tracking-wide mb-3">Labels</h3>
                 <div className="flex flex-wrap gap-1.5">
@@ -409,7 +409,7 @@ const TaskView = () => {
                     <span
                       key={idx}
                       className="text-xs text-white px-2 py-1 rounded-full font-medium"
-                      style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}
+                      style={{ background: '#59569D' }}
                     >
                       {label}
                     </span>

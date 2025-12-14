@@ -177,9 +177,10 @@ class ChatController extends Controller
         
         foreach ($messages as $message) {
             DB::table('chat_message_reads')->insert([
-                'chat_message_id' => $message->id,
+                'message_id' => $message->id,
                 'user_id' => $user->id,
-                'read_at' => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
             ]);
         }
         

@@ -30,9 +30,20 @@ const UserDetails = () => {
     try {
       const endpoint = userType === 'client' ? `/clients/${userId}` : `/users/${userId}`;
       const response = await axiosInstance.get(endpoint);
-      setUser(response.data.data || response.data);
+      const payload = response.data?.data ?? response.data ?? {};
+      const normalized = {
+        id: payload.id || payload.user_id || userId,
+        name: payload.name || payload.user?.name || payload.client?.name || 'Unknown',
+        email: payload.email || payload.user?.email || payload.client?.email || '',
+        role: userType || payload.role || payload.user?.role || '',
+        phone: payload.phone || payload.user?.phone || '',
+        company: payload.company || payload.client?.company || '',
+        profile_image: payload.profile_image || payload.user?.profile_image || payload.client?.profile_image || '',
+      };
+      setUser(normalized);
     } catch (error) {
-      console.error('Failed to fetch user details:', error);
+      // Swallow error; keep page usable
+      setUser({ id: userId, name: 'Unknown', email: '', role: userType });
     }
   };
 
@@ -41,8 +52,7 @@ const UserDetails = () => {
       const response = await axiosInstance.get(`/users/${userId}/analytics`);
       setAnalytics(response.data);
     } catch (error) {
-      console.error('Failed to fetch analytics:', error);
-      // Mock analytics if endpoint doesn't exist
+      // Use fallback analytics quietly if API unavailable
       setAnalytics({
         totalProjects: 0,
         activeProjects: 0,
@@ -207,9 +217,17 @@ const UserDetails = () => {
             </Link>
             <div>
               <div className="flex items-center gap-3 mb-1">
-                <div className={`w-12 h-12 rounded-full bg-gradient-to-br ${userInfo.gradient} flex items-center justify-center text-white text-xl font-bold shadow-lg`}>
-                  {user.name?.charAt(0).toUpperCase() || 'U'}
-                </div>
+                {user.profile_image ? (
+                  <img
+                    src={`${import.meta.env.VITE_APP_URL || ''}/storage/${user.profile_image}`}
+                    alt={user.name}
+                    className="w-12 h-12 rounded-full object-cover border-2 border-gray-200 shadow-lg"
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg" style={{background: '#59569D'}}>
+                    {user.name?.charAt(0).toUpperCase() || 'U'}
+                  </div>
+                )}
                 <div>
                   <h1 className="text-2xl font-bold text-gray-800">{user.name}</h1>
                   <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${userInfo.bgColor} border ${userInfo.borderColor}`}>

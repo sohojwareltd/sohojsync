@@ -15,6 +15,7 @@ const TaskBoard = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
   const { user } = useAuth();
+  const rolePrefix = user?.role ? `/${user.role}` : '';
   
   const [project, setProject] = useState(null);
   const [workflowStatuses, setWorkflowStatuses] = useState([]);
@@ -287,7 +288,7 @@ const TaskBoard = () => {
         <div className="flex justify-between items-center">
           <div className="flex items-center gap-3">
             <button
-              onClick={() => navigate('/projects')}
+              onClick={() => navigate(`${rolePrefix}/projects`)}
               className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors"
               title="Back to Projects"
             >
@@ -319,7 +320,7 @@ const TaskBoard = () => {
             <button
               onClick={() => openTaskModal()}
               className="px-3 py-2 rounded-lg text-sm font-medium text-white hover:shadow-md transition-all"
-              style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}
+              style={{ background: '#59569D' }}
             >
               <span className="flex items-center gap-1.5">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -386,13 +387,18 @@ const TaskBoard = () => {
                                 ref={provided.innerRef}
                                 {...provided.draggableProps}
                                 {...provided.dragHandleProps}
-                                className={`bg-white rounded-lg p-3 mb-2 cursor-pointer transition-all ${
+                                className={`rounded-lg p-3 mb-2 cursor-pointer transition-all ${
                                   snapshot.isDragging 
                                     ? 'shadow-lg border' 
                                     : 'border hover:shadow-md'
-                                }`}
-                                style={{...provided.draggableProps.style, borderColor: snapshot.isDragging ? 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' : '#e5e7eb'}}
-                                onClick={() => navigate(`/projects/${projectId}/tasks/${task.id}`)}
+                                } ${getPriorityColor(task.priority)}`}
+                                style={{
+                                  ...provided.draggableProps.style,
+                                  borderColor: snapshot.isDragging 
+                                    ? '#59569D' 
+                                    : '#e5e7eb'
+                                }}
+                                onClick={() => navigate(`${rolePrefix}/projects/${projectId}/tasks/${task.id}`)}
                               >
                                 {/* Task Header */}
                                 <div className="flex items-start justify-between mb-2">
@@ -400,11 +406,33 @@ const TaskBoard = () => {
                                     #{task.id}
                                   </span>
                                   <div className="flex items-center gap-1">
-                                    <span
-                                      className="text-xs px-2 py-0.5 rounded font-medium text-white"
-                                      style={{background: task.priority === 'low' ? 'rgb(107, 114, 128)' : '#F25292'}}
+                                    {user?.role !== 'developer' && (
+                                      <button
+                                        title="Edit Task"
+                                        onClick={(e) => { e.stopPropagation(); openTaskModal(task); }}
+                                        className="p-1 rounded hover:bg-gray-100"
+                                      >
+                                        <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M4 20h4l10.732-10.732a2.5 2.5 0 10-3.536-3.536L4 16v4z" />
+                                        </svg>
+                                      </button>
+                                    )}
+                                    <span className="text-xs px-2 py-0.5 rounded font-semibold border"
+                                      style={{
+                                        borderColor: '#e5e7eb',
+                                        background:
+                                          task.priority === 'urgent' ? '#fee2e2' :
+                                          task.priority === 'high' ? '#ffedd5' :
+                                          task.priority === 'medium' ? '#fef9c3' :
+                                          task.priority === 'low' ? '#f0fdf4' : '#f3f4f6',
+                                        color:
+                                          task.priority === 'urgent' ? '#991b1b' :
+                                          task.priority === 'high' ? '#9a3412' :
+                                          task.priority === 'medium' ? '#854d0e' :
+                                          task.priority === 'low' ? '#166534' : '#374151'
+                                      }}
                                     >
-                                      {task.priority.toUpperCase()}
+                                      {task.priority?.toUpperCase()}
                                     </span>
                                   </div>
                                 </div>
@@ -415,13 +443,13 @@ const TaskBoard = () => {
                                 </h4>
 
                                 {/* Labels */}
-                                {task.labels && task.labels.length > 0 && (
+                                {Array.isArray(task.labels) && task.labels.length > 0 && (
                                   <div className="flex flex-wrap gap-1 mb-2">
                                     {task.labels.slice(0, 3).map((label, idx) => (
                                       <span
                                         key={idx}
                                         className="text-xs text-white px-2 py-0.5 rounded font-medium"
-                                        style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}
+                                        style={{background: '#59569D'}}
                                       >
                                         {label}
                                       </span>
@@ -441,7 +469,7 @@ const TaskBoard = () => {
                                       <div
                                         key={user.id}
                                         className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-semibold border-2 border-white"
-                                        style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}
+                                        style={{ background: '#59569D' }}
                                         title={user.name}
                                       >
                                         {user.name.charAt(0).toUpperCase()}
@@ -484,7 +512,7 @@ const TaskBoard = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg max-w-3xl w-full max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
-            <div className="px-4 py-3 border-b" style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)', borderColor: '#e5e7eb' }}>
+            <div className="px-4 py-3 border-b" style={{ background: '#59569D', borderColor: '#e5e7eb' }}>
               <h2 className="text-base font-semibold text-white">
                 {editingTask ? 'Edit Task' : 'Create New Task'}
               </h2>
@@ -631,7 +659,7 @@ const TaskBoard = () => {
                             />
                             <div
                               className="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-semibold flex-shrink-0"
-                              style={{ backgroundColor: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}
+                              style={{ backgroundColor: '#59569D' }}
                             >
                               {user.name.charAt(0).toUpperCase()}
                             </div>
@@ -679,7 +707,7 @@ const TaskBoard = () => {
                   <button
                     type="submit"
                     className="px-4 py-2 rounded-lg font-medium text-white hover:opacity-90 transition-opacity"
-                    style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}
+                    style={{ background: '#59569D' }}
                   >
                     {editingTask ? 'Update Task' : 'Create Task'}
                   </button>
@@ -694,7 +722,7 @@ const TaskBoard = () => {
       {showStatusModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg shadow-xl max-w-md w-full max-h-[90vh] overflow-y-auto">
-            <div className="p-4 text-white rounded-t-lg" style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}>
+            <div className="p-4 text-white rounded-t-lg" style={{ background: '#59569D' }}>
               <h2 className="text-lg font-semibold">
                 {editingStatus ? 'Edit Status' : 'Add New Status'}
               </h2>
@@ -800,7 +828,7 @@ const TaskBoard = () => {
                   <button
                     type="submit"
                     className="px-4 py-2 rounded-lg text-sm font-medium text-white hover:opacity-90 transition-opacity"
-                    style={{ background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)' }}
+                    style={{ background: '#59569D' }}
                   >
                     {editingStatus ? 'Update Status' : 'Create Status'}
                   </button>
