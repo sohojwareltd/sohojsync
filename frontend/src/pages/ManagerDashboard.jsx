@@ -32,19 +32,30 @@ const ManagerDashboard = () => {
         axiosInstance.get('/tasks'),
       ]);
 
-      const projects = projectsRes.data;
-      const tasks = tasksRes.data;
+      // Handle possible pagination structures
+      const allProjects = Array.isArray(projectsRes.data) ? projectsRes.data : (projectsRes.data.data || []);
+      const allTasks = Array.isArray(tasksRes.data) ? tasksRes.data : (tasksRes.data.data || []);
 
-      setMyProjects(projects);
-      setTeamTasks(tasks);
+      // Filter projects managed by current user
+      const myManagedProjects = allProjects.filter(p => (
+        p.project_manager_id === user?.id || p.project_manager?.id === user?.id
+      ));
 
-      const assignedToMeTasks = tasks.filter(t => t.assigned_to === user?.id);
+      // Filter tasks relevant to the manager: tasks under projects they manage
+      const tasksUnderMyProjects = allTasks.filter(t => (
+        t.project?.project_manager_id === user?.id || t.project?.project_manager?.id === user?.id
+      ));
+
+      setMyProjects(myManagedProjects);
+      setTeamTasks(tasksUnderMyProjects);
+
+      const assignedToMeTasks = allTasks.filter(t => t.assigned_to === user?.id);
 
       setStats({
-        myProjects: projects.length,
-        totalTasks: tasks.length,
+        myProjects: myManagedProjects.length,
+        totalTasks: tasksUnderMyProjects.length,
         assignedToMe: assignedToMeTasks.length,
-        teamTasks: tasks.filter(t => t.status === 'open').length,
+        teamTasks: tasksUnderMyProjects.filter(t => (t.status === 'open' || t.status === 'in_progress')).length,
       });
     } catch (error) {
       console.error('Failed to fetch manager data:', error);
@@ -149,7 +160,10 @@ const ManagerDashboard = () => {
 
         {/* Team Tasks */}
         <div>
-          <h3 className="text-xl font-semibold mb-4">Team Tasks</h3>
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-xl font-semibold">Team Tasks</h3>
+            <a href="/manager/tasks" className="text-primary hover:underline text-sm font-medium">View All</a>
+          </div>
           <div className="space-y-3">
             {teamTasks.length > 0 ? (
               teamTasks.slice(0, 5).map(task => (

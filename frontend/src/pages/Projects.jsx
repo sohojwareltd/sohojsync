@@ -3,12 +3,30 @@ import axiosInstance from '../utils/axiosInstance';
 import Loader from '../components/Loader';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import { useAuth } from '../hooks/useAuth';
 
 /**
  * Projects Page
  * Modern design with CRUD operations
  */
+const getRolePrefix = (role) => {
+  switch (role) {
+    case 'admin':
+      return '/admin';
+    case 'project_manager':
+      return '/manager';
+    case 'developer':
+      return '/developer';
+    case 'client':
+      return '/client';
+    default:
+      return '';
+  }
+};
+
 const Projects = () => {
+  const { user } = useAuth();
+  const rolePrefix = getRolePrefix(user?.role);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState('grid');
@@ -45,7 +63,58 @@ const Projects = () => {
   const fetchProjects = async () => {
     try {
       const response = await axiosInstance.get('/projects');
-      setProjects(response.data.data || response.data);
+      // Laravel paginate returns data in response.data.data
+      let projectsData = response.data.data || response.data;
+      
+      // Ensure it's an array
+      if (!Array.isArray(projectsData)) {
+        projectsData = Array.isArray(projectsData.data) ? projectsData.data : [];
+      }
+      
+      console.log('=== FULL API RESPONSE ===', response.data);
+      
+      // Calculate progress for each project
+      const projectsWithProgress = projectsData.map(project => {
+        // Prefer tasks array if present; fallback to counts from API
+        const tasks = Array.isArray(project.tasks) ? project.tasks : [];
+        const totalTasks = tasks.length > 0 ? tasks.length : (project.tasks_count || 0);
+        const completedTasks = tasks.length > 0
+          ? tasks.filter(t => ['completed', 'done', 'resolved'].includes(String(t.status || '').toLowerCase())).length
+          : (project.completed_tasks_count || 0);
+        const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+        
+        // Debug logging - show raw field values
+        console.log(`Project: "${project.name || project.title}"`, {
+          tasks_count: project.tasks_count,
+          completed_tasks_count: project.completed_tasks_count,
+          totalTasks,
+          completedTasks,
+          calculatedProgress: progress,
+          hasProgressField: 'progress' in project,
+          apiProgress: project.progress
+        });
+        
+        return {
+          ...project,
+          progress,
+          total_tasks: totalTasks,
+          completed_tasks: completedTasks
+        };
+      });
+      // Role-based visibility: show only assigned projects
+      const filterByRole = (p) => {
+        const role = user?.role;
+        if (!role || role === 'admin') return true;
+        if (role === 'client') return p.client_id === user?.id || p.client?.id === user?.id;
+        if (role === 'project_manager') return p.project_manager_id === user?.id || p.project_manager?.id === user?.id;
+        if (role === 'developer') {
+          const members = Array.isArray(p.members) ? p.members : [];
+          return members.some(m => m.user_id === user?.id || m.id === user?.id);
+        }
+        return true;
+      };
+
+      setProjects(projectsWithProgress.filter(filterByRole));
     } catch (error) {
       console.error('Failed to fetch projects:', error);
     } finally {
@@ -310,6 +379,8 @@ const Projects = () => {
             <h1 className="text-base font-semibold text-gray-800">Projects</h1>
             <p className="text-sm text-gray-600 mt-0.5">Manage and track all your projects</p>
           </div>
+          {/* Hide New Project for project_manager and developer */}
+          {(user?.role !== 'project_manager' && user?.role !== 'developer') && (
           <button 
             onClick={openCreateModal}
             className="px-3 py-2 rounded-lg text-xs font-medium text-white shadow-sm hover:shadow-md transition-all flex items-center gap-1.5" 
@@ -320,6 +391,7 @@ const Projects = () => {
             </svg>
             New Project
           </button>
+          )}
         </div>
       </div>
 
@@ -401,10 +473,14 @@ const Projects = () => {
           {viewMode === 'grid' && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {filteredProjects.map((project, idx) => {
+                const daysUntil = project.deadline ? Math.ceil((new Date(project.deadline) - new Date()) / (1000 * 60 * 60 * 24)) : null;
+                const isOverdue = project.deadline && new Date(project.deadline) < new Date();
+                
                 return (
-                  <div
+                  <a
                     key={project.id}
-                    className="bg-white border rounded-lg p-3 hover:shadow-md transition-all cursor-pointer group"
+                    href={`${rolePrefix}/projects/${project.id}`}
+                    className="bg-white border rounded-lg p-3 hover:shadow-lg transition-all cursor-pointer group block"
                     style={{borderColor: '#e5e7eb', borderTopColor: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)', borderTopWidth: '3px'}}
                   >
                     <div className="flex items-start justify-between mb-2">
@@ -415,32 +491,71 @@ const Projects = () => {
                           </svg>
                         </div>
                       </div>
-                      <span className="px-2 py-0.5 rounded text-xs font-medium text-white" style={{background: project.status === 'completed' ? 'rgb(107, 114, 128)' : '#F25292'}}>
-                        {project.status.replace('_', ' ')}
+                      <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
+                        project.status === 'completed' ? 'bg-green-100 text-green-700 border border-green-300' :
+                        project.status === 'in_progress' ? 'bg-blue-100 text-blue-700 border border-blue-300' :
+                        project.status === 'planning' ? 'bg-yellow-100 text-yellow-700 border border-yellow-300' :
+                        project.status === 'on_hold' ? 'bg-gray-100 text-gray-700 border border-gray-300' :
+                        'bg-purple-100 text-purple-700 border border-purple-300'
+                      }`}>
+                        {project.status.replace('_', ' ').toUpperCase()}
                       </span>
                     </div>
+
+                    {/* Progress Bar - Compact Top */}
+                    {project.progress !== undefined && (
+                      <div className="mb-2 flex items-center gap-2">
+                        <div className="flex-1">
+                          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden shadow-inner">
+                            <div 
+                              className="bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 h-full transition-all duration-500 relative overflow-hidden"
+                              style={{ width: `${project.progress || 0}%` }}
+                            >
+                              <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
+                            </div>
+                          </div>
+                        </div>
+                        <span className="text-xs font-bold text-purple-600 whitespace-nowrap">{project.progress}%</span>
+                      </div>
+                    )}
                     
-                    <h3 className="text-base font-semibold text-gray-800 mb-2">
+                    <h3 className="text-base font-semibold text-gray-800 mb-2 group-hover:text-purple-600 transition-colors">
                       {project.name || project.title}
                     </h3>
                     
                     {/* Assignment Info */}
                     <div className="space-y-1 mb-3 text-sm text-gray-600">
+                      {/* Project Manager - HIGHLIGHTED */}
                       {project.project_manager && (
-                        <div className="flex items-center gap-1">
-                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <a
+                          href={`${rolePrefix}/users/project-manager/${project.project_manager.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center gap-1.5 group"
+                        >
+                          <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
                           </svg>
-                          <span>PM: {project.project_manager.name}</span>
-                        </div>
+                          <div>
+                            {/* <span className="text-xs text-gray-500 block">PM</span> */}
+                            <span className="text-base font-extrabold text-purple-700 group-hover:text-purple-900 ">{project.project_manager.name}</span>
+                          </div>
+                        </a>
                       )}
+                      {/* Client - HIGHLIGHTED */}
                       {project.client && (
-                        <div className="flex items-center gap-1">
-                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <a
+                          href={`${rolePrefix}/users/client/${project.client.id}`}
+                          onClick={(e) => e.stopPropagation()}
+                          className="flex items-center gap-1.5 group"
+                        >
+                          <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"/>
                           </svg>
-                          <span>Client: {project.client.name}</span>
-                        </div>
+                          <div>
+                            {/* <span className="text-xs text-gray-500 block">Client</span> */}
+                            <span className="text-base font-extrabold text-blue-700 ">{project.client.name}</span>
+                          </div>
+                        </a>
                       )}
                       {project.members && project.members.length > 0 && (
                         <div className="flex items-center gap-1">
@@ -450,44 +565,50 @@ const Projects = () => {
                           <span>{project.members.length} Developer{project.members.length > 1 ? 's' : ''}</span>
                         </div>
                       )}
+                      {/* Deadline - HIGHLIGHTED */}
                       {project.deadline && (
-                        <div className="flex items-center gap-1">
-                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                        <div className={`flex items-center gap-1 p-2 rounded border ${
+                          isOverdue 
+                            ? 'bg-red-50 border-red-200'
+                            : daysUntil <= 3 
+                              ? 'bg-yellow-50 border-yellow-200'
+                              : 'bg-blue-50 border-blue-200'
+                        }`}>
+                          <svg className={`w-4 h-4 ${
+                            isOverdue ? 'text-red-600' : daysUntil <= 3 ? 'text-yellow-600' : 'text-blue-600'
+                          }`} fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
                           </svg>
-                          <span>Deadline: {new Date(project.deadline).toLocaleDateString()}</span>
+                          <div>
+                            <span className={`font-semibold ${
+                              isOverdue ? 'text-red-700' : daysUntil <= 3 ? 'text-yellow-700' : 'text-blue-700'
+                            }`}>
+                              {isOverdue ? '⚠️ Overdue' : daysUntil <= 3 ? '⏰ Due Soon' : '📅 Deadline'}:
+                            </span>
+                            <span className={`ml-1 ${
+                              isOverdue ? 'text-red-600' : daysUntil <= 3 ? 'text-yellow-600' : 'text-blue-600'
+                            }`}>
+                              {new Date(project.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                            </span>
+                          </div>
                         </div>
                       )}
                     </div>
                     
                     <div className="flex items-center justify-between pt-2 border-t" style={{borderColor: '#e5e7eb'}}>
-                      <span className="text-sm text-gray-500 flex items-center gap-1">
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/>
+                      <a 
+                        href={`${rolePrefix}/projects/${project.id}/tasks`}
+                        onClick={(e) => e.stopPropagation()}
+                        className="text-sm text-purple-600 font-semibold hover:text-purple-700 flex items-center gap-1 transition-colors"
+                      >
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM15 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2h-2zM5 13a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM13 11a1 1 0 10-2 0v3.586L9.707 13.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L13 14.586V11z"/>
                         </svg>
-                        {new Date(project.created_at).toLocaleDateString()}
-                      </span>
-                      <div className="flex items-center gap-1">
-                        <a
-                          href={`/projects/${project.id}`}
-                          className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
-                          title="View Details"
-                        >
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                          </svg>
-                        </a>
-                        <a
-                          href={`/projects/${project.id}/tasks`}
-                          className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
-                          title="View Tasks"
-                        >
-                          <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                          </svg>
-                        </a>
+                        TaskBoard
+                      </a>
+                      <div className="flex items-center gap-1" onClick={(e) => e.preventDefault()}>
                         <button 
-                          onClick={() => openEditModal(project)}
+                          onClick={(e) => { e.preventDefault(); openEditModal(project); }}
                           className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
                           title="Edit"
                         >
@@ -496,7 +617,7 @@ const Projects = () => {
                           </svg>
                         </button>
                         <button 
-                          onClick={() => openDeleteModal(project)}
+                          onClick={(e) => { e.preventDefault(); openDeleteModal(project); }}
                           className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
                           title="Delete"
                         >
@@ -506,7 +627,7 @@ const Projects = () => {
                         </button>
                       </div>
                     </div>
-                  </div>
+                  </a>
                 );
               })}
             </div>
@@ -521,6 +642,7 @@ const Projects = () => {
                     <tr>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Project</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Team</th>
+                      <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">Progress</th>
                       <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">Deadline</th>
                       <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">Status</th>
                       <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">Actions</th>
@@ -528,12 +650,17 @@ const Projects = () => {
                   </thead>
                   <tbody className="divide-y" style={{borderColor: '#e5e7eb'}}>
                     {filteredProjects.map((project, idx) => {
+                      const daysUntil = project.deadline ? Math.ceil((new Date(project.deadline) - new Date()) / (1000 * 60 * 60 * 24)) : null;
+                      const isOverdue = project.deadline && new Date(project.deadline) < new Date();
+                      
                       return (
                         <tr 
                           key={project.id} 
-                          className="hover:bg-gray-50 transition-colors cursor-pointer group"
+                          className="hover:bg-gray-50 transition-colors group"
+                          onClick={() => window.location.href = `${rolePrefix}/projects/${project.id}`}
+                          style={{cursor: 'pointer'}}
                         >
-                          <td className="py-3 px-4 border-l-2" style={{borderLeftColor: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}>
+                          <td className="py-3 px-4 border-l-2" style={{borderLeftColor: 'rgb(139, 92, 246)'}}>
                             <div className="flex items-center gap-2">
                               <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}>
                                 <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
@@ -541,25 +668,43 @@ const Projects = () => {
                                 </svg>
                               </div>
                               <div>
-                                <p className="text-sm font-semibold text-gray-800">
+                                <p className="text-sm font-semibold text-gray-800 group-hover:text-purple-600 transition-colors">
                                   {project.name || project.title}
                                 </p>
                               </div>
                             </div>
                           </td>
                           <td className="py-3 px-4">
-                            <div className="space-y-0.5 text-sm text-gray-600">
+                            <div className="space-y-1.5 text-sm text-gray-600">
                               {project.project_manager && (
-                                <div className="flex items-center gap-1">
-                                  <span className="font-medium">PM:</span>
-                                  <span>{project.project_manager.name}</span>
-                                </div>
+                                <a
+                                  href={`${rolePrefix}/users/project-manager/${project.project_manager.id}`}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="flex items-center gap-1 group"
+                                >
+                                  <svg className="w-3.5 h-3.5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                  </svg>
+                                  <div>
+                                    <span className="text-xs text-gray-500">PM:</span>
+                                    <span className="ml-1 font-bold text-purple-700 text-sm group-hover:text-purple-900 group-hover:underline">{project.project_manager.name}</span>
+                                  </div>
+                                </a>
                               )}
                               {project.client && (
-                                <div className="flex items-center gap-1">
-                                  <span className="font-medium">Client:</span>
-                                  <span>{project.client.name}</span>
-                                </div>
+                                <a
+                                  href={`${rolePrefix}/users/client/${project.client.id}`}
+                                  onClick={(e) => e.stopPropagation()}
+                                  className="flex items-center gap-1 group"
+                                >
+                                  <svg className="w-3.5 h-3.5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"/>
+                                  </svg>
+                                  <div>
+                                    <span className="text-xs text-gray-500">Client:</span>
+                                    <span className="ml-1 font-bold text-blue-700 text-sm group-hover:text-blue-900 group-hover:underline">{project.client.name}</span>
+                                  </div>
+                                </a>
                               )}
                               {project.members && project.members.length > 0 && (
                                 <div className="flex items-center gap-1">
@@ -570,47 +715,65 @@ const Projects = () => {
                             </div>
                           </td>
                           <td className="py-3 px-4 text-center">
+                            {project.progress !== undefined ? (
+                              <div className="flex flex-col items-center gap-2">
+                                <div className="flex items-center gap-2">
+                                  <div className="w-24 bg-gray-200 rounded-full h-3 overflow-hidden shadow-inner">
+                                    <div 
+                                      className="bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 h-full transition-all duration-500 relative overflow-hidden"
+                                      style={{ width: `${project.progress || 0}%` }}
+                                    >
+                                      <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
+                                    </div>
+                                  </div>
+                                  <span className="text-sm font-bold text-purple-600">{project.progress}%</span>
+                                </div>
+                              </div>
+                            ) : (
+                              <span className="text-gray-400 text-sm">N/A</span>
+                            )}
+                          </td>
+                          <td className="py-3 px-4 text-center">
                             {project.deadline ? (
-                              <div className="text-sm">
-                                <span className="text-gray-700 font-medium">
-                                  {new Date(project.deadline).toLocaleDateString('en-US', { 
-                                    month: 'short', 
-                                    day: 'numeric',
-                                    year: 'numeric'
-                                  })}
-                                </span>
+                              <div className={`inline-block px-3 py-1.5 rounded-full text-xs font-semibold border ${
+                                isOverdue 
+                                  ? 'bg-red-50 text-red-700 border-red-300'
+                                  : daysUntil <= 3 
+                                    ? 'bg-yellow-50 text-yellow-700 border-yellow-300'
+                                    : 'bg-blue-50 text-blue-700 border-blue-300'
+                              }`}>
+                                <div className="flex items-center gap-1">
+                                  {isOverdue && '⚠️'}
+                                  {daysUntil <= 3 && !isOverdue && '⏰'}
+                                  {daysUntil > 3 && '📅'}
+                                  <span>
+                                    {new Date(project.deadline).toLocaleDateString('en-US', { 
+                                      month: 'short', 
+                                      day: 'numeric',
+                                      year: 'numeric'
+                                    })}
+                                  </span>
+                                </div>
                               </div>
                             ) : (
                               <span className="text-gray-400 text-sm">No deadline</span>
                             )}
                           </td>
                           <td className="py-3 px-4 text-center">
-                            <span className="inline-block px-2 py-0.5 rounded text-xs font-medium text-white" style={{background: project.status === 'completed' ? 'rgb(107, 114, 128)' : '#F25292'}}>
-                              {project.status.replace('_', ' ')}
+                            <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${
+                              project.status === 'completed' ? 'bg-green-100 text-green-700 border border-green-300' :
+                              project.status === 'in_progress' ? 'bg-blue-100 text-blue-700 border border-blue-300' :
+                              project.status === 'planning' ? 'bg-yellow-100 text-yellow-700 border border-yellow-300' :
+                              project.status === 'on_hold' ? 'bg-gray-100 text-gray-700 border border-gray-300' :
+                              'bg-purple-100 text-purple-700 border border-purple-300'
+                            }`}>
+                              {project.status.replace('_', ' ').toUpperCase()}
                             </span>
                           </td>
-                          <td className="py-3 px-4">
+                          <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center justify-center gap-1">
-                              <a
-                                href={`/projects/${project.id}`}
-                                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
-                                title="View Details"
-                              >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                                </svg>
-                              </a>
-                              <a
-                                href={`/projects/${project.id}/tasks`}
-                                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
-                                title="View Tasks"
-                              >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-                                </svg>
-                              </a>
                               <button 
-                                onClick={() => openEditModal(project)}
+                                onClick={(e) => { e.stopPropagation(); openEditModal(project); }}
                                 className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
                                 title="Edit"
                               >
@@ -619,7 +782,7 @@ const Projects = () => {
                                 </svg>
                               </button>
                               <button 
-                                onClick={() => openDeleteModal(project)}
+                                onClick={(e) => { e.stopPropagation(); openDeleteModal(project); }}
                                 className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
                                 title="Delete"
                               >
@@ -651,6 +814,7 @@ const Projects = () => {
               ? 'Try adjusting your filters' 
               : 'Get started by creating your first project'}
           </p>
+          {(user?.role !== 'project_manager' && user?.role !== 'developer') && (
           <button 
             onClick={openCreateModal}
             className="px-6 py-3 rounded-xl font-medium text-white shadow-md hover:shadow-lg transition-all" 
@@ -658,6 +822,7 @@ const Projects = () => {
           >
             + Create Project
           </button>
+          )}
         </div>
       )}
 

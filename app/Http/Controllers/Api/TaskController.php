@@ -24,19 +24,49 @@ class TaskController extends Controller
     {
         $user = $request->user();
         
-        // Get tasks from projects owned by the user or assigned to the user
-        $query = Task::whereHas('project', function ($q) use ($user) {
-            $q->where('owner_id', $user->id);
-        })->orWhere('assigned_to', $user->id);
+        // Get tasks based on user role
+        $query = Task::query();
+        
+        if ($user->role === 'admin') {
+            // Admin sees all tasks
+            $query->with(['project', 'assignedUsers']);
+        } elseif ($user->role === 'project_manager') {
+            // PM sees tasks from projects they manage
+            $query->whereHas('project', function ($q) use ($user) {
+                $q->where('project_manager_id', $user->id);
+            })->with(['project', 'assignedUsers']);
+        } elseif ($user->role === 'developer') {
+            // Developer sees ALL tasks from projects where they are members
+            // (not just tasks explicitly assigned to them)
+            $query->whereHas('project.members', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })->with(['project', 'assignedUsers']);
+            
+            // Debug logging
+            \Log::info('Developer Tasks Query', [
+                'user_id' => $user->id,
+                'user_role' => $user->role,
+            ]);
+        } elseif ($user->role === 'client') {
+            // Client sees tasks from their projects
+            $query->whereHas('project', function ($q) use ($user) {
+                $q->where('client_id', $user->id);
+            })->with(['project', 'assignedUsers']);
+        }
 
         // Filter by status if provided
         if ($request->has('status')) {
             $query->where('status', $request->status);
         }
 
-        $tasks = $query->with('project')
-            ->orderBy('created_at', 'desc')
-            ->get();
+        $tasks = $query->orderBy('created_at', 'desc')->get();
+        
+        if ($user->role === 'developer') {
+            \Log::info('Developer Tasks Result', [
+                'user_id' => $user->id,
+                'task_count' => $tasks->count(),
+            ]);
+        }
 
         return response()->json($tasks);
     }
@@ -52,11 +82,29 @@ class TaskController extends Controller
     {
         $user = $request->user();
         
-        $task = Task::whereHas('project', function ($q) use ($user) {
-            $q->where('owner_id', $user->id);
-        })->orWhere('assigned_to', $user->id)
-            ->with('project')
-            ->findOrFail($id);
+        $query = Task::where('id', $id);
+        
+        if ($user->role === 'admin') {
+            // Admin can see any task
+            $query->with(['project', 'assignedUsers']);
+        } elseif ($user->role === 'project_manager') {
+            // PM can see tasks from projects they manage
+            $query->whereHas('project', function ($q) use ($user) {
+                $q->where('project_manager_id', $user->id);
+            })->with(['project', 'assignedUsers']);
+        } elseif ($user->role === 'developer') {
+            // Developer can see tasks from projects where they are members
+            $query->whereHas('project.members', function ($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })->with(['project', 'assignedUsers']);
+        } elseif ($user->role === 'client') {
+            // Client can see tasks from their projects
+            $query->whereHas('project', function ($q) use ($user) {
+                $q->where('client_id', $user->id);
+            })->with(['project', 'assignedUsers']);
+        }
+
+        $task = $query->firstOrFail();
 
         return response()->json($task);
     }

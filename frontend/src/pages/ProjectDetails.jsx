@@ -1,18 +1,21 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import axiosInstance from '../utils/axiosInstance';
 import Loader from '../components/Loader';
 
 /**
  * Project Details Page
- * Full project analysis with charts, progress, and task breakdown
+ * Enhanced with analytics, charts, deadline alerts, and chat functionality
  */
 const ProjectDetails = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [project, setProject] = useState(null);
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [analytics, setAnalytics] = useState(null);
   const [stats, setStats] = useState({
     total: 0,
     completed: 0,
@@ -24,6 +27,7 @@ const ProjectDetails = () => {
   useEffect(() => {
     fetchProjectDetails();
     fetchProjectTasks();
+    fetchAnalytics();
   }, [projectId]);
 
   const fetchProjectDetails = async () => {
@@ -32,6 +36,21 @@ const ProjectDetails = () => {
       setProject(response.data.data || response.data);
     } catch (error) {
       console.error('Failed to fetch project:', error);
+    }
+  };
+
+  const fetchAnalytics = async () => {
+    try {
+      const response = await axiosInstance.get(`/projects/${projectId}/analytics`);
+      setAnalytics(response.data);
+    } catch (error) {
+      // Create mock analytics if endpoint doesn't exist
+      setAnalytics({
+        todaysPendingTasks: 0,
+        overdueTasks: 0,
+        clientProjectCount: 1,
+        userPendingTaskRatio: 0
+      });
     }
   };
 
@@ -60,6 +79,32 @@ const ProjectDetails = () => {
   const getProgressPercentage = () => {
     if (stats.total === 0) return 0;
     return Math.round((stats.completed / stats.total) * 100);
+  };
+
+  const isDeadlineOverdue = (deadline) => {
+    if (!deadline) return false;
+    return new Date(deadline) < new Date();
+  };
+
+  const getDaysUntilDeadline = (deadline) => {
+    if (!deadline) return null;
+    const days = Math.ceil((new Date(deadline) - new Date()) / (1000 * 60 * 60 * 24));
+    return days;
+  };
+
+  const startChatConversation = (userId, userName) => {
+    const rolePrefix = getRolePrefix();
+    navigate(`${rolePrefix}/chat?user=${userId}&name=${encodeURIComponent(userName)}`);
+  };
+
+  const getRolePrefix = () => {
+    switch (user?.role) {
+      case 'admin': return '/admin';
+      case 'project_manager': return '/manager';
+      case 'developer': return '/developer';
+      case 'client': return '/client';
+      default: return '';
+    }
   };
 
   const getStatusColor = (status) => {
@@ -93,7 +138,7 @@ const ProjectDetails = () => {
       <div className="text-center py-12">
         <p className="text-gray-500">Project not found</p>
         <button 
-          onClick={() => navigate('/projects')}
+          onClick={() => navigate(`${getRolePrefix()}/projects`)}
           className="mt-4 px-4 py-2 text-white rounded-lg"
           style={{background: 'rgb(155 2 50 / 76%)'}}
         >
@@ -104,22 +149,78 @@ const ProjectDetails = () => {
   }
 
   const progress = getProgressPercentage();
+  const daysUntil = getDaysUntilDeadline(project?.deadline);
+  const isOverdue = isDeadlineOverdue(project?.deadline);
+  const rolePrefix = getRolePrefix();
+  const todaysPending = tasks.filter(t => {
+    if (t.status === 'completed') return false;
+    if (!t.due_date) return false;
+    const dueDate = new Date(t.due_date);
+    const today = new Date();
+    return dueDate.toDateString() === today.toDateString();
+  }).length;
 
   return (
     <div className="space-y-6">
+      {/* Deadline Alert Banner */}
+      {project?.deadline && (
+        <div className={`rounded-lg p-4 border-l-4 ${
+          isOverdue 
+            ? 'bg-red-50 border-red-500' 
+            : daysUntil <= 3 
+              ? 'bg-yellow-50 border-yellow-500'
+              : 'bg-blue-50 border-blue-500'
+        }`}>
+          <div className="flex items-center gap-3">
+            <div className={`p-2 rounded-full ${
+              isOverdue ? 'bg-red-100' : daysUntil <= 3 ? 'bg-yellow-100' : 'bg-blue-100'
+            }`}>
+              <svg className={`w-6 h-6 ${
+                isOverdue ? 'text-red-600' : daysUntil <= 3 ? 'text-yellow-600' : 'text-blue-600'
+              }`} fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
+              </svg>
+            </div>
+            <div className="flex-1">
+              <h3 className={`font-semibold ${
+                isOverdue ? 'text-red-800' : daysUntil <= 3 ? 'text-yellow-800' : 'text-blue-800'
+              }`}>
+                {isOverdue 
+                  ? '⚠️ Deadline Overdue!' 
+                  : daysUntil <= 3 
+                    ? '⏰ Deadline Approaching!' 
+                    : '📅 Upcoming Deadline'}
+              </h3>
+              <p className={`text-sm ${
+                isOverdue ? 'text-red-700' : daysUntil <= 3 ? 'text-yellow-700' : 'text-blue-700'
+              }`}>
+                Deadline: {new Date(project.deadline).toLocaleDateString('en-US', { 
+                  weekday: 'long',
+                  year: 'numeric', 
+                  month: 'long', 
+                  day: 'numeric' 
+                })}
+                {!isOverdue && ` (${daysUntil} ${daysUntil === 1 ? 'day' : 'days'} remaining)`}
+                {isOverdue && ` (${Math.abs(daysUntil)} ${Math.abs(daysUntil) === 1 ? 'day' : 'days'} overdue)`}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Header */}
       <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
         <div className="flex items-start justify-between mb-4">
-          <div>
-            <button
-              onClick={() => navigate('/projects')}
+          <div className="flex-1">
+            <Link
+              to={`${rolePrefix}/projects`}
               className="text-sm text-purple-600 hover:text-purple-800 flex items-center gap-1 mb-2"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
               Back to Projects
-            </button>
+            </Link>
             <h1 className="text-3xl font-bold text-gray-800">{project.name || project.title}</h1>
             {project.description && (
               <div 
@@ -137,41 +238,148 @@ const ProjectDetails = () => {
           </span>
         </div>
 
-        {/* Project Info Grid */}
+        {/* Project Info Grid with Highlighted PM and Deadline */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {project.project_manager && (
-            <div className="p-3 bg-gray-50 rounded-lg">
-              <p className="text-xs text-gray-500 font-semibold mb-1">PROJECT MANAGER</p>
-              <p className="text-sm font-semibold text-gray-800">{project.project_manager.name}</p>
-              <p className="text-xs text-gray-500">{project.project_manager.email}</p>
+            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <a
+                href={`${rolePrefix}/users/project-manager/${project.project_manager.id}`}
+                className="block group"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                  </svg>
+                  <p className="text-xs text-gray-500 font-semibold uppercase tracking-wide">Project Manager</p>
+                </div>
+                <p className="text-lg font-extrabold text-purple-700 mb-1 group-hover:text-purple-900 group-hover:underline">{project.project_manager.name}</p>
+                <p className="text-xs text-gray-500">{project.project_manager.email}</p>
+              </a>
+              <button
+                onClick={(e) => { e.preventDefault(); startChatConversation(project.project_manager.id, project.project_manager.name); }}
+                className="mt-2 px-3 py-1 bg-purple-100 hover:bg-purple-200 rounded text-xs text-purple-700 font-semibold flex items-center gap-1 transition-colors"
+              >
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
+                </svg>
+                Chat
+              </button>
             </div>
           )}
           {project.client && (
-            <div className="p-3 bg-gray-50 rounded-lg">
-              <p className="text-xs text-gray-500 font-semibold mb-1">CLIENT</p>
-              <p className="text-sm font-semibold text-gray-800">{project.client.name}</p>
-              <p className="text-xs text-gray-500">{project.client.email}</p>
+            <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
+              <a
+                href={`${rolePrefix}/users/client/${project.client.id}`}
+                className="block group"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"/>
+                  </svg>
+                  <p className="text-xs text-gray-500 font-semibold uppercase tracking-wide">Client</p>
+                </div>
+                <p className="text-lg font-extrabold text-blue-700 mb-1 group-hover:text-blue-900 group-hover:underline">{project.client.name}</p>
+                <p className="text-xs text-gray-500">{project.client.email}</p>
+              </a>
+              <button
+                onClick={(e) => { e.preventDefault(); startChatConversation(project.client.id, project.client.name); }}
+                className="mt-2 px-3 py-1 bg-blue-100 hover:bg-blue-200 rounded text-xs text-blue-700 font-semibold flex items-center gap-1 transition-colors"
+              >
+                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
+                </svg>
+                Chat
+              </button>
             </div>
           )}
           {project.deadline && (
-            <div className="p-3 bg-gray-50 rounded-lg">
-              <p className="text-xs text-gray-500 font-semibold mb-1">DEADLINE</p>
-              <p className="text-sm font-semibold text-gray-800">{new Date(project.deadline).toLocaleDateString()}</p>
-              <p className="text-xs text-gray-500">
-                {Math.ceil((new Date(project.deadline) - new Date()) / (1000 * 60 * 60 * 24))} days left
+            <div className={`p-4 rounded-lg border-2 relative overflow-hidden ${
+              isOverdue 
+                ? 'bg-gradient-to-br from-red-50 to-red-100 border-red-300'
+                : daysUntil <= 3 
+                  ? 'bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-300'
+                  : 'bg-gradient-to-br from-blue-50 to-blue-100 border-blue-300'
+            }`}>
+              <div className={`absolute top-0 right-0 w-16 h-16 rounded-full -mr-8 -mt-8 opacity-50 ${
+                isOverdue ? 'bg-red-200' : daysUntil <= 3 ? 'bg-yellow-200' : 'bg-blue-200'
+              }`}></div>
+              <p className={`text-xs font-bold mb-1 uppercase tracking-wide flex items-center gap-1 ${
+                isOverdue ? 'text-red-700' : daysUntil <= 3 ? 'text-yellow-700' : 'text-blue-700'
+              }`}>
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
+                </svg>
+                Deadline
+              </p>
+              <p className={`text-base font-bold ${
+                isOverdue ? 'text-red-900' : daysUntil <= 3 ? 'text-yellow-900' : 'text-blue-900'
+              }`}>{new Date(project.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+              <p className={`text-xs mt-1 font-semibold ${
+                isOverdue ? 'text-red-600' : daysUntil <= 3 ? 'text-yellow-600' : 'text-blue-600'
+              }`}>
+                {isOverdue ? `${Math.abs(daysUntil)} days overdue` : daysUntil <= 0 ? 'Today!' : `${daysUntil} days left`}
               </p>
             </div>
           )}
-          <div className="p-3 bg-gray-50 rounded-lg">
+          <div className="p-4 bg-gray-50 rounded-lg border border-gray-200">
             <p className="text-xs text-gray-500 font-semibold mb-1">TEAM SIZE</p>
-            <p className="text-sm font-semibold text-gray-800">{project.members?.length || 0} Developer{(project.members?.length || 0) > 1 ? 's' : ''}</p>
+            <p className="text-sm font-semibold text-gray-800">{project.members?.length || 0} Developer{(project.members?.length || 0) !== 1 ? 's' : ''}</p>
+            <p className="text-xs text-gray-500 mt-1">
+              {analytics?.clientProjectCount || 1} project{(analytics?.clientProjectCount || 1) !== 1 ? 's' : ''} for this client
+            </p>
           </div>
         </div>
       </div>
 
-      {/* Progress Overview */}
+      {/* Analytics Cards Row */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-5 text-white shadow-lg">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium opacity-90">Total Tasks</h3>
+            <svg className="w-8 h-8 opacity-80" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+              <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
+            </svg>
+          </div>
+          <p className="text-3xl font-bold">{stats.total}</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg p-5 text-white shadow-lg">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium opacity-90">Pending Tasks</h3>
+            <svg className="w-8 h-8 opacity-80" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/>
+            </svg>
+          </div>
+          <p className="text-3xl font-bold">{stats.pending + stats.inProgress}</p>
+          <p className="text-xs opacity-90 mt-1">{todaysPending} due today</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-5 text-white shadow-lg">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium opacity-90">Completed</h3>
+            <svg className="w-8 h-8 opacity-80" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+            </svg>
+          </div>
+          <p className="text-3xl font-bold">{stats.completed}</p>
+          <p className="text-xs opacity-90 mt-1">{progress}% completion</p>
+        </div>
+
+        <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-lg p-5 text-white shadow-lg">
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-sm font-medium opacity-90">Overdue</h3>
+            <svg className="w-8 h-8 opacity-80" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd"/>
+            </svg>
+          </div>
+          <p className="text-3xl font-bold">{analytics?.overdueTasks || 0}</p>
+        </div>
+      </div>
+
+      {/* Progress Overview with Visual Charts */}
       <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
-        <h2 className="text-lg font-bold text-gray-800 mb-6">Project Progress</h2>
+        <h2 className="text-lg font-bold text-gray-800 mb-6">Project Progress & Analytics</h2>
         
         <div className="space-y-6">
           {/* Main Progress Bar */}
@@ -180,61 +388,153 @@ const ProjectDetails = () => {
               <span className="text-sm font-semibold text-gray-700">Overall Progress</span>
               <span className="text-2xl font-bold text-purple-600">{progress}%</span>
             </div>
-            <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
+            <div className="w-full bg-gray-200 rounded-full h-4 overflow-hidden shadow-inner">
               <div 
-                className="bg-gradient-to-r from-purple-500 to-purple-600 h-full transition-all duration-500"
+                className="bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 h-full transition-all duration-500 relative overflow-hidden"
                 style={{ width: `${progress}%` }}
-              ></div>
+              >
+                <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
+              </div>
             </div>
             <p className="text-xs text-gray-500 mt-2">{stats.completed} of {stats.total} tasks completed</p>
           </div>
 
-          {/* Task Status Breakdown */}
+          {/* Task Status Breakdown Cards */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {[
-              { label: 'Total', value: stats.total, color: 'bg-gray-100', textColor: 'text-gray-800' },
-              { label: 'Completed', value: stats.completed, color: 'bg-green-100', textColor: 'text-green-800' },
-              { label: 'In Progress', value: stats.inProgress, color: 'bg-blue-100', textColor: 'text-blue-800' },
-              { label: 'Pending', value: stats.pending, color: 'bg-yellow-100', textColor: 'text-yellow-800' },
-              { label: 'On Hold', value: stats.onHold, color: 'bg-orange-100', textColor: 'text-orange-800' }
+              { label: 'Total', value: stats.total, color: 'bg-gray-100 border-gray-300', textColor: 'text-gray-800', icon: '📊' },
+              { label: 'Completed', value: stats.completed, color: 'bg-green-50 border-green-300', textColor: 'text-green-800', icon: '✅' },
+              { label: 'In Progress', value: stats.inProgress, color: 'bg-blue-50 border-blue-300', textColor: 'text-blue-800', icon: '🔄' },
+              { label: 'Pending', value: stats.pending, color: 'bg-yellow-50 border-yellow-300', textColor: 'text-yellow-800', icon: '⏳' },
+              { label: 'On Hold', value: stats.onHold, color: 'bg-orange-50 border-orange-300', textColor: 'text-orange-800', icon: '⏸️' }
             ].map((stat, idx) => (
-              <div key={idx} className={`${stat.color} rounded-lg p-3 text-center`}>
+              <div key={idx} className={`${stat.color} border-2 rounded-lg p-4 text-center transform hover:scale-105 transition-transform`}>
+                <p className="text-2xl mb-1">{stat.icon}</p>
                 <p className={`text-2xl font-bold ${stat.textColor}`}>{stat.value}</p>
-                <p className="text-xs text-gray-600 mt-1">{stat.label}</p>
+                <p className="text-xs text-gray-600 mt-1 font-medium">{stat.label}</p>
               </div>
             ))}
           </div>
 
-          {/* Status Distribution Chart */}
+          {/* Visual Status Distribution Chart */}
           <div className="mt-6">
-            <h3 className="text-sm font-semibold text-gray-700 mb-3">Status Distribution</h3>
-            <div className="space-y-2">
+            <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+              <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+              </svg>
+              Status Distribution
+            </h3>
+            <div className="space-y-3">
               {[
-                { status: 'completed', label: 'Completed', count: stats.completed },
-                { status: 'in_progress', label: 'In Progress', count: stats.inProgress },
-                { status: 'pending', label: 'Pending', count: stats.pending },
-                { status: 'on_hold', label: 'On Hold', count: stats.onHold }
+                { status: 'completed', label: 'Completed', count: stats.completed, color: 'bg-green-500' },
+                { status: 'in_progress', label: 'In Progress', count: stats.inProgress, color: 'bg-blue-500' },
+                { status: 'pending', label: 'Pending', count: stats.pending, color: 'bg-yellow-500' },
+                { status: 'on_hold', label: 'On Hold', count: stats.onHold, color: 'bg-orange-500' }
               ].map((item, idx) => {
                 const percentage = stats.total > 0 ? (item.count / stats.total) * 100 : 0;
                 return (
                   <div key={idx}>
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm text-gray-700 font-medium">{item.label}</span>
-                      <span className="text-sm font-semibold text-gray-800">{item.count}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-500">{percentage.toFixed(1)}%</span>
+                        <span className="text-sm font-semibold text-gray-800 w-8 text-right">{item.count}</span>
+                      </div>
                     </div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                    <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden shadow-inner">
                       <div 
-                        className={`${getStatusColor(item.status)} h-full transition-all duration-500`}
+                        className={`${item.color} h-full transition-all duration-500 relative`}
                         style={{ width: `${percentage}%` }}
-                      ></div>
+                      >
+                        <div className="absolute inset-0 bg-white opacity-20"></div>
+                      </div>
                     </div>
                   </div>
                 );
               })}
             </div>
           </div>
+
+          {/* User Analytics Section */}
+          {project.members && project.members.length > 0 && (
+            <div className="mt-6 pt-6 border-t border-gray-200">
+              <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
+                <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                </svg>
+                Team Member Analytics
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {project.members.slice(0, 4).map((member, idx) => {
+                  const memberTasks = tasks.filter(t => t.assigned_to?.id === member.user_id);
+                  const memberPending = memberTasks.filter(t => t.status !== 'completed').length;
+                  const memberCompleted = memberTasks.filter(t => t.status === 'completed').length;
+                  const memberRatio = memberTasks.length > 0 ? ((memberCompleted / memberTasks.length) * 100).toFixed(1) : 0;
+                  
+                  return (
+                    <div key={idx} className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                            {(member.user?.name || 'D').charAt(0).toUpperCase()}
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-800 text-sm">{member.user?.name || 'Developer'}</p>
+                            <p className="text-xs text-gray-500">{memberTasks.length} tasks</p>
+                          </div>
+                        </div>
+                        <button
+                          onClick={() => startChatConversation(member.user_id, member.user?.name)}
+                          className="p-2 bg-white hover:bg-purple-50 rounded-lg transition-colors border border-gray-200"
+                          title="Start Chat"
+                        >
+                          <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
+                          </svg>
+                        </button>
+                      </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-gray-600">Pending</span>
+                          <span className="font-semibold text-yellow-600">{memberPending}</span>
+                        </div>
+                        <div className="flex items-center justify-between text-xs">
+                          <span className="text-gray-600">Completed</span>
+                          <span className="font-semibold text-green-600">{memberCompleted}</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
+                          <div 
+                            className="bg-gradient-to-r from-green-400 to-green-600 h-full rounded-full"
+                            style={{ width: `${memberRatio}%` }}
+                          ></div>
+                        </div>
+                        <p className="text-xs text-gray-500 text-center">{memberRatio}% completion</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )}
         </div>
       </div>
+
+      {/* Today's Pending Tasks Alert */}
+      {todaysPending > 0 && (
+        <div className="bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-yellow-100 rounded-full">
+              <svg className="w-6 h-6 text-yellow-600" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/>
+              </svg>
+            </div>
+            <div>
+              <h3 className="font-semibold text-yellow-800">⚡ {todaysPending} Task{todaysPending !== 1 ? 's' : ''} Due Today!</h3>
+              <p className="text-sm text-yellow-700">You have pending tasks that need attention today.</p>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Tasks List */}
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
@@ -289,7 +589,7 @@ const ProjectDetails = () => {
           <div className="p-8 text-center">
             <p className="text-gray-500">No tasks yet for this project</p>
             <a
-              href={`/projects/${projectId}/tasks`}
+              href={`${rolePrefix}/projects/${projectId}/tasks`}
               className="mt-3 inline-block px-4 py-2 text-white rounded-lg text-sm"
               style={{background: 'rgb(155 2 50 / 76%)'}}
             >

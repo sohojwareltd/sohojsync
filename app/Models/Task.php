@@ -41,6 +41,7 @@ class Task extends Model
         'labels' => 'array',
         'estimated_hours' => 'decimal:2',
         'actual_hours' => 'decimal:2',
+        'assigned_to' => 'integer',
     ];
 
     /**

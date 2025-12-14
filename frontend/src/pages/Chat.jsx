@@ -1,10 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { MessageCircle, Send, Plus, X, UserCircle, Circle, Paperclip, AtSign } from 'lucide-react';
 import axiosInstance from '../utils/axiosInstance';
 import { useAuth } from '../hooks/useAuth';
 
 export default function Chat() {
     const { user } = useAuth();
+    const [searchParams] = useSearchParams();
     const [rooms, setRooms] = useState([]);
     const [currentRoom, setCurrentRoom] = useState(null);
     const [showSidebar, setShowSidebar] = useState(true);
@@ -49,6 +51,19 @@ export default function Chat() {
     }, []);
 
     useEffect(() => {
+        const userId = searchParams.get('userId');
+        if (userId && rooms.length > 0 && !currentRoom) {
+            const userRoom = rooms.find(r => 
+                r.type === 'direct' && 
+                r.users?.some(u => u.id == userId)
+            );
+            if (userRoom) {
+                setCurrentRoom(userRoom);
+            }
+        }
+    }, [searchParams, rooms]);
+
+    useEffect(() => {
         if (currentRoom) {
             loadMessages(currentRoom.id);
         }
@@ -78,10 +93,34 @@ export default function Chat() {
             console.log('Raw API Response:', roomsRes.data); // Debug log
             
             const apiResponse = roomsRes.data;
-            const existingRooms = (Array.isArray(apiResponse) ? apiResponse : (apiResponse.rooms || []))
+            let existingRooms = (Array.isArray(apiResponse) ? apiResponse : (apiResponse.rooms || []))
                 .map(room => ({ ...room, is_virtual: false }));
             const groupChatMessages = (apiResponse.groupChatMessages || {});
             const allMembers = Array.isArray(membersRes.data) ? membersRes.data : [];
+
+            // Role-based visibility filtering
+            const allowedForRole = (viewerRole, otherRole) => {
+                if (!viewerRole) return true;
+                const vr = viewerRole;
+                const or = otherRole;
+                if (vr === 'developer') {
+                    return or === 'developer' || or === 'project_manager' || or === 'admin';
+                }
+                if (vr === 'project_manager') {
+                    return true; // PM sees all
+                }
+                if (vr === 'client') {
+                    return or === 'project_manager' || or === 'admin';
+                }
+                return true; // admin or others
+            };
+
+            // Filter existing direct rooms by allowed roles (based on the non-self participant)
+            existingRooms = existingRooms.filter(r => {
+                if (r?.type !== 'direct' || !Array.isArray(r?.users)) return true;
+                const other = r.users.find(u => u?.id !== user?.id) || r.users[0];
+                return allowedForRole(user?.role, other?.role);
+            });
             
             console.log('Existing Rooms:', existingRooms); // Debug log
             console.log('Group Chat Messages:', groupChatMessages); // Debug log
@@ -96,6 +135,7 @@ export default function Chat() {
             
             const virtualRooms = allMembers
                 .filter(member => member?.id && !existingUserIds.has(member.id))
+                .filter(member => allowedForRole(user?.role, member?.role))
                 .map(member => {
                     // Find the latest message from this user in group chats
                     const userMessages = groupChatMessages[member.id] || [];
@@ -126,6 +166,12 @@ export default function Chat() {
 
     const loadMessages = async (roomId) => {
         try {
+            // Skip loading messages for virtual rooms (they don't exist in DB yet)
+            if (String(roomId).startsWith('virtual-')) {
+                setMessages([]);
+                return;
+            }
+            
             const response = await axiosInstance.get(`/chat/rooms/${roomId}/messages`);
             setMessages(response.data.messages);
             await axiosInstance.post(`/chat/rooms/${roomId}/mark-read`);
@@ -134,6 +180,10 @@ export default function Chat() {
             ));
         } catch (error) {
             console.error('Failed to load messages:', error);
+            // If room doesn't exist (virtual room), just show empty message list
+            if (String(roomId).startsWith('virtual-')) {
+                setMessages([]);
+            }
         }
     };
 
@@ -246,12 +296,25 @@ export default function Chat() {
         if (!newMessage.trim() || !currentRoom) return;
 
         try {
+            let roomId = currentRoom.id;
+            
+            // If it's a virtual room, create it first
+            if (currentRoom.is_virtual && currentRoom.virtual_user) {
+                const createResponse = await axiosInstance.post('/chat/rooms', {
+                    type: 'direct',
+                    user_ids: [currentRoom.virtual_user.id],
+                });
+                roomId = createResponse.data.id;
+                // Update currentRoom with the newly created room
+                setCurrentRoom(createResponse.data);
+            }
+
             const formData = new FormData();
             formData.append('message', newMessage);
             formData.append('type', 'text');
 
             const response = await axiosInstance.post(
-                `/chat/rooms/${currentRoom.id}/messages`,
+                `/chat/rooms/${roomId}/messages`,
                 formData
             );
 
@@ -268,6 +331,18 @@ export default function Chat() {
         if (!file || !currentRoom) return;
 
         try {
+            let roomId = currentRoom.id;
+            
+            // If it's a virtual room, create it first
+            if (currentRoom.is_virtual && currentRoom.virtual_user) {
+                const createResponse = await axiosInstance.post('/chat/rooms', {
+                    type: 'direct',
+                    user_ids: [currentRoom.virtual_user.id],
+                });
+                roomId = createResponse.data.id;
+                setCurrentRoom(createResponse.data);
+            }
+
             const formData = new FormData();
             formData.append('file', file);
             formData.append('message', file.name);
@@ -275,7 +350,7 @@ export default function Chat() {
             formData.append('type', isImage ? 'image' : 'file');
 
             const response = await axiosInstance.post(
-                `/chat/rooms/${currentRoom.id}/messages`,
+                `/chat/rooms/${roomId}/messages`,
                 formData,
                 {
                     headers: {

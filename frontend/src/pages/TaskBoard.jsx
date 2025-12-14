@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
@@ -13,6 +14,7 @@ import Loader from '../components/Loader';
 const TaskBoard = () => {
   const { projectId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   
   const [project, setProject] = useState(null);
   const [workflowStatuses, setWorkflowStatuses] = useState([]);
@@ -299,6 +301,7 @@ const TaskBoard = () => {
             </div>
           </div>
           <div className="flex items-center gap-2">
+            {user?.role !== 'developer' && (
             <button
               onClick={() => openStatusModal()}
               className="px-3 py-2 rounded-lg text-sm font-medium border hover:bg-gray-50 transition-all flex items-center gap-1.5"
@@ -311,6 +314,8 @@ const TaskBoard = () => {
               </svg>
               Statuses
             </button>
+            )}
+            {user?.role !== 'developer' && (
             <button
               onClick={() => openTaskModal()}
               className="px-3 py-2 rounded-lg text-sm font-medium text-white hover:shadow-md transition-all"
@@ -323,6 +328,7 @@ const TaskBoard = () => {
                 New Task
               </span>
             </button>
+            )}
           </div>
         </div>
       </div>

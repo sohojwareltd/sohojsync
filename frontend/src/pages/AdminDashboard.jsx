@@ -147,9 +147,12 @@ const AdminDashboard = () => {
         <div className="bg-white border rounded-lg shadow-sm" style={{borderColor: '#e5e7eb'}}>
           <div className="border-b p-3 flex items-center justify-between" style={{borderColor: '#e5e7eb'}}>
             <h3 className="text-base font-semibold text-gray-800">Task Overview</h3>
-            <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-sm font-medium">
-              {allTasks.length} tasks
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="px-2 py-0.5 bg-gray-100 text-gray-700 rounded text-sm font-medium">
+                {allTasks.length} tasks
+              </span>
+              <a href="/admin/tasks" className="px-2 py-0.5 text-primary hover:underline text-sm font-medium">View All</a>
+            </div>
           </div>
           <div className="p-4 space-y-2 max-h-96 overflow-y-auto">
             {allTasks.slice(0, 8).map((task) => (

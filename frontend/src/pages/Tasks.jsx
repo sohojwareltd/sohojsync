@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../hooks/useAuth';
 import axiosInstance from '../utils/axiosInstance';
 import Loader from '../components/Loader';
 import { formatDate, isOverdue } from '../utils/helpers';
@@ -7,6 +8,7 @@ import { formatDate, isOverdue } from '../utils/helpers';
  * Tasks Page - Minimalistic Design
  */
 const Tasks = () => {
+  const { user } = useAuth();
   const [tasks, setTasks] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
@@ -48,15 +50,17 @@ const Tasks = () => {
             <h1 className="text-base font-semibold text-gray-800">Tasks</h1>
             <p className="text-sm text-gray-600 mt-0.5">Track and manage your tasks</p>
           </div>
-          <button 
-            className="px-3 py-2 rounded-lg text-sm font-medium text-white shadow-sm hover:shadow-md transition-all flex items-center gap-1.5" 
-            style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}
-          >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
-            </svg>
-            New Task
-          </button>
+          {user?.role !== 'developer' && (
+            <button 
+              className="px-3 py-2 rounded-lg text-sm font-medium text-white shadow-sm hover:shadow-md transition-all flex items-center gap-1.5" 
+              style={{background: 'linear-gradient(135deg, rgb(139, 92, 246) 0%, rgb(124, 58, 237) 100%)'}}
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
+              </svg>
+              New Task
+            </button>
+          )}
         </div>
       </div>
 

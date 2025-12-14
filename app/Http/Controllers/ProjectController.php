@@ -18,7 +18,7 @@ class ProjectController extends Controller
             ->withCount([
                 'tasks',
                 'tasks as completed_tasks_count' => function ($query) {
-                    $query->where('status', 'completed');
+                    $query->where('status', 'done');
                 }
             ]);
         

@@ -23,7 +23,11 @@ export const AuthProvider = ({ children }) => {
       const response = await axiosInstance.get('/me');
       setUser(response.data);
     } catch (error) {
-      // User is not authenticated
+      // User is not authenticated (401) or other error - silently set to null
+      // Don't log 401 errors as they're expected when not logged in
+      if (error.response?.status !== 401) {
+        console.error('Error fetching user:', error);
+      }
       setUser(null);
     } finally {
       setLoading(false);

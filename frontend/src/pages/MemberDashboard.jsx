@@ -19,6 +19,7 @@ const MemberDashboard = () => {
     overdueTask: 0,
   });
   const [myTasks, setMyTasks] = useState([]);
+  const [myProjects, setMyProjects] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -27,22 +28,48 @@ const MemberDashboard = () => {
 
   const fetchMemberData = async () => {
     try {
-      const tasksRes = await axiosInstance.get('/tasks');
-      const allTasks = tasksRes.data;
+      const [projectsRes, tasksRes] = await Promise.all([
+        axiosInstance.get('/projects'),
+        axiosInstance.get('/tasks'),
+      ]);
 
-      // Filter only tasks assigned to this member
-      const myAssignedTasks = allTasks.filter(t => t.assigned_to === user?.id);
+      const allProjects = Array.isArray(projectsRes.data) ? projectsRes.data : (projectsRes.data.data || []);
+      const allTasks = Array.isArray(tasksRes.data) ? tasksRes.data : (tasksRes.data.data || []);
+
+      // Determine projects relevant to the logged-in user
+      let relevantProjects = [];
+      if (user?.role === 'client') {
+        relevantProjects = allProjects.filter(p => (
+          p.client_id === user?.id || p.client?.id === user?.id
+        ));
+      } else {
+        // Developer/member: projects where the user is a member
+        relevantProjects = allProjects.filter(p => {
+          const members = Array.isArray(p.members) ? p.members : [];
+          return members.some(m => m.user_id === user?.id || m.id === user?.id);
+        });
+      }
+      setMyProjects(relevantProjects);
+
+      // Tasks relevant to the user AND within relevant projects
+      const relevantProjectIds = new Set(relevantProjects.map(p => p.id));
+      let myRelevantTasks = [];
+      if (user?.role === 'client') {
+        myRelevantTasks = allTasks.filter(t => relevantProjectIds.has(t.project?.id));
+      } else {
+        myRelevantTasks = allTasks.filter(t => t.assigned_to === user?.id && relevantProjectIds.has(t.project?.id));
+      }
       
-      setMyTasks(myAssignedTasks);
+      setMyTasks(myRelevantTasks);
 
-      const completed = myAssignedTasks.filter(t => t.status === 'done').length;
-      const pending = myAssignedTasks.filter(t => t.status === 'open').length;
-      const overdue = myAssignedTasks.filter(t => 
-        t.status === 'open' && t.due_date && isOverdue(t.due_date)
+      const completed = myRelevantTasks.filter(t => ['done','completed'].includes(String(t.status).toLowerCase())).length;
+      const pending = myRelevantTasks.filter(t => ['open','in_progress'].includes(String(t.status).toLowerCase())).length;
+      const overdue = myRelevantTasks.filter(t => 
+        ['open','in_progress'].includes(String(t.status).toLowerCase()) && t.due_date && isOverdue(t.due_date)
       ).length;
 
       setStats({
-        myTasks: myAssignedTasks.length,
+        myTasks: myRelevantTasks.length,
         completedTasks: completed,
         pendingTasks: pending,
         overdueTask: overdue,
@@ -122,6 +149,30 @@ const MemberDashboard = () => {
             </div>
           </div>
         </Card>
+      </div>
+
+      {/* My Projects */}
+      <div className="mb-8">
+        <h3 className="text-xl font-semibold mb-4">My Projects</h3>
+        {myProjects.length > 0 ? (
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-3">
+            {myProjects.map(project => (
+              <Card key={project.id}>
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h4 className="font-semibold">{project.title || project.name}</h4>
+                    <p className="text-sm text-gray-600">{project.status?.replace('_',' ') || 'planning'}</p>
+                  </div>
+                  <a href={`/${user?.role === 'admin' ? 'admin' : user?.role === 'project_manager' ? 'manager' : user?.role === 'developer' ? 'developer' : 'client'}/projects/${project.id}`} className="text-primary font-medium hover:underline">Open</a>
+                </div>
+              </Card>
+            ))}
+          </div>
+        ) : (
+          <Card className="text-center py-8 bg-highlight">
+            <p className="text-gray-600">No projects assigned to you.</p>
+          </Card>
+        )}
       </div>
 
       {/* My Tasks List */}
