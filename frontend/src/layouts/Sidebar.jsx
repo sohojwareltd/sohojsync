@@ -64,25 +64,25 @@ const Sidebar = () => {
   return (
     <aside 
       className={clsx(
-        'hidden md:flex flex-col border-r transition-all duration-300 bg-white',
+        'hidden md:flex flex-col border-r transition-all duration-300',
         collapsed ? 'w-20' : 'w-64'
       )}
-      style={{borderRightColor: '#e5e7eb'}}
+      style={{borderRightColor: '#e3e8ef', background: '#ffffff', fontFamily: 'Inter, sans-serif', boxShadow: '2px 0 8px rgba(0,0,0,0.04)'}}
     >
       {/* Logo/Brand */}
-      <div className="h-16 flex items-center justify-between px-4 border-b" style={{borderColor: '#e5e7eb'}}>
+      <div className="h-16 flex items-center justify-between px-5 border-b" style={{borderColor: '#e9ecef'}}>
         {!collapsed && (
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{background: '#59569D'}}>
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-[10px] flex items-center justify-center" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
               <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
               </svg>
             </div>
-            <span className="text-sm font-semibold text-gray-800">SohojSync</span>
+            <span className="text-[16px] font-semibold text-gray-900" style={{fontFamily: 'Inter, sans-serif'}}>SohojSync</span>
           </div>
         )}
         {collapsed && (
-          <div className="w-8 h-8 rounded-lg flex items-center justify-center mx-auto" style={{background: '#59569D'}}>
+          <div className="w-9 h-9 rounded-[10px] flex items-center justify-center mx-auto" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
             <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
               <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
             </svg>
@@ -111,22 +111,23 @@ const Sidebar = () => {
       )}
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 space-y-3 mt-8">
+      <nav className="flex-1 px-3 space-y-1 mt-6">
         {navItems.map((item) => (
           <NavLink
             key={item.path}
             to={item.path}
             className={({ isActive }) =>
               clsx(
-                'flex items-center gap-2 px-3 py-2 rounded-lg transition-colors text-sm',
+                'flex items-center gap-3 px-3 py-2.5 rounded-[8px] transition-all duration-200 text-[14px]',
                 isActive 
-                  ? 'text-white' 
+                  ? 'text-white shadow-sm' 
                   : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
               )
             }
             style={({ isActive }) => isActive ? {
-              background: '#59569D'
-            } : {}}
+              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+              fontFamily: 'Inter, sans-serif'
+            } : {fontFamily: 'Inter, sans-serif'}}
           >
             {({ isActive }) => (
               <>
@@ -142,14 +143,14 @@ const Sidebar = () => {
 
       {/* User Info */}
       {!collapsed && (
-        <div className="p-3 border-t" style={{borderColor: '#e5e7eb'}}>
-          <div className="flex items-center gap-2 p-2 rounded-lg bg-gray-50">
-            <div className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-semibold" style={{background: '#59569D'}}>
+        <div className="p-4 border-t" style={{borderColor: '#e9ecef'}}>
+          <div className="flex items-center gap-3 p-3 rounded-[10px] bg-gradient-to-r from-gray-50 to-gray-100">
+            <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-[13px] font-semibold" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
               {user?.name?.[0]?.toUpperCase() || 'A'}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-xs font-medium text-gray-800 truncate">{user?.name || 'Admin User'}</p>
-              <p className="text-xs text-gray-500 truncate">{user?.email || 'admin@example.com'}</p>
+              <p className="text-[13px] font-semibold text-gray-900 truncate" style={{fontFamily: 'Inter, sans-serif'}}>{user?.name || 'Admin User'}</p>
+              <p className="text-[11px] text-gray-500 truncate" style={{fontFamily: 'Inter, sans-serif'}}>{user?.email || 'admin@example.com'}</p>
             </div>
           </div>
         </div>

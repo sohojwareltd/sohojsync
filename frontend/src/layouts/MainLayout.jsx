@@ -22,7 +22,7 @@ const MainLayout = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-900">
+    <div className="flex h-screen overflow-hidden" style={{background: '#f5f6fa'}}>
       {/* Sidebar - Desktop */}
       <Sidebar />
 
@@ -32,7 +32,7 @@ const MainLayout = () => {
         <CommonHeader pageTitle={getPageTitle()} />
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-20 md:pb-8 bg-gray-100">
+        <main className="flex-1 overflow-y-auto px-6 py-8 pb-20 md:pb-8" style={{background: '#f5f6fa', fontFamily: 'Inter, sans-serif'}}>
           <Outlet />
         </main>
       </div>

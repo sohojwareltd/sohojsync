@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate, useLocation } from 'react-router-dom';
 import axiosInstance from '../utils/axiosInstance';
 import Loader from '../components/Loader';
 
@@ -11,6 +11,7 @@ import Loader from '../components/Loader';
 const UserDetails = () => {
   const { userId, userType } = useParams(); // userType: 'project-manager', 'client', 'developer'
   const navigate = useNavigate();
+  const location = useLocation();
   const [user, setUser] = useState(null);
   const [analytics, setAnalytics] = useState(null);
   const [projects, setProjects] = useState([]);
@@ -149,8 +150,9 @@ const UserDetails = () => {
   };
 
   const startChat = () => {
-    // Navigate to chat with the user's direct message room
-    navigate(`/chat?userId=${userId}`);
+    // Keep navigation scoped to the current role prefix so it matches defined routes
+    const baseSegment = location.pathname.split('/')?.[1] || 'admin';
+    navigate(`/${baseSegment}/chat?userId=${userId}`);
   };
 
   if (loading) {

@@ -131,10 +131,10 @@ const TaskView = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white p-4">
+    <div className="min-h-screen p-6" style={{background: '#f8f9fa', fontFamily: 'Inter, sans-serif'}}>
       <div className="max-w-6xl mx-auto">
         {/* Header */}
-        <div className="mb-4 flex items-start gap-3 bg-white rounded-lg p-3 shadow-sm border border-gray-200">
+        <div className="mb-5 flex items-start gap-3 bg-white rounded-[12px] p-5 shadow-sm border" style={{borderColor: '#e9ecef'}}>
           <button
             onClick={() => navigate(`/projects/${projectId}/tasks`)}
             className="p-2 hover:bg-gray-100 rounded-lg transition-colors group"

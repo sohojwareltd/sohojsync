@@ -96,9 +96,9 @@ const UserAnalytics = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
+    <div className="max-w-6xl mx-auto px-6 py-8 space-y-5" style={{fontFamily: 'Inter, sans-serif'}}>
       {/* Header */}
-      <div className="bg-white rounded-lg p-6 shadow-sm border border-gray-200">
+      <div className="bg-white rounded-[12px] p-6 shadow-sm border" style={{borderColor: '#e9ecef'}}>
         <button
           onClick={() => navigate(-1)}
           className="text-sm text-purple-600 hover:text-purple-800 flex items-center gap-1 mb-3"

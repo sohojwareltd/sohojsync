@@ -161,10 +161,10 @@ const ProjectDetails = () => {
   }).length;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5" style={{fontFamily: 'Inter, sans-serif'}}>
       {/* Deadline Alert Banner */}
       {project?.deadline && (
-        <div className={`rounded-lg p-4 border-l-4 ${
+        <div className={`rounded-[12px] p-5 border-l-4 ${
           isOverdue 
             ? 'bg-red-50 border-red-500' 
             : daysUntil <= 3 

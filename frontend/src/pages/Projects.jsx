@@ -372,57 +372,70 @@ const Projects = () => {
 
   return (
     <div className="space-y-6">
-      {/* Modern Header */}
-      <div className="bg-white rounded-lg p-3 shadow-sm border" style={{borderColor: '#e5e7eb'}}>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-          <div>
-            <h1 className="text-base font-semibold text-gray-800">Projects</h1>
-            <p className="text-sm text-gray-600 mt-0.5">Manage and track all your projects</p>
+      {/* Header */}
+      <div className="mb-2">
+        <h1 className="text-2xl font-bold text-gray-900 mb-1">
+          Projects
+        </h1>
+        <p className="text-sm text-gray-500">Manage and track all your projects</p>
+      </div>
+
+      {/* Action Bar */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-[10px] flex items-center justify-center" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
+            <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
+            </svg>
           </div>
-          {/* Hide New Project for project_manager and developer */}
-          {(user?.role !== 'project_manager' && user?.role !== 'developer') && (
+          <div>
+            <p className="text-sm font-semibold text-gray-900">Total Projects</p>
+            <p className="text-xl font-bold text-gray-900">{filteredProjects.length}</p>
+          </div>
+        </div>
+        {(user?.role !== 'project_manager' && user?.role !== 'developer') && (
           <button 
             onClick={openCreateModal}
-            className="px-3 py-2 rounded-lg text-xs font-medium text-white shadow-sm hover:shadow-md transition-all flex items-center gap-1.5" 
-            style={{background: '#59569D'}}
+            className="px-6 py-3 rounded-[10px] font-semibold text-white shadow-md hover:shadow-lg transition-all flex items-center gap-2" 
+            style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', fontSize: '15px', fontFamily: 'Inter, sans-serif'}}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
             </svg>
             New Project
           </button>
-          )}
-        </div>
+        )}
       </div>
 
       {/* Filters and View Toggle */}
-      <div className="bg-white rounded-lg p-3 shadow-sm border" style={{borderColor: '#e5e7eb'}}>
-        <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
+      <div className="bg-white rounded-[16px] p-6 shadow-md border border-gray-100">
+        <h3 className="text-[16px] font-bold text-gray-900 mb-4" style={{fontFamily: 'Inter, sans-serif'}}>Filters & Search</h3>
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
           {/* Search */}
-          <div className="flex-1 max-w-md">
+          <div className="flex-1 max-w-lg">
             <div className="relative">
               <input
                 type="text"
                 placeholder="Search projects..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-1"
-                style={{borderColor: '#e5e7eb'}}
+                className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-300 transition-all"
+                style={{fontSize: '14px', fontFamily: 'Inter, sans-serif'}}
               />
-              <svg className="w-4 h-4 text-gray-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-gray-400 absolute left-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
               </svg>
             </div>
           </div>
 
           {/* Filter and View Toggle */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             {/* Status Filter */}
             <select
               value={filterStatus}
               onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-1"
-              style={{borderColor: '#e5e7eb'}}
+              className="px-4 py-3 border-2 border-gray-200 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-300 transition-all"
+              style={{fontSize: '14px', fontFamily: 'Inter, sans-serif'}}
             >
               <option value="all">All Status</option>
               <option value="planning">Planning</option>
@@ -434,15 +447,15 @@ const Projects = () => {
             </select>
 
             {/* View Toggle */}
-            <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+            <div className="flex gap-1 bg-gray-100 rounded-[10px] p-1.5">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`px-2 py-1.5 rounded-lg transition-all ${
+                className={`px-3 py-2 rounded-[8px] transition-all ${
                   viewMode === 'grid'
-                    ? 'text-white shadow-sm'
+                    ? 'text-white shadow-md'
                     : 'text-gray-600 hover:text-gray-800'
                 }`}
-                style={viewMode === 'grid' ? {background: '#59569D'} : {}}
+                style={viewMode === 'grid' ? {background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'} : {}}
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
@@ -450,12 +463,12 @@ const Projects = () => {
               </button>
               <button
                 onClick={() => setViewMode('table')}
-                className={`px-2 py-1.5 rounded-lg transition-all ${
+                className={`px-3 py-2 rounded-[8px] transition-all ${
                   viewMode === 'table'
-                    ? 'text-white shadow-sm'
+                    ? 'text-white shadow-md'
                     : 'text-gray-600 hover:text-gray-800'
                 }`}
-                style={viewMode === 'table' ? {background: '#59569D'} : {}}
+                style={viewMode === 'table' ? {background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'} : {}}
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"/>
@@ -471,7 +484,7 @@ const Projects = () => {
         <>
           {/* Grid View */}
           {viewMode === 'grid' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {filteredProjects.map((project, idx) => {
                 const daysUntil = project.deadline ? Math.ceil((new Date(project.deadline) - new Date()) / (1000 * 60 * 60 * 24)) : null;
                 const isOverdue = project.deadline && new Date(project.deadline) < new Date();
@@ -480,136 +493,161 @@ const Projects = () => {
                   <a
                     key={project.id}
                     href={`${rolePrefix}/projects/${project.id}`}
-                    className="bg-white border rounded-lg p-3 hover:shadow-lg transition-all cursor-pointer group block"
-                    style={{borderColor: '#e5e7eb', borderTopColor: '#59569D', borderTopWidth: '3px'}}
+                    className="bg-white border border-gray-100 rounded-[16px] p-5 hover:shadow-xl transition-all duration-300 cursor-pointer group block shadow-md"
+                    style={{fontFamily: 'Inter, sans-serif'}}
                   >
-                    <div className="flex items-start justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: '#59569D'}}>
-                          <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-[10px] flex items-center justify-center shadow-md" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
+                          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
                           </svg>
                         </div>
                       </div>
-                      <span className={`px-2 py-0.5 rounded text-xs font-semibold ${
-                        project.status === 'completed' ? 'bg-green-100 text-green-700 border border-green-300' :
-                        project.status === 'in_progress' ? 'bg-blue-100 text-blue-700 border border-blue-300' :
-                        project.status === 'planning' ? 'bg-yellow-100 text-yellow-700 border border-yellow-300' :
-                        project.status === 'on_hold' ? 'bg-gray-100 text-gray-700 border border-gray-300' :
-                        'bg-purple-100 text-purple-700 border border-purple-300'
-                      }`}>
+                      <span className={`px-2 py-1 rounded-[6px] text-xs font-bold shadow-sm ${
+                        project.status === 'completed' ? 'bg-green-100 text-green-700 border border-green-200' :
+                        project.status === 'in_progress' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
+                        project.status === 'planning' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
+                        project.status === 'on_hold' ? 'bg-gray-100 text-gray-700 border border-gray-200' :
+                        'bg-purple-100 text-purple-700 border border-purple-200'
+                      }`} style={{fontSize: '11px', fontFamily: 'Inter, sans-serif'}}>
                         {project.status.replace('_', ' ').toUpperCase()}
                       </span>
                     </div>
+                    
+                    <h3 className="font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors text-base">
+                      {project.name || project.title}
+                    </h3>
 
-                    {/* Progress Bar - Compact Top */}
+                    {/* Progress Bar */}
                     {project.progress !== undefined && (
-                      <div className="mb-2 flex items-center gap-2">
-                        <div className="flex-1">
-                          <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden shadow-inner">
-                            <div 
-                              className="bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 h-full transition-all duration-500 relative overflow-hidden"
-                              style={{ width: `${project.progress || 0}%` }}
-                            >
-                              <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
-                            </div>
+                      <div className="mb-4">
+                        <div className="flex items-center justify-between mb-1.5">
+                          <span className="text-xs font-semibold text-gray-700">Progress</span>
+                          <span className="text-xs font-bold text-purple-600">{project.progress}%</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden shadow-inner">
+                          <div 
+                            className="bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 h-full transition-all duration-500 relative overflow-hidden rounded-full"
+                            style={{ width: `${project.progress || 0}%` }}
+                          >
+                            <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
                           </div>
                         </div>
-                        <span className="text-xs font-bold text-purple-600 whitespace-nowrap">{project.progress}%</span>
                       </div>
                     )}
                     
-                    <h3 className="text-base font-semibold text-gray-800 mb-2 group-hover:text-purple-600 transition-colors">
-                      {project.name || project.title}
-                    </h3>
-                    
-                    {/* Assignment Info */}
-                    <div className="space-y-1 mb-3 text-sm text-gray-600">
-                      {/* Project Manager - HIGHLIGHTED */}
+                    {/* Team Info */}
+                    <div className="space-y-2 mb-4">
+                      {/* Project Manager */}
                       {project.project_manager && (
-                        <a
-                          href={`${rolePrefix}/users/project-manager/${project.project_manager.id}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="flex items-center gap-1.5 group"
-                        >
-                          <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
-                          </svg>
-                          <div>
-                            {/* <span className="text-xs text-gray-500 block">PM</span> */}
-                            <span className="text-base font-extrabold text-purple-700 group-hover:text-purple-900 ">{project.project_manager.name}</span>
+                        <div className="flex items-center gap-2 p-2 bg-purple-50 rounded-[8px] border border-purple-100">
+                          <div className="w-7 h-7 rounded-[6px] flex items-center justify-center" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
+                            <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                            </svg>
                           </div>
-                        </a>
-                      )}
-                      {/* Client - HIGHLIGHTED */}
-                      {project.client && (
-                        <a
-                          href={`${rolePrefix}/users/client/${project.client.id}`}
-                          onClick={(e) => e.stopPropagation()}
-                          className="flex items-center gap-1.5 group"
-                        >
-                          <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"/>
-                          </svg>
-                          <div>
-                            {/* <span className="text-xs text-gray-500 block">Client</span> */}
-                            <span className="text-base font-extrabold text-blue-700 ">{project.client.name}</span>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-gray-500 font-medium" style={{fontSize: '11px', fontFamily: 'Inter, sans-serif'}}>Project Manager</p>
+                            <a
+                              href={`${rolePrefix}/users/project-manager/${project.project_manager.id}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="font-bold text-purple-700 hover:text-purple-900 transition-colors truncate block"
+                              style={{fontSize: '14px', fontFamily: 'Inter, sans-serif'}}
+                            >
+                              {project.project_manager.name}
+                            </a>
                           </div>
-                        </a>
-                      )}
-                      {project.members && project.members.length > 0 && (
-                        <div className="flex items-center gap-1">
-                          <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
-                          </svg>
-                          <span>{project.members.length} Developer{project.members.length > 1 ? 's' : ''}</span>
                         </div>
                       )}
-                      {/* Deadline - HIGHLIGHTED */}
+                      
+                      {/* Client */}
+                      {project.client && (
+                        <div className="flex items-center gap-2 p-2 bg-blue-50 rounded-[8px] border border-blue-100">
+                          <div className="w-7 h-7 rounded-[6px] flex items-center justify-center" style={{background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'}}>
+                            <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"/>
+                            </svg>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-gray-500 font-medium" style={{fontSize: '11px', fontFamily: 'Inter, sans-serif'}}>Client</p>
+                            <a
+                              href={`${rolePrefix}/users/client/${project.client.id}`}
+                              onClick={(e) => e.stopPropagation()}
+                              className="font-bold text-blue-700 hover:text-blue-900 transition-colors truncate block"
+                              style={{fontSize: '14px', fontFamily: 'Inter, sans-serif'}}
+                            >
+                              {project.client.name}
+                            </a>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Developers */}
+                      {project.members && project.members.length > 0 && (
+                        <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-[8px] border border-gray-100">
+                          <div className="w-7 h-7 rounded-[6px] flex items-center justify-center bg-gray-700">
+                            <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+                            </svg>
+                          </div>
+                          <div>
+                            <p className="text-gray-500 font-medium text-xs">Team Size</p>
+                            <p className="font-bold text-gray-900 text-sm">
+                              {project.members.length} Developer{project.members.length > 1 ? 's' : ''}
+                            </p>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Deadline */}
                       {project.deadline && (
-                        <div className={`flex items-center gap-1 p-2 rounded border ${
+                        <div className={`flex items-center gap-2 p-2 rounded-[8px] border ${
                           isOverdue 
                             ? 'bg-red-50 border-red-200'
                             : daysUntil <= 3 
                               ? 'bg-yellow-50 border-yellow-200'
-                              : 'bg-blue-50 border-blue-200'
+                              : 'bg-green-50 border-green-200'
                         }`}>
-                          <svg className={`w-4 h-4 ${
-                            isOverdue ? 'text-red-600' : daysUntil <= 3 ? 'text-yellow-600' : 'text-blue-600'
-                          }`} fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
-                          </svg>
-                          <div>
-                            <span className={`font-semibold ${
-                              isOverdue ? 'text-red-700' : daysUntil <= 3 ? 'text-yellow-700' : 'text-blue-700'
+                          <div className={`w-7 h-7 rounded-[6px] flex items-center justify-center ${
+                            isOverdue ? 'bg-red-600' : daysUntil <= 3 ? 'bg-yellow-600' : 'bg-green-600'
+                          }`}>
+                            <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
+                            </svg>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className={`font-medium text-xs ${
+                              isOverdue ? 'text-red-600' : daysUntil <= 3 ? 'text-yellow-600' : 'text-green-600'
                             }`}>
-                              {isOverdue ? '⚠️ Overdue' : daysUntil <= 3 ? '⏰ Due Soon' : '📅 Deadline'}:
-                            </span>
-                            <span className={`ml-1 ${
-                              isOverdue ? 'text-red-600' : daysUntil <= 3 ? 'text-yellow-600' : 'text-blue-600'
+                              {isOverdue ? 'Overdue' : daysUntil <= 3 ? 'Due Soon' : 'Deadline'}
+                            </p>
+                            <p className={`font-bold text-sm ${
+                              isOverdue ? 'text-red-700' : daysUntil <= 3 ? 'text-yellow-700' : 'text-green-700'
                             }`}>
-                              {new Date(project.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                            </span>
+                              {new Date(project.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                            </p>
                           </div>
                         </div>
                       )}
                     </div>
                     
-                    <div className="flex items-center justify-between pt-2 border-t" style={{borderColor: '#e5e7eb'}}>
+                    <div className="flex items-center justify-between pt-3 border-t border-gray-200">
                       <a 
                         href={`${rolePrefix}/projects/${project.id}/tasks`}
                         onClick={(e) => e.stopPropagation()}
-                        className="text-sm text-purple-600 font-semibold hover:text-purple-700 flex items-center gap-1 transition-colors"
+                        className="px-3 py-2 rounded-[8px] font-bold text-white shadow-md hover:shadow-lg flex items-center gap-1.5 transition-all text-xs"
+                        style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}
                       >
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM15 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2h-2zM5 13a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM13 11a1 1 0 10-2 0v3.586L9.707 13.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L13 14.586V11z"/>
                         </svg>
-                        TaskBoard
+                        View Tasks
                       </a>
-                      <div className="flex items-center gap-1" onClick={(e) => e.preventDefault()}>
+                      <div className="flex items-center gap-1.5" onClick={(e) => e.preventDefault()}>
                         <button 
                           onClick={(e) => { e.preventDefault(); openEditModal(project); }}
-                          className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+                          className="p-2 hover:bg-purple-50 rounded-[6px] transition-all text-gray-600 hover:text-purple-600 border border-gray-200 hover:border-purple-200"
                           title="Edit"
                         >
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -618,7 +656,7 @@ const Projects = () => {
                         </button>
                         <button 
                           onClick={(e) => { e.preventDefault(); openDeleteModal(project); }}
-                          className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+                          className="p-2 hover:bg-red-50 rounded-[6px] transition-all text-gray-600 hover:text-red-600 border border-gray-200 hover:border-red-200"
                           title="Delete"
                         >
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -635,10 +673,13 @@ const Projects = () => {
 
           {/* Table View */}
           {viewMode === 'table' && (
-            <div className="bg-white rounded-lg shadow-sm border overflow-hidden" style={{borderColor: '#e5e7eb'}}>
+            <div className="bg-white rounded-[16px] shadow-md border border-gray-100 overflow-hidden">
+              <div className="px-6 py-4 border-b border-gray-200">
+                <h3 className="text-[18px] font-bold text-gray-900" style={{fontFamily: 'Inter, sans-serif'}}>All Projects</h3>
+              </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
-                  <thead className="bg-gray-50 border-b" style={{borderColor: '#e5e7eb'}}>
+                  <thead className="bg-gray-50">
                     <tr>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Project</th>
                       <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Team</th>

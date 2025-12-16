@@ -160,17 +160,17 @@ const Calendar = () => {
   }
 
   return (
-    <div className="p-6">
+    <div className="p-6" style={{fontFamily: 'Inter, sans-serif'}}>
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Calendar</h1>
-          <p className="text-sm text-gray-600 mt-1">Manage your tasks, events, and meetings</p>
+          <h1 style={{fontSize: '28px', fontFamily: 'Inter, sans-serif'}} className="font-bold text-gray-900">Calendar</h1>
+          <p style={{fontSize: '14px', fontFamily: 'Inter, sans-serif'}} className="text-gray-600 mt-1">Manage your tasks, events, and meetings</p>
         </div>
         <button
           onClick={() => setShowEventModal(true)}
-          className="px-4 py-2 text-white rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center gap-2"
-          style={{background: '#59569D'}}
+          className="px-4 py-2.5 text-white rounded-[8px] font-medium hover:opacity-90 transition-opacity flex items-center gap-2"
+          style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', fontSize: '14px', fontFamily: 'Inter, sans-serif'}}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -180,19 +180,19 @@ const Calendar = () => {
       </div>
 
       {/* Calendar Legend */}
-      <div className="bg-white rounded-lg shadow-sm p-4 mb-6 border border-gray-200">
+      <div className="bg-white rounded-[12px] shadow-sm p-5 mb-6 border" style={{borderColor: '#e9ecef', fontFamily: 'Inter, sans-serif'}}>
         <div className="flex items-center gap-6 flex-wrap">
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded" style={{backgroundColor: '#8B5CF6'}}></div>
-            <span className="text-sm text-gray-700">Tasks</span>
+            <div className="w-4 h-4 rounded-[6px]" style={{backgroundColor: '#8B5CF6'}}></div>
+            <span style={{fontSize: '14px', fontFamily: 'Inter, sans-serif'}} className="text-gray-700">Tasks</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded" style={{backgroundColor: '#F25292'}}></div>
-            <span className="text-sm text-gray-700">Custom Events</span>
+            <div className="w-4 h-4 rounded-[6px]" style={{backgroundColor: '#F25292'}}></div>
+            <span style={{fontSize: '14px', fontFamily: 'Inter, sans-serif'}} className="text-gray-700">Custom Events</span>
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-4 h-4 rounded" style={{backgroundColor: '#10B981'}}></div>
-            <span className="text-sm text-gray-700">Google Meet</span>
+            <div className="w-4 h-4 rounded-[6px]" style={{backgroundColor: '#10B981'}}></div>
+            <span style={{fontSize: '14px', fontFamily: 'Inter, sans-serif'}} className="text-gray-700">Google Meet</span>
           </div>
         </div>
       </div>

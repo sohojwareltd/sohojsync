@@ -205,10 +205,10 @@ const Employees = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Alert */}
       {alert && (
-        <div className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-lg shadow-lg ${
+        <div className={`fixed top-4 right-4 z-50 px-6 py-3 rounded-[8px] shadow-lg ${
           alert.type === 'error' ? 'bg-red-500' : 'bg-green-500'
         } text-white`}>
           {alert.message}
@@ -216,18 +216,18 @@ const Employees = () => {
       )}
 
       {/* Header */}
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <div className="bg-white rounded-[12px] p-6 shadow-sm border" style={{borderColor: '#e9ecef', fontFamily: 'Inter, sans-serif'}}>
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+            <h1 style={{fontSize: '28px', fontFamily: 'Inter, sans-serif'}} className="font-bold text-gray-800 flex items-center gap-2">
               <span className="text-3xl">👥</span> Employees
             </h1>
-            <p className="text-gray-500 mt-1">Manage your team members</p>
+            <p style={{fontSize: '14px', fontFamily: 'Inter, sans-serif'}} className="text-gray-500 mt-1">Manage your team members</p>
           </div>
           <button
             onClick={openCreateModal}
-            className="px-6 py-2.5 rounded-lg text-white font-medium transition-colors shadow-md hover:shadow-lg"
-            style={{background: '#59569D'}}
+            className="px-5 py-2.5 rounded-[8px] text-white font-medium transition-colors shadow-md hover:shadow-lg"
+            style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', fontSize: '14px', fontFamily: 'Inter, sans-serif'}}
           >
             + Add Employee
           </button>
@@ -236,18 +236,18 @@ const Employees = () => {
 
       {/* Statistics Cards */}
       {statistics && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white rounded-xl p-5 shadow-md border-l-4" style={{borderLeftColor: '#59569D'}}>
-            <p className="text-sm text-gray-600 mb-1">Total Employees</p>
-            <p className="text-3xl font-bold text-gray-800">{statistics.total_employees}</p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+          <div className="bg-white rounded-[12px] p-6 shadow-sm border-l-4" style={{borderLeftColor: '#667eea', borderColor: '#e9ecef', fontFamily: 'Inter, sans-serif'}}>
+            <p style={{fontSize: '13px', fontFamily: 'Inter, sans-serif'}} className="text-gray-600 mb-1">Total Employees</p>
+            <p style={{fontSize: '32px', fontFamily: 'Inter, sans-serif'}} className="font-bold text-gray-800">{statistics.total_employees}</p>
           </div>
-          <div className="bg-white rounded-xl p-5 shadow-md border-l-4" style={{borderLeftColor: '#59569D'}}>
-            <p className="text-sm text-gray-600 mb-1">Developers</p>
-            <p className="text-3xl font-bold text-gray-800">{statistics.developers}</p>
+          <div className="bg-white rounded-[12px] p-6 shadow-sm border-l-4" style={{borderLeftColor: '#667eea', borderColor: '#e9ecef', fontFamily: 'Inter, sans-serif'}}>
+            <p style={{fontSize: '13px', fontFamily: 'Inter, sans-serif'}} className="text-gray-600 mb-1">Developers</p>
+            <p style={{fontSize: '32px', fontFamily: 'Inter, sans-serif'}} className="font-bold text-gray-800">{statistics.developers}</p>
           </div>
-          <div className="bg-white rounded-xl p-5 shadow-md border-l-4" style={{borderLeftColor: '#59569D'}}>
-            <p className="text-sm text-gray-600 mb-1">Project Managers</p>
-            <p className="text-3xl font-bold text-gray-800">{statistics.project_managers}</p>
+          <div className="bg-white rounded-[12px] p-6 shadow-sm border-l-4" style={{borderLeftColor: '#667eea', borderColor: '#e9ecef', fontFamily: 'Inter, sans-serif'}}>
+            <p style={{fontSize: '13px', fontFamily: 'Inter, sans-serif'}} className="text-gray-600 mb-1">Project Managers</p>
+            <p style={{fontSize: '32px', fontFamily: 'Inter, sans-serif'}} className="font-bold text-gray-800">{statistics.project_managers}</p>
           </div>
           <div className="bg-white rounded-xl p-5 shadow-md border-l-4" style={{borderLeftColor: '#59569D'}}>
             <p className="text-sm text-gray-600 mb-1">Avg Performance</p>

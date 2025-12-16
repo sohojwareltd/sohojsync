@@ -131,20 +131,20 @@ const Clients = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Header */}
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
+      <div className="bg-white rounded-[12px] p-6 shadow-sm border" style={{borderColor: '#e9ecef', fontFamily: 'Inter, sans-serif'}}>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
+            <h1 style={{fontSize: '28px', fontFamily: 'Inter, sans-serif'}} className="font-bold text-gray-800 flex items-center gap-2">
               <span className="text-3xl">👥</span> Clients
             </h1>
-            <p className="text-gray-500 mt-1">Manage your client accounts and credentials</p>
+            <p style={{fontSize: '14px', fontFamily: 'Inter, sans-serif'}} className="text-gray-500 mt-1">Manage your client accounts and credentials</p>
           </div>
           <button 
             onClick={openCreateModal}
-            className="px-6 py-3 rounded-xl font-medium text-white shadow-md hover:shadow-lg transition-all flex items-center gap-2" 
-            style={{background: '#59569D'}}
+            className="px-5 py-2.5 rounded-[8px] font-medium text-white shadow-md hover:shadow-lg transition-all flex items-center gap-2" 
+            style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', fontSize: '14px', fontFamily: 'Inter, sans-serif'}}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
@@ -155,7 +155,7 @@ const Clients = () => {
       </div>
 
       {/* Filters and View Toggle */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+      <div className="bg-white rounded-[12px] p-6 shadow-sm border" style={{borderColor: '#e9ecef', fontFamily: 'Inter, sans-serif'}}>
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
           {/* Search */}
           <div className="flex-1 max-w-md">
@@ -165,7 +165,8 @@ const Clients = () => {
                 placeholder="Search clients..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                className="w-full pl-10 pr-4 py-2.5 border rounded-[8px] focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                style={{borderColor: '#e9ecef', fontSize: '14px', fontFamily: 'Inter, sans-serif'}}
               />
               <svg className="w-5 h-5 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>

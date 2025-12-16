@@ -42,18 +42,18 @@ const Tasks = () => {
   }
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-6 space-y-5" style={{background: '#f8f9fa', minHeight: '100vh'}}>
       {/* Header */}
-      <div className="bg-white rounded-lg p-3 shadow-sm border" style={{borderColor: '#e5e7eb'}}>
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+      <div className="bg-white rounded-[12px] p-6 shadow-sm border" style={{borderColor: '#e9ecef', fontFamily: 'Inter, sans-serif'}}>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-base font-semibold text-gray-800">Tasks</h1>
-            <p className="text-sm text-gray-600 mt-0.5">Track and manage your tasks</p>
+            <h1 style={{fontSize: '28px', fontFamily: 'Inter, sans-serif'}} className="font-semibold text-gray-800">Tasks</h1>
+            <p style={{fontSize: '14px', fontFamily: 'Inter, sans-serif'}} className="text-gray-600 mt-1">Track and manage your tasks</p>
           </div>
           {user?.role !== 'developer' && (
             <button 
-              className="px-3 py-2 rounded-lg text-sm font-medium text-white shadow-sm hover:shadow-md transition-all flex items-center gap-1.5" 
-              style={{background: '#59569D'}}
+              className="px-4 py-2.5 rounded-[8px] font-medium text-white shadow-sm hover:shadow-md transition-all flex items-center gap-2" 
+              style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', fontSize: '14px', fontFamily: 'Inter, sans-serif'}}
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
@@ -65,8 +65,8 @@ const Tasks = () => {
       </div>
 
       {/* Search and Filters */}
-      <div className="bg-white rounded-lg p-3 shadow-sm border" style={{borderColor: '#e5e7eb'}}>
-        <div className="flex flex-col md:flex-row gap-3 items-center justify-between">
+      <div className="bg-white rounded-[12px] p-6 shadow-sm border" style={{borderColor: '#e9ecef', fontFamily: 'Inter, sans-serif'}}>
+        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
           {/* Search */}
           <div className="flex-1 max-w-md">
             <div className="relative">
@@ -75,8 +75,8 @@ const Tasks = () => {
                 placeholder="Search tasks..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-3 py-2 border rounded-lg text-sm focus:outline-none focus:ring-1"
-                style={{borderColor: '#e5e7eb'}}
+                className="w-full pl-10 pr-4 py-2.5 border rounded-[8px] focus:outline-none focus:ring-2 focus:ring-blue-500"
+                style={{borderColor: '#e9ecef', fontSize: '14px', fontFamily: 'Inter, sans-serif'}}
               />
               <svg className="w-4 h-4 text-gray-400 absolute left-2.5 top-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -88,10 +88,10 @@ const Tasks = () => {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setFilter('all')}
-              className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-4 py-2.5 rounded-[8px] font-medium transition-all ${
                 filter === 'all' ? 'text-white shadow-sm' : 'text-gray-600 hover:bg-gray-100'
               }`}
-              style={filter === 'all' ? {background: '#59569D'} : {}}
+              style={filter === 'all' ? {background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', fontSize: '14px', fontFamily: 'Inter, sans-serif'} : {fontSize: '14px', fontFamily: 'Inter, sans-serif'}}
             >
               All ({tasks.length})
             </button>
@@ -119,17 +119,17 @@ const Tasks = () => {
 
       {/* Tasks List */}
       {filteredTasks.length > 0 ? (
-        <div className="grid grid-cols-1 gap-3">
+        <div className="grid grid-cols-1 gap-4">
           {filteredTasks.map(task => (
             <div
               key={task.id}
-              className="bg-white border rounded-lg p-3 hover:shadow-md transition-all"
-              style={{borderColor: '#e5e7eb', borderLeftColor: '#59569D', borderLeftWidth: '3px'}}
+              className="bg-white border rounded-[12px] p-5 hover:shadow-md transition-all"
+              style={{borderColor: '#e9ecef', borderLeftColor: '#667eea', borderLeftWidth: '4px', fontFamily: 'Inter, sans-serif'}}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-2">
-                    <h3 className="text-base font-semibold text-gray-800">
+                    <h3 style={{fontSize: '16px', fontFamily: 'Inter, sans-serif'}} className="font-semibold text-gray-800">
                       {task.title}
                     </h3>
                     <span 

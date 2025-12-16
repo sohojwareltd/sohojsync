@@ -129,47 +129,90 @@ const ActivityLogs = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-            <span className="text-3xl">📊</span> Activity Logs
-          </h1>
-          <p className="text-gray-500 mt-1">Track all user activities and system events</p>
-        </div>
+      <div className="mb-2">
+        <h1 className="text-[32px] font-bold text-gray-900 mb-1" style={{fontFamily: 'Inter, sans-serif'}}>
+          Activity Logs
+        </h1>
+        <p className="text-[15px] text-gray-500" style={{fontFamily: 'Inter, sans-serif'}}>Track all user activities and system events</p>
       </div>
 
       {/* Statistics Cards */}
       {statistics && (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            <div className="bg-white rounded-xl p-5 shadow-md border-l-4 border-purple-500">
-              <p className="text-sm text-gray-600 mb-1">Total Activities</p>
-              <p className="text-3xl font-bold text-purple-600">{statistics.total_activities}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="bg-white rounded-[16px] p-7 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[14px] text-gray-600 font-semibold" style={{fontFamily: 'Inter, sans-serif'}}>Total Activities</p>
+                <div className="w-12 h-12 rounded-[12px] flex items-center justify-center" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
+                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                    <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
+                  </svg>
+                </div>
+              </div>
+              <p className="text-[36px] font-bold text-gray-900 mb-2" style={{fontFamily: 'Inter, sans-serif'}}>{statistics.total_activities}</p>
+              <div className="flex items-center text-[13px]">
+                <span className="text-green-600 font-semibold">↑ 12%</span>
+                <span className="text-gray-500 ml-2" style={{fontFamily: 'Inter, sans-serif'}}>vs last month</span>
+              </div>
             </div>
-            <div className="bg-white rounded-xl p-5 shadow-md border-l-4 border-emerald-500">
-              <p className="text-sm text-gray-600 mb-1">Today's Activities</p>
-              <p className="text-3xl font-bold text-emerald-600">{statistics.today_activities}</p>
+            <div className="bg-white rounded-[16px] p-7 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[14px] text-gray-600 font-semibold" style={{fontFamily: 'Inter, sans-serif'}}>Today's Activities</p>
+                <div className="w-12 h-12 rounded-[12px] flex items-center justify-center" style={{background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'}}>
+                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/>
+                  </svg>
+                </div>
+              </div>
+              <p className="text-[36px] font-bold text-gray-900 mb-2" style={{fontFamily: 'Inter, sans-serif'}}>{statistics.today_activities}</p>
+              <div className="flex items-center text-[13px]">
+                <span className="text-blue-600 font-semibold">•</span>
+                <span className="text-gray-500 ml-2" style={{fontFamily: 'Inter, sans-serif'}}>Last 24 hours</span>
+              </div>
             </div>
-            <div className="bg-white rounded-xl p-5 shadow-md border-l-4 border-blue-500">
-              <p className="text-sm text-gray-600 mb-1">Active Users</p>
-              <p className="text-3xl font-bold text-blue-600">{statistics.by_role?.length || 0}</p>
+            <div className="bg-white rounded-[16px] p-7 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[14px] text-gray-600 font-semibold" style={{fontFamily: 'Inter, sans-serif'}}>Active Users</p>
+                <div className="w-12 h-12 rounded-[12px] flex items-center justify-center" style={{background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'}}>
+                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                  </svg>
+                </div>
+              </div>
+              <p className="text-[36px] font-bold text-gray-900 mb-2" style={{fontFamily: 'Inter, sans-serif'}}>{statistics.by_role?.length || 0}</p>
+              <div className="flex items-center text-[13px]">
+                <span className="text-purple-600 font-semibold">👥</span>
+                <span className="text-gray-500 ml-2" style={{fontFamily: 'Inter, sans-serif'}}>User roles</span>
+              </div>
             </div>
-            <div className="bg-white rounded-xl p-5 shadow-md border-l-4 border-rose-500">
-              <p className="text-sm text-gray-600 mb-1">Action Types</p>
-              <p className="text-3xl font-bold text-rose-600">{statistics.by_action?.length || 0}</p>
+            <div className="bg-white rounded-[16px] p-7 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
+              <div className="flex items-center justify-between mb-3">
+                <p className="text-[14px] text-gray-600 font-semibold" style={{fontFamily: 'Inter, sans-serif'}}>Action Types</p>
+                <div className="w-12 h-12 rounded-[12px] flex items-center justify-center" style={{background: 'linear-gradient(135deg, #fa709a 0%, #fee140 100%)'}}>
+                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M11.3 1.046A1 1 0 0112 2v5h4a1 1 0 01.82 1.573l-7 10A1 1 0 018 18v-5H4a1 1 0 01-.82-1.573l7-10a1 1 0 011.12-.38z" clipRule="evenodd"/>
+                  </svg>
+                </div>
+              </div>
+              <p className="text-[36px] font-bold text-gray-900 mb-2" style={{fontFamily: 'Inter, sans-serif'}}>{statistics.by_action?.length || 0}</p>
+              <div className="flex items-center text-[13px]">
+                <span className="text-orange-600 font-semibold">⚡</span>
+                <span className="text-gray-500 ml-2" style={{fontFamily: 'Inter, sans-serif'}}>Event types</span>
+              </div>
             </div>
           </div>
 
           {/* Charts Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
             {/* Activities by Action - Bar Chart */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
-                </svg>
-                Activities by Action Type
-              </h3>
+            <div className="bg-white rounded-[16px] p-6 shadow-md border border-gray-100">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-[18px] font-bold text-gray-900" style={{fontFamily: 'Inter, sans-serif'}}>
+                  Activities by Action Type
+                </h3>
+                <span className="text-[12px] px-3 py-1 bg-blue-100 text-blue-700 rounded-full font-medium">Overview</span>
+              </div>
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={statistics.by_action || []}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
@@ -185,13 +228,13 @@ const ActivityLogs = () => {
             </div>
 
             {/* Activities by Role - Pie Chart */}
-            <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-100">
-              <h3 className="text-lg font-bold text-gray-800 mb-4 flex items-center gap-2">
-                <svg className="w-5 h-5 text-pink-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
-                </svg>
-                Activities by User Role
-              </h3>
+            <div className="bg-white rounded-[16px] p-6 shadow-md border border-gray-100">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-[18px] font-bold text-gray-900" style={{fontFamily: 'Inter, sans-serif'}}>
+                  Activities by User Role
+                </h3>
+                <span className="text-[12px] px-3 py-1 bg-purple-100 text-purple-700 rounded-full font-medium">Distribution</span>
+              </div>
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
                   <Pie
@@ -218,7 +261,8 @@ const ActivityLogs = () => {
       )}
 
       {/* Filters */}
-      <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+      <div className="bg-white rounded-[16px] p-6 shadow-md border border-gray-100">
+        <h3 className="text-[16px] font-bold text-gray-900 mb-4" style={{fontFamily: 'Inter, sans-serif'}}>Filters & Search</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {/* Search */}
           <div className="lg:col-span-2">
@@ -227,7 +271,8 @@ const ActivityLogs = () => {
               placeholder="Search activities..."
               value={filters.search}
               onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+              className="w-full px-4 py-2.5 text-[14px] border border-gray-300 rounded-[8px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              style={{fontFamily: 'Inter, sans-serif'}}
             />
           </div>
 
@@ -235,7 +280,8 @@ const ActivityLogs = () => {
           <select
             value={filters.role}
             onChange={(e) => setFilters({ ...filters, role: e.target.value })}
-            className="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="px-4 py-2.5 text-[14px] border border-gray-300 rounded-[8px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            style={{fontFamily: 'Inter, sans-serif'}}
           >
             <option value="all">All Roles</option>
             <option value="admin">Admin</option>
@@ -248,7 +294,8 @@ const ActivityLogs = () => {
           <select
             value={filters.action}
             onChange={(e) => setFilters({ ...filters, action: e.target.value })}
-            className="px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="px-4 py-2.5 text-[14px] border border-gray-300 rounded-[8px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            style={{fontFamily: 'Inter, sans-serif'}}
           >
             <option value="all">All Actions</option>
             <option value="create">Create</option>
@@ -265,51 +312,54 @@ const ActivityLogs = () => {
               type="date"
               value={filters.start_date}
               onChange={(e) => setFilters({ ...filters, start_date: e.target.value })}
-              className="px-3 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-sm"
+              className="px-3 py-2.5 text-[14px] border border-gray-300 rounded-[8px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              style={{fontFamily: 'Inter, sans-serif'}}
             />
           </div>
         </div>
       </div>
 
       {/* Activity Logs Table */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+      <div className="bg-white rounded-[16px] shadow-md border border-gray-100 overflow-hidden">
+        <div className="px-6 py-4 border-b border-gray-200">
+          <h3 className="text-[18px] font-bold text-gray-900" style={{fontFamily: 'Inter, sans-serif'}}>Recent Activities</h3>
+        </div>
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-gray-50 border-b-2 border-gray-200">
+            <thead className="bg-gray-50">
               <tr>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">User</th>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">Role</th>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">Action</th>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">Description</th>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">IP Address</th>
-                <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">Time</th>
+                <th className="text-left py-4 px-6 text-[13px] font-bold text-gray-700 uppercase tracking-wide" style={{fontFamily: 'Inter, sans-serif'}}>User</th>
+                <th className="text-left py-4 px-6 text-[13px] font-bold text-gray-700 uppercase tracking-wide" style={{fontFamily: 'Inter, sans-serif'}}>Role</th>
+                <th className="text-left py-4 px-6 text-[13px] font-bold text-gray-700 uppercase tracking-wide" style={{fontFamily: 'Inter, sans-serif'}}>Action</th>
+                <th className="text-left py-4 px-6 text-[13px] font-bold text-gray-700 uppercase tracking-wide" style={{fontFamily: 'Inter, sans-serif'}}>Description</th>
+                <th className="text-left py-4 px-6 text-[13px] font-bold text-gray-700 uppercase tracking-wide" style={{fontFamily: 'Inter, sans-serif'}}>IP Address</th>
+                <th className="text-left py-4 px-6 text-[13px] font-bold text-gray-700 uppercase tracking-wide" style={{fontFamily: 'Inter, sans-serif'}}>Time</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
               {logs.length > 0 ? (
                 logs.map((log, idx) => {
-                  const borderColors = ['border-l-purple-500', 'border-l-pink-500', 'border-l-indigo-500', 'border-l-blue-500'];
-                  
                   return (
                     <tr 
                       key={log.id} 
-                      className={`hover:bg-gray-50 transition-colors border-l-4 ${borderColors[idx % 4]}`}
+                      className="hover:bg-gray-50/50 transition-colors"
                     >
                       <td className="py-4 px-6">
                         <div className="flex items-center gap-3">
-                          <div className="w-8 h-8 rounded-full bg-purple-100 flex items-center justify-center text-purple-600 font-bold text-sm">
+                          <div className="w-9 h-9 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-[14px]" style={{fontFamily: 'Inter, sans-serif'}}>
                             {log.user?.name?.charAt(0).toUpperCase() || 'U'}
                           </div>
                           <div className="flex-1">
-                            <p className="font-medium text-gray-800">{log.user?.name || 'Unknown User'}</p>
-                            <p className="text-xs text-gray-500">{log.user?.email || '-'}</p>
+                            <p className="font-medium text-[14px] text-gray-900" style={{fontFamily: 'Inter, sans-serif'}}>{log.user?.name || 'Unknown User'}</p>
+                            <p className="text-[12px] text-gray-500" style={{fontFamily: 'Inter, sans-serif'}}>{log.user?.email || '-'}</p>
                           </div>
                           <button
                             onClick={() => {
                               setSelectedUser(log.user);
                               fetchUserReport(log.user_id);
                             }}
-                            className="px-2.5 py-1 text-xs font-medium text-purple-600 hover:bg-purple-50 rounded-lg transition-colors"
+                            className="px-3 py-1.5 text-[12px] font-medium text-blue-600 hover:bg-blue-50 rounded-[6px] transition-colors"
+                            style={{fontFamily: 'Inter, sans-serif'}}
                             title="View user report"
                           >
                             View Report
@@ -317,33 +367,33 @@ const ActivityLogs = () => {
                         </div>
                       </td>
                       <td className="py-4 px-6">
-                        <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${getRoleBadgeColor(log.user_role || log.user?.role)}`}>
+                        <span className={`inline-block px-3 py-1 rounded-[6px] text-[12px] font-medium ${getRoleBadgeColor(log.user_role || log.user?.role)}`} style={{fontFamily: 'Inter, sans-serif'}}>
                           {(log.user_role || log.user?.role || 'unknown').replace('_', ' ')}
                         </span>
                       </td>
                       <td className="py-4 px-6">
-                        <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-medium ${getActionBadgeColor(log.action)}`}>
+                        <span className={`inline-block px-3 py-1 rounded-[6px] text-[12px] font-medium ${getActionBadgeColor(log.action)}`} style={{fontFamily: 'Inter, sans-serif'}}>
                           {log.action}
                         </span>
                       </td>
                       <td className="py-4 px-6">
-                        <p className="text-sm text-gray-700">{log.description}</p>
+                        <p className="text-[14px] text-gray-700" style={{fontFamily: 'Inter, sans-serif'}}>{log.description}</p>
                         {log.event_type && (
-                          <p className="text-xs text-gray-400 mt-1">{log.event_type}</p>
+                          <p className="text-[12px] text-gray-400 mt-1" style={{fontFamily: 'Inter, sans-serif'}}>{log.event_type}</p>
                         )}
                       </td>
                       <td className="py-4 px-6">
                         <div>
-                          <p className="text-sm font-mono text-gray-600">{log.ip_address || '-'}</p>
+                          <p className="text-[13px] font-mono text-gray-600">{log.ip_address || '-'}</p>
                           {log.user_agent && (
-                            <p className="text-xs text-gray-400 mt-1 truncate max-w-xs" title={log.user_agent}>
+                            <p className="text-[11px] text-gray-400 mt-1 truncate max-w-xs" title={log.user_agent}>
                               {log.user_agent.split(' ')[0]}
                             </p>
                           )}
                         </div>
                       </td>
                       <td className="py-4 px-6">
-                        <p className="text-sm text-gray-600">
+                        <p className="text-[13px] text-gray-600" style={{fontFamily: 'Inter, sans-serif'}}>
                           {new Date(log.created_at).toLocaleString('en-US', {
                             month: 'short',
                             day: 'numeric',
@@ -351,7 +401,7 @@ const ActivityLogs = () => {
                             minute: '2-digit'
                           })}
                         </p>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-[11px] text-gray-400" style={{fontFamily: 'Inter, sans-serif'}}>
                           {new Date(log.created_at).toLocaleDateString('en-US', { year: 'numeric' })}
                         </p>
                       </td>
