@@ -450,15 +450,14 @@ const Employees = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                                  const roleColors = {
-                                    'admin': 'bg-purple-100 text-purple-700',
-                                    'project_manager': 'bg-blue-100 text-blue-700',
-                                    'developer': 'bg-green-100 text-green-700',
-                                    'client': 'bg-pink-100 text-pink-700'
-                                  };
-                                  const roleColor = roleColors[employee.user.role] || 'bg-gray-100 text-gray-700';
-
                 {filteredEmployees.map((employee, idx) => {
+                  const roleColors = {
+                    'admin': 'bg-purple-100 text-purple-700',
+                    'project_manager': 'bg-blue-100 text-blue-700',
+                    'developer': 'bg-green-100 text-green-700',
+                    'client': 'bg-pink-100 text-pink-700'
+                  };
+                  const roleColor = roleColors[employee.user.role] || 'bg-gray-100 text-gray-700';
                   return (
                     <tr key={employee.id} className="hover:bg-gray-50 transition-colors">
                       <td className="py-3 px-5">

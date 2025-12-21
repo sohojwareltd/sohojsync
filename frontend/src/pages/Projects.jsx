@@ -32,6 +32,7 @@ const Projects = () => {
   const [viewMode, setViewMode] = useState('grid');
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState('all');
+  const [sortBy, setSortBy] = useState('deadline');
   const [showModal, setShowModal] = useState(false);
   const [editingProject, setEditingProject] = useState(null);
   const [formData, setFormData] = useState({
@@ -268,6 +269,54 @@ const Projects = () => {
     return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i];
   };
 
+  const getInitials = (name = '') => {
+    return name
+      .split(' ')
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(part => part[0]?.toUpperCase() || '')
+      .join('');
+  };
+
+  const statusTabs = [
+    { label: 'All Projects', value: 'all' },
+    { label: 'Current', value: 'current' },
+    { label: 'Pending', value: 'pending' },
+    { label: 'Completed', value: 'completed' },
+    { label: 'Failed', value: 'failed' }
+  ];
+
+  const statusMatchesTab = (project, tab) => {
+    const status = project.status;
+    if (tab === 'all') return true;
+    if (tab === 'current') return ['in_progress'].includes(status);
+    if (tab === 'pending') return ['planning', 'review', 'on_hold'].includes(status);
+    if (tab === 'completed') return status === 'completed';
+    if (tab === 'failed') return ['cancelled', 'failed'].includes(status);
+    return status === tab;
+  };
+
+  const getTabCount = (tab) => projects.filter(p => statusMatchesTab(p, tab)).length;
+
+  const getStatusBadgeClasses = (status) => {
+    switch (status) {
+      case 'completed':
+        return 'bg-emerald-50 text-emerald-700 border border-emerald-200';
+      case 'in_progress':
+        return 'bg-blue-50 text-blue-700 border border-blue-200';
+      case 'planning':
+      case 'review':
+        return 'bg-amber-50 text-amber-700 border border-amber-200';
+      case 'on_hold':
+        return 'bg-gray-50 text-gray-700 border border-gray-200';
+      case 'cancelled':
+      case 'failed':
+        return 'bg-rose-50 text-rose-700 border border-rose-200';
+      default:
+        return 'bg-purple-50 text-purple-700 border border-purple-200';
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -362,8 +411,23 @@ const Projects = () => {
   const filteredProjects = projects.filter(project => {
     const matchesSearch = (project.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
                          (project.description || '').toLowerCase().includes(searchQuery.toLowerCase());
-    const matchesStatus = filterStatus === 'all' || project.status === filterStatus;
+    const matchesStatus = statusMatchesTab(project, filterStatus);
     return matchesSearch && matchesStatus;
+  });
+
+  const sortedProjects = [...filteredProjects].sort((a, b) => {
+    if (sortBy === 'progress') {
+      return (b.progress || 0) - (a.progress || 0);
+    }
+    if (sortBy === 'deadline') {
+      const aDate = a.deadline ? new Date(a.deadline).getTime() : Number.MAX_SAFE_INTEGER;
+      const bDate = b.deadline ? new Date(b.deadline).getTime() : Number.MAX_SAFE_INTEGER;
+      return aDate - bDate;
+    }
+    if (sortBy === 'name') {
+      return (a.name || a.title || '').localeCompare(b.name || b.title || '');
+    }
+    return 0;
   });
 
   if (loading) {
@@ -371,7 +435,7 @@ const Projects = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6" style={{fontFamily: 'Inter, sans-serif'}}>
       {/* Header */}
       <div className="mb-2">
         <h1 className="text-2xl font-bold text-gray-900 mb-1">
@@ -410,16 +474,37 @@ const Projects = () => {
       {/* Filters and View Toggle */}
       <div className="bg-white rounded-[16px] p-6 shadow-md border border-gray-100">
         <h3 className="text-[16px] font-bold text-gray-900 mb-4" style={{fontFamily: 'Inter, sans-serif'}}>Filters & Search</h3>
+
+        {/* Status Tabs */}
+        <div className="flex flex-wrap gap-2 mb-4">
+          {statusTabs.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setFilterStatus(tab.value)}
+              className={`px-3 py-2 rounded-[10px] border transition-all text-sm font-semibold flex items-center gap-2 ${
+                filterStatus === tab.value
+                  ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-md border-transparent'
+                  : 'bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-300'
+              }`}
+            >
+              <span>{tab.label}</span>
+              <span className={`text-xs px-2 py-1 rounded-full ${filterStatus === tab.value ? 'bg-white/20 text-white' : 'bg-white text-gray-700 border border-gray-200'}`}>
+                {getTabCount(tab.value)}
+              </span>
+            </button>
+          ))}
+        </div>
+
         <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
           {/* Search */}
-          <div className="flex-1 max-w-lg">
+          <div className="flex-1 max-w-lg w-full">
             <div className="relative">
               <input
                 type="text"
                 placeholder="Search projects..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-300 transition-all"
+                className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 hover:border-gray-300 transition-all"
                 style={{fontSize: '14px', fontFamily: 'Inter, sans-serif'}}
               />
               <svg className="w-5 h-5 text-gray-400 absolute left-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -428,25 +513,19 @@ const Projects = () => {
             </div>
           </div>
 
-          {/* Filter and View Toggle */}
-          <div className="flex items-center gap-3">
-            {/* Status Filter */}
+          {/* Sort + View */}
+          <div className="flex items-center gap-3 w-full md:w-auto justify-end">
             <select
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="px-4 py-3 border-2 border-gray-200 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 hover:border-gray-300 transition-all"
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value)}
+              className="px-4 py-3 border-2 border-gray-200 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 hover:border-gray-300 transition-all text-sm"
               style={{fontSize: '14px', fontFamily: 'Inter, sans-serif'}}
             >
-              <option value="all">All Status</option>
-              <option value="planning">Planning</option>
-              <option value="in_progress">In Progress</option>
-              <option value="review">Review</option>
-              <option value="completed">Completed</option>
-              <option value="on_hold">On Hold</option>
-              <option value="cancelled">Cancelled</option>
+              <option value="deadline">Sort by Deadline</option>
+              <option value="progress">Sort by Progress</option>
+              <option value="name">Sort by Name</option>
             </select>
 
-            {/* View Toggle */}
             <div className="flex gap-1 bg-gray-100 rounded-[10px] p-1.5">
               <button
                 onClick={() => setViewMode('grid')}
@@ -484,162 +563,119 @@ const Projects = () => {
         <>
           {/* Grid View */}
           {viewMode === 'grid' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredProjects.map((project, idx) => {
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {sortedProjects.map((project, idx) => {
                 const daysUntil = project.deadline ? Math.ceil((new Date(project.deadline) - new Date()) / (1000 * 60 * 60 * 24)) : null;
                 const isOverdue = project.deadline && new Date(project.deadline) < new Date();
+                const avatarItems = [];
+                if (project.project_manager) {
+                  avatarItems.push({ name: project.project_manager.name, from: '#7c3aed', to: '#6366f1' });
+                }
+                if (project.members && project.members.length > 0) {
+                  project.members.slice(0, 3).forEach((member) => {
+                    avatarItems.push({ name: member.name || member.full_name || member.username || 'Dev', from: '#111827', to: '#1f2937' });
+                  });
+                }
+                const extraMembers = (project.members?.length || 0) - 3;
+                const totalTeam = avatarItems.length + (extraMembers > 0 ? extraMembers : 0);
                 
                 return (
-                  <a
+                  <div
                     key={project.id}
-                    href={`${rolePrefix}/projects/${project.id}`}
-                    className="bg-white border border-gray-100 rounded-[16px] p-5 hover:shadow-xl transition-all duration-300 cursor-pointer group block shadow-md"
+                    onClick={() => (window.location.href = `${rolePrefix}/projects/${project.id}`)}
+                    className="bg-white border border-gray-100 rounded-[16px] p-4 hover:shadow-xl transition-all duration-300 cursor-pointer group block shadow-md"
                     style={{fontFamily: 'Inter, sans-serif'}}
                   >
-                    <div className="flex items-start justify-between mb-4">
+                    <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-[10px] flex items-center justify-center shadow-md" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
-                          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                        <div className="w-10 h-10 rounded-[12px] flex items-center justify-center bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-md">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
                           </svg>
                         </div>
+                        <div>
+                          <p className="text-[11px] text-gray-500 font-semibold uppercase tracking-wide">Project</p>
+                          <h3 className="font-bold text-gray-900 text-sm group-hover:text-purple-600 transition-colors">
+                            {project.name || project.title}
+                          </h3>
+                        </div>
                       </div>
-                      <span className={`px-2 py-1 rounded-[6px] text-xs font-bold shadow-sm ${
-                        project.status === 'completed' ? 'bg-green-100 text-green-700 border border-green-200' :
-                        project.status === 'in_progress' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
-                        project.status === 'planning' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
-                        project.status === 'on_hold' ? 'bg-gray-100 text-gray-700 border border-gray-200' :
-                        'bg-purple-100 text-purple-700 border border-purple-200'
-                      }`} style={{fontSize: '11px', fontFamily: 'Inter, sans-serif'}}>
+                      <span className={`px-2 py-1 rounded-full text-[11px] font-semibold shadow-sm ${getStatusBadgeClasses(project.status)}`}>
                         {project.status.replace('_', ' ').toUpperCase()}
                       </span>
                     </div>
-                    
-                    <h3 className="font-bold text-gray-900 mb-3 group-hover:text-purple-600 transition-colors text-base">
-                      {project.name || project.title}
-                    </h3>
 
-                    {/* Progress Bar */}
+                    {project.description && (
+                      <p className="text-[12px] text-gray-600 mb-3 line-clamp-2">
+                        {project.description}
+                      </p>
+                    )}
+
                     {project.progress !== undefined && (
-                      <div className="mb-4">
+                      <div className="mb-3">
                         <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-xs font-semibold text-gray-700">Progress</span>
-                          <span className="text-xs font-bold text-purple-600">{project.progress}%</span>
+                          <span className="text-[11px] font-semibold text-gray-700">Progress</span>
+                          <span className="text-[11px] font-bold text-purple-600">{project.progress}%</span>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden shadow-inner">
-                          <div 
+                        <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
+                          <div
                             className="bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 h-full transition-all duration-500 relative overflow-hidden rounded-full"
                             style={{ width: `${project.progress || 0}%` }}
                           >
-                            <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
+                            <div className="absolute inset-0 bg-white opacity-20"></div>
                           </div>
                         </div>
                       </div>
                     )}
-                    
-                    {/* Team Info */}
-                    <div className="space-y-2 mb-4">
-                      {/* Project Manager */}
-                      {project.project_manager && (
-                        <div className="flex items-center gap-2 p-2 bg-purple-50 rounded-[8px] border border-purple-100">
-                          <div className="w-7 h-7 rounded-[6px] flex items-center justify-center" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
-                            <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
-                            </svg>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-gray-500 font-medium" style={{fontSize: '11px', fontFamily: 'Inter, sans-serif'}}>Project Manager</p>
-                            <a
-                              href={`${rolePrefix}/users/project-manager/${project.project_manager.id}`}
-                              onClick={(e) => e.stopPropagation()}
-                              className="font-bold text-purple-700 hover:text-purple-900 transition-colors truncate block"
-                              style={{fontSize: '14px', fontFamily: 'Inter, sans-serif'}}
-                            >
-                              {project.project_manager.name}
-                            </a>
-                          </div>
-                        </div>
-                      )}
-                      
-                      {/* Client */}
-                      {project.client && (
-                        <div className="flex items-center gap-2 p-2 bg-blue-50 rounded-[8px] border border-blue-100">
-                          <div className="w-7 h-7 rounded-[6px] flex items-center justify-center" style={{background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)'}}>
-                            <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"/>
-                            </svg>
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <p className="text-gray-500 font-medium" style={{fontSize: '11px', fontFamily: 'Inter, sans-serif'}}>Client</p>
-                            <a
-                              href={`${rolePrefix}/users/client/${project.client.id}`}
-                              onClick={(e) => e.stopPropagation()}
-                              className="font-bold text-blue-700 hover:text-blue-900 transition-colors truncate block"
-                              style={{fontSize: '14px', fontFamily: 'Inter, sans-serif'}}
-                            >
-                              {project.client.name}
-                            </a>
-                          </div>
-                        </div>
-                      )}
 
-                      {/* Developers */}
-                      {project.members && project.members.length > 0 && (
-                        <div className="flex items-center gap-2 p-2 bg-gray-50 rounded-[8px] border border-gray-100">
-                          <div className="w-7 h-7 rounded-[6px] flex items-center justify-center bg-gray-700">
-                            <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                              <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
-                            </svg>
-                          </div>
-                          <div>
-                            <p className="text-gray-500 font-medium text-xs">Team Size</p>
-                            <p className="font-bold text-gray-900 text-sm">
-                              {project.members.length} Developer{project.members.length > 1 ? 's' : ''}
-                            </p>
-                          </div>
+                    <div className="flex items-center justify-between gap-3 mb-3">
+                      <div className="flex items-center gap-2">
+                        <div className="flex -space-x-2">
+                          {avatarItems.map((item, avatarIdx) => (
+                            <div
+                              key={`${item.name}-${avatarIdx}`}
+                              className="w-8 h-8 rounded-full bg-gradient-to-br text-white text-xs font-bold flex items-center justify-center border-2 border-white shadow-sm"
+                              style={{ backgroundImage: `linear-gradient(135deg, ${item.from}, ${item.to})` }}
+                            >
+                              {getInitials(item.name)}
+                            </div>
+                          ))}
+                          {extraMembers > 0 && (
+                            <div className="w-8 h-8 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold flex items-center justify-center border-2 border-white">+{extraMembers}</div>
+                          )}
                         </div>
-                      )}
+                        <span className="text-xs text-gray-500">Team {totalTeam}</span>
+                      </div>
 
-                      {/* Deadline */}
                       {project.deadline && (
-                        <div className={`flex items-center gap-2 p-2 rounded-[8px] border ${
-                          isOverdue 
-                            ? 'bg-red-50 border-red-200'
-                            : daysUntil <= 3 
-                              ? 'bg-yellow-50 border-yellow-200'
-                              : 'bg-green-50 border-green-200'
+                        <div className={`px-3 py-1.5 rounded-[10px] border text-[11px] font-semibold ${
+                          isOverdue
+                            ? 'bg-rose-50 text-rose-700 border-rose-200'
+                            : daysUntil <= 3
+                              ? 'bg-amber-50 text-amber-700 border-amber-200'
+                              : 'bg-emerald-50 text-emerald-700 border-emerald-200'
                         }`}>
-                          <div className={`w-7 h-7 rounded-[6px] flex items-center justify-center ${
-                            isOverdue ? 'bg-red-600' : daysUntil <= 3 ? 'bg-yellow-600' : 'bg-green-600'
-                          }`}>
-                            <svg className="w-3.5 h-3.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <div className="flex items-center gap-1">
+                            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
                             </svg>
+                            <span>{isOverdue ? 'Overdue' : daysUntil <= 3 ? 'Due soon' : 'Deadline'}</span>
                           </div>
-                          <div className="flex-1 min-w-0">
-                            <p className={`font-medium text-xs ${
-                              isOverdue ? 'text-red-600' : daysUntil <= 3 ? 'text-yellow-600' : 'text-green-600'
-                            }`}>
-                              {isOverdue ? 'Overdue' : daysUntil <= 3 ? 'Due Soon' : 'Deadline'}
-                            </p>
-                            <p className={`font-bold text-sm ${
-                              isOverdue ? 'text-red-700' : daysUntil <= 3 ? 'text-yellow-700' : 'text-green-700'
-                            }`}>
-                              {new Date(project.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                            </p>
+                          <div className="font-bold text-xs mt-1">
+                            {new Date(project.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                           </div>
                         </div>
                       )}
                     </div>
-                    
-                    <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+
+                    <div className="flex items-center justify-between pt-2.5 border-t border-gray-200">
                       <a 
                         href={`${rolePrefix}/projects/${project.id}/tasks`}
                         onClick={(e) => e.stopPropagation()}
-                        className="px-3 py-2 rounded-[8px] font-bold text-white shadow-md hover:shadow-lg flex items-center gap-1.5 transition-all text-xs"
+                        className="px-2.5 py-1.5 rounded-[8px] font-bold text-white shadow-md hover:shadow-lg flex items-center gap-1.5 transition-all text-[12px]"
                         style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}
                       >
-                        <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM15 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2h-2zM5 13a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM13 11a1 1 0 10-2 0v3.586L9.707 13.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L13 14.586V11z"/>
                         </svg>
                         View Tasks
@@ -665,7 +701,7 @@ const Projects = () => {
                         </button>
                       </div>
                     </div>
-                  </a>
+                  </div>
                 );
               })}
             </div>
@@ -690,7 +726,7 @@ const Projects = () => {
                     </tr>
                   </thead>
                   <tbody className="divide-y" style={{borderColor: '#e5e7eb'}}>
-                    {filteredProjects.map((project, idx) => {
+                    {sortedProjects.map((project, idx) => {
                       const daysUntil = project.deadline ? Math.ceil((new Date(project.deadline) - new Date()) / (1000 * 60 * 60 * 24)) : null;
                       const isOverdue = project.deadline && new Date(project.deadline) < new Date();
                       
