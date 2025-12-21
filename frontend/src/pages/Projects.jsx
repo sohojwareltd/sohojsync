@@ -447,7 +447,7 @@ const Projects = () => {
       {/* Action Bar */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-[10px] flex items-center justify-center" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{background: 'rgb(89, 86, 157)'}}>
             <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
               <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
             </svg>
@@ -460,8 +460,8 @@ const Projects = () => {
         {(user?.role !== 'project_manager' && user?.role !== 'developer') && (
           <button 
             onClick={openCreateModal}
-            className="px-6 py-3 rounded-[10px] font-semibold text-white shadow-md hover:shadow-lg transition-all flex items-center gap-2" 
-            style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', fontSize: '15px', fontFamily: 'Inter, sans-serif'}}
+            className="px-5 py-2.5 rounded-lg font-medium text-white shadow-sm hover:shadow-md hover:opacity-90 transition-all flex items-center gap-2" 
+            style={{background: 'rgb(89, 86, 157)', fontSize: '14px'}}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
@@ -472,69 +472,70 @@ const Projects = () => {
       </div>
 
       {/* Filters and View Toggle */}
-      <div className="bg-white rounded-[16px] p-6 shadow-md border border-gray-100">
-        <h3 className="text-[16px] font-bold text-gray-900 mb-4" style={{fontFamily: 'Inter, sans-serif'}}>Filters & Search</h3>
+      <div className="bg-white rounded-xl p-5 border border-gray-200">
 
         {/* Status Tabs */}
-        <div className="flex flex-wrap gap-2 mb-4">
+        <div className="flex flex-wrap gap-2 mb-5">
           {statusTabs.map((tab) => (
             <button
               key={tab.value}
               onClick={() => setFilterStatus(tab.value)}
-              className={`px-3 py-2 rounded-[10px] border transition-all text-sm font-semibold flex items-center gap-2 ${
+              className={`px-3 py-2 rounded-lg border transition-colors text-sm font-medium flex items-center gap-2 ${
                 filterStatus === tab.value
-                  ? 'bg-gradient-to-r from-purple-500 to-indigo-600 text-white shadow-md border-transparent'
-                  : 'bg-gray-50 text-gray-700 border-gray-200 hover:border-gray-300'
+                  ? 'text-white border-transparent'
+                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
               }`}
+              style={filterStatus === tab.value ? {background: 'rgb(89, 86, 157)'} : {}}
             >
               <span>{tab.label}</span>
-              <span className={`text-xs px-2 py-1 rounded-full ${filterStatus === tab.value ? 'bg-white/20 text-white' : 'bg-white text-gray-700 border border-gray-200'}`}>
+              <span className={`text-xs px-1.5 py-0.5 rounded-md font-medium ${filterStatus === tab.value ? 'bg-white/20' : 'bg-gray-100 text-gray-600'}`}>
                 {getTabCount(tab.value)}
               </span>
             </button>
           ))}
         </div>
 
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+        {/* Search & Controls */}
+        <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center">
           {/* Search */}
-          <div className="flex-1 max-w-lg w-full">
+          <div className="flex-1">
             <div className="relative">
+              <svg className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+              </svg>
               <input
                 type="text"
                 placeholder="Search projects..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-11 pr-4 py-3 border-2 border-gray-200 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 hover:border-gray-300 transition-all"
-                style={{fontSize: '14px', fontFamily: 'Inter, sans-serif'}}
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 hover:border-gray-300 transition-colors text-sm"
               />
-              <svg className="w-5 h-5 text-gray-400 absolute left-3 top-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-              </svg>
             </div>
           </div>
 
-          {/* Sort + View */}
-          <div className="flex items-center gap-3 w-full md:w-auto justify-end">
+          {/* Sort & View Controls */}
+          <div className="flex items-center gap-2">
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-4 py-3 border-2 border-gray-200 rounded-[10px] focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 hover:border-gray-300 transition-all text-sm"
-              style={{fontSize: '14px', fontFamily: 'Inter, sans-serif'}}
+              className="px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 hover:border-gray-300 transition-colors text-sm bg-white"
+              style={{minWidth: '150px'}}
             >
-              <option value="deadline">Sort by Deadline</option>
-              <option value="progress">Sort by Progress</option>
-              <option value="name">Sort by Name</option>
+              <option value="deadline">Deadline</option>
+              <option value="progress">Progress</option>
+              <option value="name">Name</option>
             </select>
 
-            <div className="flex gap-1 bg-gray-100 rounded-[10px] p-1.5">
+            <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`px-3 py-2 rounded-[8px] transition-all ${
+                className={`p-2 rounded-md transition-colors ${
                   viewMode === 'grid'
-                    ? 'text-white shadow-md'
-                    : 'text-gray-600 hover:text-gray-800'
+                    ? 'text-white'
+                    : 'text-gray-500 hover:text-gray-700'
                 }`}
-                style={viewMode === 'grid' ? {background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'} : {}}
+                style={viewMode === 'grid' ? {background: 'rgb(89, 86, 157)'} : {}}
+                title="Grid view"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
@@ -542,12 +543,13 @@ const Projects = () => {
               </button>
               <button
                 onClick={() => setViewMode('table')}
-                className={`px-3 py-2 rounded-[8px] transition-all ${
+                className={`p-2 rounded-md transition-colors ${
                   viewMode === 'table'
-                    ? 'text-white shadow-md'
-                    : 'text-gray-600 hover:text-gray-800'
+                    ? 'text-white'
+                    : 'text-gray-500 hover:text-gray-700'
                 }`}
-                style={viewMode === 'table' ? {background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'} : {}}
+                style={viewMode === 'table' ? {background: 'rgb(89, 86, 157)'} : {}}
+                title="Table view"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"/>
@@ -569,60 +571,84 @@ const Projects = () => {
                 const isOverdue = project.deadline && new Date(project.deadline) < new Date();
                 const avatarItems = [];
                 if (project.project_manager) {
-                  avatarItems.push({ name: project.project_manager.name, from: '#7c3aed', to: '#6366f1' });
-                }
-                if (project.members && project.members.length > 0) {
-                  project.members.slice(0, 3).forEach((member) => {
-                    avatarItems.push({ name: member.name || member.full_name || member.username || 'Dev', from: '#111827', to: '#1f2937' });
+                  avatarItems.push({ 
+                    name: project.project_manager.name, 
+                    id: project.project_manager.id,
+                    role: 'project-manager',
+                    roleLabel: 'Project Manager',
+                    from: '#7c3aed', 
+                    to: '#6366f1' 
                   });
                 }
-                const extraMembers = (project.members?.length || 0) - 3;
+                if (project.client) {
+                  avatarItems.push({ 
+                    name: project.client.name, 
+                    id: project.client.id,
+                    role: 'client',
+                    roleLabel: 'Client',
+                    from: '#059669', 
+                    to: '#10b981' 
+                  });
+                }
+                if (project.members && project.members.length > 0) {
+                  project.members.slice(0, 2).forEach((member) => {
+                    avatarItems.push({ 
+                      name: member.name || member.full_name || member.username || 'Dev', 
+                      id: member.user_id || member.id,
+                      role: 'developer',
+                      roleLabel: 'Developer',
+                      from: '#111827', 
+                      to: '#1f2937' 
+                    });
+                  });
+                }
+                const extraMembers = Math.max(0, (project.members?.length || 0) - 2);
                 const totalTeam = avatarItems.length + (extraMembers > 0 ? extraMembers : 0);
                 
                 return (
                   <div
                     key={project.id}
                     onClick={() => (window.location.href = `${rolePrefix}/projects/${project.id}`)}
-                    className="bg-white border border-gray-100 rounded-[16px] p-4 hover:shadow-xl transition-all duration-300 cursor-pointer group block shadow-md"
+                    className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer group"
                     style={{fontFamily: 'Inter, sans-serif'}}
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-[12px] flex items-center justify-center bg-gradient-to-br from-purple-500 to-indigo-600 text-white shadow-md">
+                        <div className="w-9 h-9 rounded-lg flex items-center justify-center text-white shadow-sm" style={{background: 'rgb(89, 86, 157)'}}>
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
                           </svg>
                         </div>
                         <div>
-                          <p className="text-[11px] text-gray-500 font-semibold uppercase tracking-wide">Project</p>
-                          <h3 className="font-bold text-gray-900 text-sm group-hover:text-purple-600 transition-colors">
+                          <p className="text-xs text-gray-500 font-medium uppercase tracking-wide">Project</p>
+                          <h3 className="font-semibold text-gray-900 text-sm group-hover:opacity-80 transition-opacity">
                             {project.name || project.title}
                           </h3>
                         </div>
                       </div>
-                      <span className={`px-2 py-1 rounded-full text-[11px] font-semibold shadow-sm ${getStatusBadgeClasses(project.status)}`}>
+                      <span className={`px-2.5 py-1 rounded-full text-xs font-medium ${getStatusBadgeClasses(project.status)}`}>
                         {project.status.replace('_', ' ').toUpperCase()}
                       </span>
                     </div>
 
                     {project.description && (
-                      <p className="text-[12px] text-gray-600 mb-3 line-clamp-2">
-                        {project.description}
-                      </p>
+                      <div 
+                        className="text-xs text-gray-600 mb-3 line-clamp-2"
+                        dangerouslySetInnerHTML={{ __html: project.description }}
+                      />
                     )}
 
                     {project.progress !== undefined && (
                       <div className="mb-3">
                         <div className="flex items-center justify-between mb-1.5">
-                          <span className="text-[11px] font-semibold text-gray-700">Progress</span>
-                          <span className="text-[11px] font-bold text-purple-600">{project.progress}%</span>
+                          <span className="text-xs font-medium text-gray-600">Progress</span>
+                          <span className="text-xs font-semibold" style={{color: 'rgb(89, 86, 157)'}}>{project.progress}%</span>
                         </div>
                         <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
                           <div
-                            className="bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 h-full transition-all duration-500 relative overflow-hidden rounded-full"
-                            style={{ width: `${project.progress || 0}%` }}
+                            className="h-full transition-all duration-500 rounded-full"
+                            style={{ width: `${project.progress || 0}%`, background: 'rgb(89, 86, 157)' }}
                           >
-                            <div className="absolute inset-0 bg-white opacity-20"></div>
                           </div>
                         </div>
                       </div>
@@ -632,13 +658,16 @@ const Projects = () => {
                       <div className="flex items-center gap-2">
                         <div className="flex -space-x-2">
                           {avatarItems.map((item, avatarIdx) => (
-                            <div
+                            <a
                               key={`${item.name}-${avatarIdx}`}
-                              className="w-8 h-8 rounded-full bg-gradient-to-br text-white text-xs font-bold flex items-center justify-center border-2 border-white shadow-sm"
+                              href={`${rolePrefix}/users/${item.role}/${item.id}`}
+                              onClick={(e) => e.stopPropagation()}
+                              title={`${item.name} - ${item.roleLabel}`}
+                              className="w-8 h-8 rounded-full bg-gradient-to-br text-white text-xs font-bold flex items-center justify-center border-2 border-white shadow-sm hover:scale-105 transition-transform cursor-pointer"
                               style={{ backgroundImage: `linear-gradient(135deg, ${item.from}, ${item.to})` }}
                             >
                               {getInitials(item.name)}
-                            </div>
+                            </a>
                           ))}
                           {extraMembers > 0 && (
                             <div className="w-8 h-8 rounded-full bg-gray-100 text-gray-700 text-xs font-semibold flex items-center justify-center border-2 border-white">+{extraMembers}</div>
@@ -648,7 +677,7 @@ const Projects = () => {
                       </div>
 
                       {project.deadline && (
-                        <div className={`px-3 py-1.5 rounded-[10px] border text-[11px] font-semibold ${
+                        <div className={`px-2.5 py-1.5 rounded-lg border text-xs font-medium ${
                           isOverdue
                             ? 'bg-rose-50 text-rose-700 border-rose-200'
                             : daysUntil <= 3
@@ -656,12 +685,12 @@ const Projects = () => {
                               : 'bg-emerald-50 text-emerald-700 border-emerald-200'
                         }`}>
                           <div className="flex items-center gap-1">
-                            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
+                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                               <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
                             </svg>
-                            <span>{isOverdue ? 'Overdue' : daysUntil <= 3 ? 'Due soon' : 'Deadline'}</span>
+                            <span className="text-xs">{isOverdue ? 'Overdue' : daysUntil <= 3 ? 'Due soon' : 'Deadline'}</span>
                           </div>
-                          <div className="font-bold text-xs mt-1">
+                          <div className="font-semibold text-xs mt-0.5">
                             {new Date(project.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                           </div>
                         </div>
@@ -672,8 +701,8 @@ const Projects = () => {
                       <a 
                         href={`${rolePrefix}/projects/${project.id}/tasks`}
                         onClick={(e) => e.stopPropagation()}
-                        className="px-2.5 py-1.5 rounded-[8px] font-bold text-white shadow-md hover:shadow-lg flex items-center gap-1.5 transition-all text-[12px]"
-                        style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}
+                        className="px-3 py-1.5 rounded-lg font-medium text-white shadow-sm hover:shadow-md hover:opacity-90 flex items-center gap-1.5 transition-all text-xs"
+                        style={{background: 'rgb(89, 86, 157)'}}
                       >
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM15 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2h-2zM5 13a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM13 11a1 1 0 10-2 0v3.586L9.707 13.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L13 14.586V11z"/>
@@ -683,7 +712,7 @@ const Projects = () => {
                       <div className="flex items-center gap-1.5" onClick={(e) => e.preventDefault()}>
                         <button 
                           onClick={(e) => { e.preventDefault(); openEditModal(project); }}
-                          className="p-2 hover:bg-purple-50 rounded-[6px] transition-all text-gray-600 hover:text-purple-600 border border-gray-200 hover:border-purple-200"
+                          className="p-1.5 hover:bg-gray-100 rounded-md transition-colors text-gray-500 hover:text-gray-700 border border-gray-200"
                           title="Edit"
                         >
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -692,7 +721,7 @@ const Projects = () => {
                         </button>
                         <button 
                           onClick={(e) => { e.preventDefault(); openDeleteModal(project); }}
-                          className="p-2 hover:bg-red-50 rounded-[6px] transition-all text-gray-600 hover:text-red-600 border border-gray-200 hover:border-red-200"
+                          className="p-1.5 hover:bg-red-50 rounded-md transition-colors text-gray-500 hover:text-red-600 border border-gray-200"
                           title="Delete"
                         >
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

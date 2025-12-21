@@ -204,58 +204,57 @@ const UserDetails = () => {
     : 0;
 
   return (
-    <div className="space-y-6 pb-8">
+    <div className="space-y-5 pb-8">
       {/* Modern Header */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-        <div className="flex items-start justify-between">
+      <div className="bg-white rounded-xl border border-gray-200 p-5">
+        <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-4">
             <Link 
               to="/projects"
               className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
             >
-              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7"/>
               </svg>
             </Link>
-            <div>
-              <div className="flex items-center gap-3 mb-1">
+            <div className="flex items-center gap-3">
                 {user.profile_image ? (
                   <img
                     src={`${import.meta.env.VITE_APP_URL || ''}/storage/${user.profile_image}`}
                     alt={user.name}
-                    className="w-12 h-12 rounded-full object-cover border-2 border-gray-200 shadow-lg"
+                    className="w-12 h-12 rounded-full object-cover border-2 border-gray-200"
                   />
                 ) : (
-                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-xl font-bold shadow-lg" style={{background: '#59569D'}}>
+                  <div className="w-12 h-12 rounded-full flex items-center justify-center text-white text-lg font-semibold" style={{background: 'rgb(89, 86, 157)'}}>
                     {user.name?.charAt(0).toUpperCase() || 'U'}
                   </div>
                 )}
                 <div>
-                  <h1 className="text-2xl font-bold text-gray-800">{user.name}</h1>
-                  <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${userInfo.bgColor} border ${userInfo.borderColor}`}>
+                  <h1 className="text-xl font-semibold text-gray-900">{user.name}</h1>
+                  <span className="inline-block px-2.5 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200">
                     {userInfo.title}
                   </span>
                 </div>
-              </div>
             </div>
           </div>
           <button
             onClick={startChat}
-            className={`px-5 py-2.5 bg-gradient-to-r ${userInfo.gradient} text-white rounded-lg font-semibold hover:shadow-lg transition-all flex items-center gap-2`}
+            className="px-4 py-2 text-white rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center gap-2 text-sm"
+            style={{background: 'rgb(89, 86, 157)'}}
           >
-            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
               <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"/>
             </svg>
-            Start Chat
+            Chat
           </button>
         </div>
 
         {/* Contact Info */}
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="pt-4 border-t border-gray-200">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
             <div className="flex items-center gap-2 text-sm text-gray-600">
-              <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/>
                 <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/>
               </svg>
@@ -263,7 +262,7 @@ const UserDetails = () => {
             </div>
             {user.phone && (
               <div className="flex items-center gap-2 text-sm text-gray-600">
-                <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
                 </svg>
                 <span className="font-medium">{user.phone}</span>
@@ -271,7 +270,7 @@ const UserDetails = () => {
             )}
             {user.company && (
               <div className="flex items-center gap-2 text-sm text-gray-600">
-                <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd"/>
                 </svg>
                 <span className="font-medium">{user.company}</span>
@@ -282,101 +281,101 @@ const UserDetails = () => {
       </div>
 
       {/* Key Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <div className={`p-3 rounded-lg ${userInfo.bgColor}`}>
-              <svg className={`w-6 h-6 ${userInfo.textColor}`} fill="currentColor" viewBox="0 0 20 20">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white p-5 rounded-xl border border-gray-200 hover:border-gray-300 transition-colors">
+          <div className="flex items-center justify-between mb-3">
+            <div className="p-2.5 rounded-lg" style={{background: 'rgba(89, 86, 157, 0.1)'}}>
+              <svg className="w-5 h-5" style={{color: 'rgb(89, 86, 157)'}} fill="currentColor" viewBox="0 0 20 20">
                 <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
               </svg>
             </div>
             <div className="text-right">
-              <p className="text-3xl font-bold text-gray-800">{projects.length}</p>
-              <p className="text-xs text-gray-500 mt-1">
-                +{projectStats.inProgress} active
+              <p className="text-2xl font-semibold text-gray-900">{projects.length}</p>
+              <p className="text-xs text-gray-500 mt-0.5">
+                {projectStats.inProgress} active
               </p>
             </div>
           </div>
-          <h3 className="text-sm font-semibold text-gray-700">Total Projects</h3>
+          <h3 className="text-sm font-medium text-gray-600">Total Projects</h3>
         </div>
 
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 rounded-lg bg-green-100">
-              <svg className="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+        <div className="bg-white p-5 rounded-xl border border-gray-200 hover:border-gray-300 transition-colors">
+          <div className="flex items-center justify-between mb-3">
+            <div className="p-2.5 rounded-lg bg-green-50">
+              <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
               </svg>
             </div>
             <div className="text-right">
-              <p className="text-3xl font-bold text-gray-800">{taskStats.completed}</p>
-              <p className="text-xs text-gray-500 mt-1">
+              <p className="text-2xl font-semibold text-gray-900">{taskStats.completed}</p>
+              <p className="text-xs text-gray-500 mt-0.5">
                 of {taskStats.total} tasks
               </p>
             </div>
           </div>
-          <h3 className="text-sm font-semibold text-gray-700">Completed Tasks</h3>
+          <h3 className="text-sm font-medium text-gray-600">Completed Tasks</h3>
         </div>
 
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <div className="p-3 rounded-lg bg-blue-100">
-              <svg className="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+        <div className="bg-white p-5 rounded-xl border border-gray-200 hover:border-gray-300 transition-colors">
+          <div className="flex items-center justify-between mb-3">
+            <div className="p-2.5 rounded-lg bg-blue-50">
+              <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/>
               </svg>
             </div>
             <div className="text-right">
-              <p className="text-3xl font-bold text-gray-800">{taskStats.inProgress}</p>
-              <p className="text-xs text-gray-500 mt-1">
-                +{taskStats.pending} pending
+              <p className="text-2xl font-semibold text-gray-900">{taskStats.inProgress}</p>
+              <p className="text-xs text-gray-500 mt-0.5">
+                {taskStats.pending} pending
               </p>
             </div>
           </div>
-          <h3 className="text-sm font-semibold text-gray-700">In Progress</h3>
+          <h3 className="text-sm font-medium text-gray-600">In Progress</h3>
         </div>
 
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
-          <div className="flex items-center justify-between mb-4">
-            <div className={`p-3 rounded-lg ${taskStats.overdue > 0 ? 'bg-red-100' : 'bg-purple-100'}`}>
-              <svg className={`w-6 h-6 ${taskStats.overdue > 0 ? 'text-red-600' : 'text-purple-600'}`} fill="currentColor" viewBox="0 0 20 20">
+        <div className="bg-white p-5 rounded-xl border border-gray-200 hover:border-gray-300 transition-colors">
+          <div className="flex items-center justify-between mb-3">
+            <div className={`p-2.5 rounded-lg ${taskStats.overdue > 0 ? 'bg-red-50' : 'bg-purple-50'}`}>
+              <svg className={`w-5 h-5 ${taskStats.overdue > 0 ? 'text-red-600' : 'text-purple-600'}`} fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11 4a1 1 0 10-2 0v4a1 1 0 102 0V7zm-3 1a1 1 0 10-2 0v3a1 1 0 102 0V8zM8 9a1 1 0 00-2 0v2a1 1 0 102 0V9z" clipRule="evenodd"/>
               </svg>
             </div>
             <div className="text-right">
-              <p className="text-3xl font-bold text-gray-800">{completionRate}%</p>
-              <p className={`text-xs mt-1 font-medium ${taskStats.overdue > 0 ? 'text-red-600' : 'text-gray-500'}`}>
+              <p className="text-2xl font-semibold text-gray-900">{completionRate}%</p>
+              <p className={`text-xs mt-0.5 font-medium ${taskStats.overdue > 0 ? 'text-red-600' : 'text-gray-500'}`}>
                 {taskStats.overdue > 0 ? `${taskStats.overdue} overdue` : 'On track'}
               </p>
             </div>
           </div>
-          <h3 className="text-sm font-semibold text-gray-700">Completion Rate</h3>
+          <h3 className="text-sm font-medium text-gray-600">Completion Rate</h3>
         </div>
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Project Status Chart */}
-        <div className="bg-white p-6 rounded-xl border border-gray-200 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-800 mb-6 flex items-center gap-2">
-            <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+        <div className="bg-white p-5 rounded-xl border border-gray-200">
+          <h3 className="text-base font-semibold text-gray-900 mb-5 flex items-center gap-2">
+            <svg className="w-5 h-5" style={{color: 'rgb(89, 86, 157)'}} fill="currentColor" viewBox="0 0 20 20">
               <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
             </svg>
             Project Status Distribution
           </h3>
-          <div className="space-y-4">
+          <div className="space-y-3">
             {/* Completed */}
             <div>
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                  <span className="text-sm font-medium text-gray-700">Completed</span>
+                  <div className="w-2.5 h-2.5 rounded-full bg-green-500"></div>
+                  <span className="text-sm font-medium text-gray-600">Completed</span>
                 </div>
-                <span className="text-sm font-bold text-gray-800">
+                <span className="text-sm font-semibold text-gray-900">
                   {projectStats.completed} ({projectStats.total > 0 ? ((projectStats.completed / projectStats.total) * 100).toFixed(0) : 0}%)
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                <div 
-                  className="bg-gradient-to-r from-green-500 to-green-600 h-3 rounded-full transition-all duration-500"
+              <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                <div
+                  className="bg-green-500 h-2 rounded-full transition-all duration-500"
                   style={{ width: `${projectStats.total > 0 ? (projectStats.completed / projectStats.total) * 100 : 0}%` }}
                 ></div>
               </div>
@@ -384,18 +383,18 @@ const UserDetails = () => {
 
             {/* In Progress */}
             <div>
-              <div className="flex items-center justify-between mb-2">
+              <div className="flex items-center justify-between mb-1.5">
                 <div className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-blue-500"></div>
-                  <span className="text-sm font-medium text-gray-700">In Progress</span>
+                  <div className="w-2.5 h-2.5 rounded-full bg-blue-500"></div>
+                  <span className="text-sm font-medium text-gray-600">In Progress</span>
                 </div>
-                <span className="text-sm font-bold text-gray-800">
+                <span className="text-sm font-semibold text-gray-900">
                   {projectStats.inProgress} ({projectStats.total > 0 ? ((projectStats.inProgress / projectStats.total) * 100).toFixed(0) : 0}%)
                 </span>
               </div>
-              <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
-                <div 
-                  className="bg-gradient-to-r from-blue-500 to-blue-600 h-3 rounded-full transition-all duration-500"
+              <div className="w-full bg-gray-100 rounded-full h-2 overflow-hidden">
+                <div
+                  className="bg-blue-500 h-2 rounded-full transition-all duration-500"
                   style={{ width: `${projectStats.total > 0 ? (projectStats.inProgress / projectStats.total) * 100 : 0}%` }}
                 ></div>
               </div>
@@ -795,21 +794,21 @@ const UserDetails = () => {
 
       {/* Recent Tasks (for developers and PMs) */}
       {(userType === 'developer' || userType === 'project-manager') && tasks.length > 0 && (
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-          <div className="p-6 border-b border-gray-200 flex items-center justify-between">
+        <div className="bg-white rounded-xl border border-gray-200">
+          <div className="p-5 border-b border-gray-200 flex items-center justify-between">
             <div>
-              <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
-                <svg className="w-6 h-6 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+              <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+                <svg className="w-5 h-5" style={{color: 'rgb(89, 86, 157)'}} fill="currentColor" viewBox="0 0 20 20">
                   <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
                   <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
                 </svg>
                 Recent Tasks
               </h2>
-              <p className="text-sm text-gray-500 mt-1">{tasks.length} total tasks</p>
+              <p className="text-xs text-gray-500 mt-0.5">{tasks.length} total tasks</p>
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-5">
             {tasks.slice(0, 9).map((task) => {
               const isOverdue = task.due_date && new Date(task.due_date) < new Date() && task.status !== 'completed';
               const daysUntilDue = task.due_date 
@@ -819,18 +818,18 @@ const UserDetails = () => {
               return (
                 <div
                   key={task.id}
-                  className="group bg-gradient-to-br from-gray-50 to-white p-4 rounded-lg border-2 border-gray-200 hover:border-blue-400 hover:shadow-md transition-all duration-200"
+                  className="group bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
                 >
-                  <div className="flex items-start justify-between mb-3">
+                  <div className="flex items-start justify-between mb-2.5">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="flex items-center gap-2 mb-1.5">
                         <div className={`w-2 h-2 rounded-full ${
                           task.status === 'completed' ? 'bg-green-500' :
                           task.status === 'in_progress' ? 'bg-blue-500' :
                           isOverdue ? 'bg-red-500' :
                           'bg-yellow-500'
                         }`}></div>
-                        <h3 className="text-sm font-bold text-gray-800 group-hover:text-blue-600 transition-colors line-clamp-2">
+                        <h3 className="text-sm font-semibold text-gray-900 line-clamp-2">
                           {task.title || task.name}
                         </h3>
                       </div>
@@ -838,22 +837,23 @@ const UserDetails = () => {
                   </div>
 
                   {task.description && (
-                    <p className="text-xs text-gray-600 mb-3 line-clamp-2">
-                      {task.description}
-                    </p>
+                    <div 
+                      className="text-xs text-gray-600 mb-2.5 line-clamp-2"
+                      dangerouslySetInnerHTML={{ __html: task.description }}
+                    />
                   )}
                   
                   <div className="space-y-2">
-                    <span className={`inline-block px-2 py-1 rounded text-xs font-bold ${
-                      task.status === 'completed' ? 'bg-green-100 text-green-700 border border-green-300' :
-                      task.status === 'in_progress' ? 'bg-blue-100 text-blue-700 border border-blue-300' :
-                      'bg-yellow-100 text-yellow-700 border border-yellow-300'
+                    <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
+                      task.status === 'completed' ? 'bg-green-50 text-green-700 border border-green-200' :
+                      task.status === 'in_progress' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
+                      'bg-yellow-50 text-yellow-700 border border-yellow-200'
                     }`}>
                       {task.status.replace('_', ' ').toUpperCase()}
                     </span>
                     
                     {task.due_date && (
-                      <div className={`flex items-center gap-1 text-xs font-semibold ${
+                      <div className={`flex items-center gap-1 text-xs font-medium ${
                         isOverdue ? 'text-red-600' :
                         daysUntilDue <= 3 ? 'text-orange-600' :
                         'text-gray-600'
@@ -862,7 +862,7 @@ const UserDetails = () => {
                           <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/>
                         </svg>
                         <span>{new Date(task.due_date).toLocaleDateString()}</span>
-                        {isOverdue && <span className="text-xs font-bold">(OVERDUE)</span>}
+                        {isOverdue && <span className="text-xs font-semibold">(OVERDUE)</span>}
                         {!isOverdue && daysUntilDue <= 3 && daysUntilDue >= 0 && (
                           <span className="text-xs">({daysUntilDue}d left)</span>
                         )}
@@ -871,10 +871,10 @@ const UserDetails = () => {
 
                     {task.priority && (
                       <div className="flex items-center gap-1">
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-bold ${
-                          task.priority === 'high' ? 'bg-red-100 text-red-700' :
-                          task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                          'bg-gray-100 text-gray-700'
+                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${
+                          task.priority === 'high' ? 'bg-red-50 text-red-700' :
+                          task.priority === 'medium' ? 'bg-yellow-50 text-yellow-700' :
+                          'bg-gray-50 text-gray-700'
                         }`}>
                           {task.priority === 'high' && (
                             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
