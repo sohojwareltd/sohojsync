@@ -3,7 +3,7 @@ import axiosInstance from '../utils/axiosInstance';
 import Loader from '../components/Loader';
 
 /**
- * Clients Page with CRUD operations
+ * Clients Page with CRUD operations - Modern Design
  */
 const Clients = () => {
   const [clients, setClients] = useState([]);
@@ -12,6 +12,7 @@ const Clients = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showModal, setShowModal] = useState(false);
   const [editingClient, setEditingClient] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -50,6 +51,7 @@ const Clients = () => {
 
   const openCreateModal = () => {
     setEditingClient(null);
+    setProfileImage(null);
     setFormData({ name: '', email: '', company: '', phone: '', address: '', website: '', notes: '' });
     setFormErrors({});
     setShowModal(true);
@@ -57,6 +59,7 @@ const Clients = () => {
 
   const openEditModal = (client) => {
     setEditingClient(client);
+    setProfileImage(client.user?.avatar || null);
     setFormData({
       name: client.user?.name || '',
       email: client.user?.email || '',
@@ -73,6 +76,7 @@ const Clients = () => {
   const closeModal = () => {
     setShowModal(false);
     setEditingClient(null);
+    setProfileImage(null);
     setFormData({ name: '', email: '', company: '', phone: '', address: '', website: '', notes: '' });
     setFormErrors({});
   };
@@ -89,6 +93,17 @@ const Clients = () => {
     }
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
+  };
+
+  const handleImageChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfileImage(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -131,22 +146,20 @@ const Clients = () => {
   }
 
   return (
-    <div className="space-y-5">
+    <div className="p-6 space-y-5" style={{ background: '#f8f9fa', minHeight: '100vh' }}>
       {/* Header */}
-      <div className="bg-white rounded-[12px] p-6 shadow-sm border" style={{borderColor: '#e9ecef', fontFamily: 'Inter, sans-serif'}}>
+      <div className="bg-white rounded-xl p-5 border" style={{ borderColor: '#e9ecef' }}>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 style={{fontSize: '28px', fontFamily: 'Inter, sans-serif'}} className="font-bold text-gray-800 flex items-center gap-2">
-              <span className="text-3xl">👥</span> Clients
-            </h1>
-            <p style={{fontSize: '14px', fontFamily: 'Inter, sans-serif'}} className="text-gray-500 mt-1">Manage your client accounts and credentials</p>
+            <h1 className="text-2xl font-semibold text-gray-900">Clients</h1>
+            <p className="text-sm text-gray-600 mt-1">Manage your client accounts and credentials</p>
           </div>
           <button 
             onClick={openCreateModal}
-            className="px-5 py-2.5 rounded-[8px] font-medium text-white shadow-md hover:shadow-lg transition-all flex items-center gap-2" 
-            style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', fontSize: '14px', fontFamily: 'Inter, sans-serif'}}
+            className="px-4 py-2 rounded-lg text-sm font-medium text-white shadow-sm hover:shadow-md transition-all flex items-center gap-2" 
+            style={{ background: 'rgb(89, 86, 157)' }}
           >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
             </svg>
             New Client
@@ -154,49 +167,49 @@ const Clients = () => {
         </div>
       </div>
 
-      {/* Filters and View Toggle */}
-      <div className="bg-white rounded-[12px] p-6 shadow-sm border" style={{borderColor: '#e9ecef', fontFamily: 'Inter, sans-serif'}}>
-        <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
-          {/* Search */}
-          <div className="flex-1 max-w-md">
+      {/* Search and Filters */}
+      <div className="bg-white rounded-xl p-5 border" style={{ borderColor: '#e9ecef' }}>
+        <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center justify-between">
+          <div className="flex-1">
             <div className="relative">
+              <svg className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
               <input
                 type="text"
                 placeholder="Search clients..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border rounded-[8px] focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                style={{borderColor: '#e9ecef', fontSize: '14px', fontFamily: 'Inter, sans-serif'}}
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 hover:border-gray-300 transition-colors text-sm"
               />
-              <svg className="w-5 h-5 text-gray-400 absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-              </svg>
             </div>
           </div>
 
           {/* View Toggle */}
-          <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+          <div className="flex items-center gap-2">
             <button
               onClick={() => setViewMode('grid')}
-              className={`px-3 py-2 rounded-lg transition-all ${
+              className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
                 viewMode === 'grid'
-                  ? 'bg-white text-purple-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-800'
+                  ? 'text-white border'
+                  : 'text-gray-700 hover:bg-gray-100 border-gray-300'
               }`}
+              style={viewMode === 'grid' ? { background: 'rgb(89, 86, 157)', borderColor: 'rgb(89, 86, 157)' } : {}}
             >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
               </svg>
             </button>
             <button
               onClick={() => setViewMode('table')}
-              className={`px-3 py-2 rounded-lg transition-all ${
+              className={`px-3 py-2 rounded-lg border text-sm font-medium transition-all ${
                 viewMode === 'table'
-                  ? 'bg-white text-purple-600 shadow-sm'
-                  : 'text-gray-600 hover:text-gray-800'
+                  ? 'text-white border'
+                  : 'text-gray-700 hover:bg-gray-100 border-gray-300'
               }`}
+              style={viewMode === 'table' ? { background: 'rgb(89, 86, 157)', borderColor: 'rgb(89, 86, 157)' } : {}}
             >
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+              <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"/>
               </svg>
             </button>
@@ -209,132 +222,123 @@ const Clients = () => {
         <>
           {/* Grid View */}
           {viewMode === 'grid' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {filteredClients.map((client) => {
-                return (
-                  <div
-                    key={client.id}
-                    className={"bg-white border border-gray-200 rounded-xl p-6 hover:shadow-xl transition-all group"}
-                    style={{ borderTopWidth: '4px', borderTopColor: '#59569D' }}
-                  >
-                    <div className="flex items-start justify-between mb-4">
-                      <div className="flex items-center gap-3">
-                        <div className={"w-12 h-12 rounded-full flex items-center justify-center text-lg font-bold group-hover:scale-110 transition-transform"}
-                             style={{ background: '#59569D20', color: '#59569D' }}>
-                          {client.user?.name?.charAt(0).toUpperCase()}
-                        </div>
-                        <div>
-                          <h3 className="text-lg font-bold text-gray-800 group-hover:text-gray-900 transition-colors">
-                            {client.user?.name}
-                          </h3>
-                          <p className="text-xs text-gray-500">{client.user?.email}</p>
-                        </div>
-                      </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {filteredClients.map((client) => (
+                <div key={client.id} className="bg-white rounded-xl border p-5 hover:shadow-md transition-all" style={{ borderColor: '#e5e7eb' }}>
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-full flex-shrink-0 overflow-hidden flex items-center justify-center text-sm font-bold text-white" style={{ background: 'rgb(89, 86, 157)' }}>
+                      {client.user?.avatar ? (
+                        <img src={client.user.avatar} alt={client.user?.name} className="w-full h-full object-cover" />
+                      ) : (
+                        client.user?.name?.charAt(0).toUpperCase()
+                      )}
                     </div>
-                    
-                    {client.company && (
-                      <div className="mb-3 flex items-center gap-2 text-sm text-gray-600">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M4 4a2 2 0 012-2h8a2 2 0 012 2v12a1 1 0 110 2h-3a1 1 0 01-1-1v-2a1 1 0 00-1-1H9a1 1 0 00-1 1v2a1 1 0 01-1 1H4a1 1 0 110-2V4zm3 1h2v2H7V5zm2 4H7v2h2V9zm2-4h2v2h-2V5zm2 4h-2v2h2V9z" clipRule="evenodd"/>
-                        </svg>
-                        {client.company}
-                      </div>
-                    )}
-
-                    {client.phone && (
-                      <div className="mb-3 flex items-center gap-2 text-sm text-gray-600">
-                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"/>
-                        </svg>
-                        {client.phone}
-                      </div>
-                    )}
-                    
-                    <div className="flex items-center gap-2 pt-4 border-t border-gray-200">
-                      <button 
-                        onClick={() => openEditModal(client)}
-                        className="flex-1 py-2 rounded-lg text-sm font-medium bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors"
-                      >
-                        Edit
-                      </button>
-                      <button 
-                        onClick={() => handleDelete(client.id)}
-                        className="flex-1 py-2 rounded-lg text-sm font-medium bg-red-50 text-red-600 hover:bg-red-100 transition-colors"
-                      >
-                        Delete
-                      </button>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-sm font-semibold text-gray-900 truncate">{client.user?.name}</h3>
+                      <p className="text-xs text-gray-500 truncate">{client.user?.email}</p>
                     </div>
                   </div>
-                );
-              })}
+
+                  {client.company && (
+                    <div className="mb-3 text-xs text-gray-600">
+                      <span className="font-medium">Company:</span> {client.company}
+                    </div>
+                  )}
+
+                  {client.phone && (
+                    <div className="mb-3 text-xs text-gray-600">
+                      <span className="font-medium">Phone:</span> {client.phone}
+                    </div>
+                  )}
+
+                  <div className="flex gap-2 pt-4 border-t justify-end" style={{ borderColor: '#e5e7eb' }}>
+                    <button 
+                      onClick={() => openEditModal(client)}
+                      className="py-2 px-3 rounded-lg text-xs font-medium text-white transition-all hover:shadow-sm"
+                      style={{ background: 'rgb(242, 82, 146)' }}
+                    >
+                      Edit
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(client.id)}
+                      className="py-2 px-3 rounded-lg text-xs font-medium border transition-colors hover:bg-opacity-5"
+                      style={{ color: 'rgb(242, 82, 146)', borderColor: 'rgb(242, 82, 146)' }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+              ))}
             </div>
           )}
 
           {/* Table View */}
           {viewMode === 'table' && (
-            <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-white rounded-xl border overflow-hidden" style={{ borderColor: '#e5e7eb' }}>
               <div className="overflow-x-auto">
-                <table className="w-full">
-                  <thead className="bg-gray-50 border-b-2 border-gray-200">
+                <table className="min-w-full text-sm">
+                  <thead className="bg-gray-50 text-gray-600 font-medium" style={{ borderBottomColor: '#e5e7eb' }}>
                     <tr>
-                      <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">Client</th>
-                      <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">Company</th>
-                      <th className="text-left py-4 px-6 text-sm font-semibold text-gray-700">Phone</th>
-                      <th className="text-center py-4 px-6 text-sm font-semibold text-gray-700">Created</th>
-                      <th className="text-center py-4 px-6 text-sm font-semibold text-gray-700">Actions</th>
+                      <th className="text-left px-4 py-3">Client</th>
+                      <th className="text-left px-4 py-3">Company</th>
+                      <th className="text-left px-4 py-3">Phone</th>
+                      <th className="text-left px-4 py-3">Created</th>
+                      <th className="text-center px-4 py-3">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-100">
-                    {filteredClients.map((client) => {
-                      return (
-                        <tr 
-                          key={client.id} 
-                          className={`transition-colors group hover:bg-gray-50`}
-                        >
-                          <td className={`py-4 px-6 border-l-4`} style={{ borderLeftColor: '#59569D' }}>
-                            <div>
-                              <p className="font-semibold text-gray-800">{client.user?.name}</p>
-                              <p className="text-sm text-gray-500">{client.user?.email}</p>
+                    {filteredClients.map((client) => (
+                      <tr key={client.id} className="hover:bg-gray-50 transition-colors">
+                        <td className="px-4 py-3">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-full flex-shrink-0 overflow-hidden flex items-center justify-center text-xs font-bold text-white" style={{ background: 'rgb(89, 86, 157)' }}>
+                              {client.user?.avatar ? (
+                                <img src={client.user.avatar} alt={client.user?.name} className="w-full h-full object-cover" />
+                              ) : (
+                                client.user?.name?.charAt(0).toUpperCase()
+                              )}
                             </div>
-                          </td>
-                          <td className="py-4 px-6">
-                            <p className="text-sm text-gray-600">{client.company || '-'}</p>
-                          </td>
-                          <td className="py-4 px-6">
-                            <p className="text-sm text-gray-600">{client.phone || '-'}</p>
-                          </td>
-                          <td className="py-4 px-6 text-center text-sm text-gray-500">
-                            {new Date(client.created_at).toLocaleDateString('en-US', { 
-                              month: 'short', 
-                              day: 'numeric',
-                              year: 'numeric'
-                            })}
-                          </td>
-                          <td className="py-4 px-6">
-                            <div className="flex items-center justify-center gap-2">
-                              <button 
-                                onClick={() => openEditModal(client)}
-                                className="p-2 hover:bg-blue-100 rounded-lg transition-colors text-blue-600" 
-                                title="Edit"
-                              >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                                </svg>
-                              </button>
-                              <button 
-                                onClick={() => handleDelete(client.id)}
-                                className="p-2 hover:bg-red-100 rounded-lg transition-colors text-red-600" 
-                                title="Delete"
-                              >
-                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                                </svg>
-                              </button>
+                            <div className="min-w-0">
+                              <p className="text-sm font-medium text-gray-900">{client.user?.name}</p>
+                              <p className="text-xs text-gray-500">{client.user?.email}</p>
                             </div>
-                          </td>
-                        </tr>
-                      );
-                    })}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 text-gray-700">{client.company || '-'}</td>
+                        <td className="px-4 py-3 text-gray-700">{client.phone || '-'}</td>
+                        <td className="px-4 py-3 text-gray-600 text-xs">
+                          {new Date(client.created_at).toLocaleDateString('en-US', { 
+                            month: 'short', 
+                            day: 'numeric',
+                            year: 'numeric'
+                          })}
+                        </td>
+                        <td className="px-4 py-3">
+                          <div className="flex items-center justify-end gap-2">
+                            <button 
+                              onClick={() => openEditModal(client)}
+                              className="p-2 rounded-lg transition-colors"
+                              title="Edit"
+                              style={{ color: 'rgb(242, 82, 146)' }}
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                              </svg>
+                            </button>
+                            <button 
+                              onClick={() => handleDelete(client.id)}
+                              className="p-2 rounded-lg transition-colors"
+                              title="Delete"
+                              style={{ color: 'rgb(242, 82, 146)' }}
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                              </svg>
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -342,20 +346,20 @@ const Clients = () => {
           )}
         </>
       ) : (
-        <div className="bg-white rounded-xl p-16 text-center shadow-sm border border-gray-100">
-          <div className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4" style={{background: '#59569D20'}}>
-            <svg className="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" style={{color: '#59569D'}}>
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+        <div className="bg-white rounded-xl p-12 text-center border" style={{ borderColor: '#e5e7eb' }}>
+          <div className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4" style={{ background: 'rgba(89, 86, 157, 0.1)' }}>
+            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'rgb(89, 86, 157)' }}>
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
             </svg>
           </div>
-          <h3 className="text-xl font-bold text-gray-800 mb-2">No Clients Found</h3>
-          <p className="text-gray-500 mb-6">
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Clients Found</h3>
+          <p className="text-sm text-gray-600 mb-4">
             {searchQuery ? 'Try adjusting your search' : 'Get started by creating your first client'}
           </p>
           <button 
             onClick={openCreateModal}
-            className="px-6 py-3 rounded-xl font-medium text-white shadow-md hover:shadow-lg transition-all" 
-            style={{background: '#59569D'}}
+            className="px-4 py-2 rounded-lg text-sm font-medium text-white shadow-sm hover:shadow-md transition-all"
+            style={{ background: 'rgb(89, 86, 157)' }}
           >
             + Create Client
           </button>
@@ -365,94 +369,111 @@ const Clients = () => {
       {/* Create/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border" style={{ borderColor: '#e5e7eb' }}>
             {/* Modal Header */}
-            <div className="p-6 border-b border-gray-200">
+            <div className="p-6 border-b" style={{ borderColor: '#e5e7eb' }}>
               <div className="flex items-center justify-between">
-                <h2 className="text-2xl font-bold text-gray-800">
-                  {editingClient ? 'Edit Client' : 'Create New Client'}
-                </h2>
+                <div>
+                  <h2 className="text-xl font-semibold text-gray-900">
+                    {editingClient ? 'Edit Client' : 'Create New Client'}
+                  </h2>
+                  {!editingClient && (
+                    <p className="text-xs text-gray-600 mt-1">
+                      Login credentials will be auto-generated and sent via email
+                    </p>
+                  )}
+                </div>
                 <button
                   onClick={closeModal}
                   className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
                 >
-                  <svg className="w-6 h-6 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
                   </svg>
                 </button>
               </div>
-              {!editingClient && (
-                <p className="text-sm text-gray-500 mt-2">
-                  📧 Login credentials will be auto-generated and sent to the client's email
-                </p>
-              )}
             </div>
 
             {/* Modal Body */}
             <form onSubmit={handleSubmit} className="p-6 space-y-4">
+              {/* Profile Image */}
+              <div className="flex justify-center mb-4">
+                <div className="relative">
+                  <div className="w-24 h-24 rounded-full flex items-center justify-center text-2xl font-bold text-white overflow-hidden" style={{ background: 'rgb(89, 86, 157)' }}>
+                    {profileImage ? (
+                      <img src={profileImage} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      formData.name?.charAt(0).toUpperCase() || '+'
+                    )}
+                  </div>
+                  <label className="absolute bottom-0 right-0 p-2 rounded-full bg-white border-2 border-gray-200 cursor-pointer hover:bg-gray-50 transition-colors" style={{ borderColor: 'rgb(89, 86, 157)' }}>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: 'rgb(89, 86, 157)' }}>
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
+                  </label>
+                </div>
+              </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Name */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Full Name <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-gray-400 text-sm ${
                       formErrors.name ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="John Doe"
                   />
                   {formErrors.name && (
-                    <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>
+                    <p className="text-red-500 text-xs mt-1">{formErrors.name}</p>
                   )}
                 </div>
 
                 {/* Email */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
                     Email <span className="text-red-500">*</span>
                   </label>
                   <input
                     type="email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 ${
+                    className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:border-gray-400 text-sm ${
                       formErrors.email ? 'border-red-500' : 'border-gray-300'
                     }`}
                     placeholder="john@example.com"
                   />
                   {formErrors.email && (
-                    <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>
+                    <p className="text-red-500 text-xs mt-1">{formErrors.email}</p>
                   )}
                 </div>
 
                 {/* Company */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Company
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
                   <input
                     type="text"
                     value={formData.company}
                     onChange={(e) => setFormData({ ...formData, company: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 text-sm"
                     placeholder="Company Name"
                   />
                 </div>
 
                 {/* Phone */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Phone
-                  </label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
                   <input
                     type="text"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 text-sm"
                     placeholder="+1234567890"
                   />
                 </div>
@@ -460,27 +481,23 @@ const Clients = () => {
 
               {/* Website */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Website
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Website</label>
                 <input
                   type="url"
                   value={formData.website}
                   onChange={(e) => setFormData({ ...formData, website: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 text-sm"
                   placeholder="https://example.com"
                 />
               </div>
 
               {/* Address */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Address
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
                 <textarea
                   value={formData.address}
                   onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 text-sm resize-none"
                   placeholder="Full address"
                   rows="2"
                 />
@@ -488,13 +505,11 @@ const Clients = () => {
 
               {/* Notes */}
               <div>
-                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                  Notes
-                </label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
                 <textarea
                   value={formData.notes}
                   onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-                  className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-gray-400 text-sm resize-none"
                   placeholder="Additional notes"
                   rows="3"
                 />
@@ -502,25 +517,25 @@ const Clients = () => {
 
               {/* Error Message */}
               {formErrors.submit && (
-                <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg">
+                <div className="bg-red-50 border border-red-200 text-red-700 px-3 py-2 rounded-lg text-xs">
                   {formErrors.submit}
                 </div>
               )}
 
               {/* Modal Footer */}
-              <div className="flex items-center gap-3 pt-4">
+              <div className="flex items-center gap-2 pt-4 border-t" style={{ borderColor: '#e5e7eb' }}>
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors"
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg font-medium text-gray-700 hover:bg-gray-50 transition-colors text-sm"
                   disabled={submitting}
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 px-4 py-3 rounded-lg font-medium text-white shadow-md hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
-                  style={{background: 'rgb(155 2 50 / 76%)'}}
+                  className="flex-1 px-4 py-2 rounded-lg font-medium text-white shadow-sm hover:shadow-md transition-all text-sm disabled:opacity-50"
+                  style={{ background: 'rgb(89, 86, 157)' }}
                   disabled={submitting}
                 >
                   {submitting ? 'Saving...' : editingClient ? 'Update Client' : 'Create Client'}

@@ -61,6 +61,14 @@ class Task extends Model
     }
 
     /**
+     * Get the workflow status (alias for API compatibility).
+     */
+    public function workflow_status()
+    {
+        return $this->belongsTo(WorkflowStatus::class);
+    }
+
+    /**
      * Get the assigned users (many-to-many).
      */
     public function assignedUsers()
@@ -74,6 +82,14 @@ class Task extends Model
      * Get the task assignments.
      */
     public function assignments()
+    {
+        return $this->hasMany(TaskAssignment::class);
+    }
+
+    /**
+     * Get the task assignments (alias for API compatibility).
+     */
+    public function task_assignments()
     {
         return $this->hasMany(TaskAssignment::class);
     }

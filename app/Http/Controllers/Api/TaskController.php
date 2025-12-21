@@ -29,18 +29,33 @@ class TaskController extends Controller
         
         if ($user->role === 'admin') {
             // Admin sees all tasks
-            $query->with(['project', 'assignedUsers']);
+            $query->with([
+                'project' => function($q) { $q->with(['members', 'projectManager']); },
+                'assignedUsers',
+                'task_assignments' => function($q) { $q->with('user'); },
+                'workflow_status'
+            ]);
         } elseif ($user->role === 'project_manager') {
             // PM sees tasks from projects they manage
             $query->whereHas('project', function ($q) use ($user) {
                 $q->where('project_manager_id', $user->id);
-            })->with(['project', 'assignedUsers']);
+            })->with([
+                'project' => function($q) { $q->with(['members', 'projectManager']); },
+                'assignedUsers',
+                'task_assignments' => function($q) { $q->with('user'); },
+                'workflow_status'
+            ]);
         } elseif ($user->role === 'developer') {
             // Developer sees ALL tasks from projects where they are members
             // (not just tasks explicitly assigned to them)
             $query->whereHas('project.members', function ($q) use ($user) {
                 $q->where('user_id', $user->id);
-            })->with(['project', 'assignedUsers']);
+            })->with([
+                'project' => function($q) { $q->with(['members', 'projectManager']); },
+                'assignedUsers',
+                'task_assignments' => function($q) { $q->with('user'); },
+                'workflow_status'
+            ]);
             
             // Debug logging
             \Log::info('Developer Tasks Query', [
@@ -51,7 +66,12 @@ class TaskController extends Controller
             // Client sees tasks from their projects
             $query->whereHas('project', function ($q) use ($user) {
                 $q->where('client_id', $user->id);
-            })->with(['project', 'assignedUsers']);
+            })->with([
+                'project' => function($q) { $q->with(['members', 'projectManager']); },
+                'assignedUsers',
+                'task_assignments' => function($q) { $q->with('user'); },
+                'workflow_status'
+            ]);
         }
 
         // Filter by status if provided

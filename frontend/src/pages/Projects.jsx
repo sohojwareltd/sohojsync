@@ -712,7 +712,8 @@ const Projects = () => {
                       <div className="flex items-center gap-1.5" onClick={(e) => e.preventDefault()}>
                         <button 
                           onClick={(e) => { e.preventDefault(); openEditModal(project); }}
-                          className="p-1.5 hover:bg-gray-100 rounded-md transition-colors text-gray-500 hover:text-gray-700 border border-gray-200"
+                          className="p-1.5 rounded-md transition-colors border"
+                          style={{ color: 'rgb(242, 82, 146)', borderColor: 'rgb(242, 82, 146)' }}
                           title="Edit"
                         >
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -721,7 +722,8 @@ const Projects = () => {
                         </button>
                         <button 
                           onClick={(e) => { e.preventDefault(); openDeleteModal(project); }}
-                          className="p-1.5 hover:bg-red-50 rounded-md transition-colors text-gray-500 hover:text-red-600 border border-gray-200"
+                          className="p-1.5 rounded-md transition-colors border"
+                          style={{ color: 'rgb(242, 82, 146)', borderColor: 'rgb(242, 82, 146)' }}
                           title="Delete"
                         >
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -880,7 +882,8 @@ const Projects = () => {
                             <div className="flex items-center justify-center gap-1">
                               <button 
                                 onClick={(e) => { e.stopPropagation(); openEditModal(project); }}
-                                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+                                className="p-1.5 rounded-lg transition-colors"
+                                style={{ color: 'rgb(242, 82, 146)' }}
                                 title="Edit"
                               >
                                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -889,7 +892,8 @@ const Projects = () => {
                               </button>
                               <button 
                                 onClick={(e) => { e.stopPropagation(); openDeleteModal(project); }}
-                                className="p-1.5 hover:bg-gray-100 rounded-lg transition-colors text-gray-600"
+                                className="p-1.5 rounded-lg transition-colors"
+                                style={{ color: 'rgb(242, 82, 146)' }}
                                 title="Delete"
                               >
                                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

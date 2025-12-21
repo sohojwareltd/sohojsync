@@ -807,95 +807,74 @@ const UserDetails = () => {
               <p className="text-xs text-gray-500 mt-0.5">{tasks.length} total tasks</p>
             </div>
           </div>
-          
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-5">
-            {tasks.slice(0, 9).map((task) => {
-              const isOverdue = task.due_date && new Date(task.due_date) < new Date() && task.status !== 'completed';
-              const daysUntilDue = task.due_date 
-                ? Math.ceil((new Date(task.due_date) - new Date()) / (1000 * 60 * 60 * 24))
-                : null;
-              
-              return (
-                <div
-                  key={task.id}
-                  className="group bg-white p-4 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
-                >
-                  <div className="flex items-start justify-between mb-2.5">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1.5">
-                        <div className={`w-2 h-2 rounded-full ${
-                          task.status === 'completed' ? 'bg-green-500' :
-                          task.status === 'in_progress' ? 'bg-blue-500' :
-                          isOverdue ? 'bg-red-500' :
-                          'bg-yellow-500'
-                        }`}></div>
-                        <h3 className="text-sm font-semibold text-gray-900 line-clamp-2">
-                          {task.title || task.name}
-                        </h3>
-                      </div>
-                    </div>
-                  </div>
 
-                  {task.description && (
-                    <div 
-                      className="text-xs text-gray-600 mb-2.5 line-clamp-2"
-                      dangerouslySetInnerHTML={{ __html: task.description }}
-                    />
-                  )}
-                  
-                  <div className="space-y-2">
-                    <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
-                      task.status === 'completed' ? 'bg-green-50 text-green-700 border border-green-200' :
-                      task.status === 'in_progress' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
-                      'bg-yellow-50 text-yellow-700 border border-yellow-200'
-                    }`}>
-                      {task.status.replace('_', ' ').toUpperCase()}
-                    </span>
-                    
-                    {task.due_date && (
-                      <div className={`flex items-center gap-1 text-xs font-medium ${
-                        isOverdue ? 'text-red-600' :
-                        daysUntilDue <= 3 ? 'text-orange-600' :
-                        'text-gray-600'
-                      }`}>
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/>
-                        </svg>
-                        <span>{new Date(task.due_date).toLocaleDateString()}</span>
-                        {isOverdue && <span className="text-xs font-semibold">(OVERDUE)</span>}
-                        {!isOverdue && daysUntilDue <= 3 && daysUntilDue >= 0 && (
-                          <span className="text-xs">({daysUntilDue}d left)</span>
-                        )}
-                      </div>
-                    )}
+          <div className="overflow-x-auto">
+            <table className="min-w-full text-sm">
+              <thead className="bg-gray-50 text-gray-600 font-medium">
+                <tr>
+                  <th className="text-left px-4 py-3">Task</th>
+                  <th className="text-left px-4 py-3">Status</th>
+                  <th className="text-left px-4 py-3">Type</th>
+                  <th className="text-left px-4 py-3">Due date</th>
+                  <th className="text-left px-4 py-3">Responsible</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {tasks.slice(0, 12).map((task) => {
+                  const isOverdue = task.due_date && new Date(task.due_date) < new Date() && task.status !== 'completed';
+                  const statusClasses = task.status === 'completed'
+                    ? 'text-green-700 bg-green-50 border-green-200'
+                    : task.status === 'in_progress'
+                      ? 'text-blue-700 bg-blue-50 border-blue-200'
+                      : 'text-yellow-700 bg-yellow-50 border-yellow-200';
+                  const dueDateText = task.due_date ? new Date(task.due_date).toLocaleDateString() : '—';
+                  const responsible = task.assignee?.name || user.name;
 
-                    {task.priority && (
-                      <div className="flex items-center gap-1">
-                        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs font-medium ${
-                          task.priority === 'high' ? 'bg-red-50 text-red-700' :
-                          task.priority === 'medium' ? 'bg-yellow-50 text-yellow-700' :
-                          'bg-gray-50 text-gray-700'
-                        }`}>
-                          {task.priority === 'high' && (
-                            <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd"/>
-                            </svg>
+                  return (
+                    <tr key={task.id} className="hover:bg-gray-50">
+                      <td className="px-4 py-3 align-top">
+                        <div className="flex flex-col gap-1">
+                          <div className="flex items-center gap-2 text-gray-900 font-medium">
+                            <span className="inline-block w-2 h-2 rounded-full bg-gray-300" aria-hidden="true"></span>
+                            <span className="line-clamp-2">{task.title || task.name}</span>
+                          </div>
+                          {task.description && (
+                            <div
+                              className="text-xs text-gray-600 line-clamp-2"
+                              dangerouslySetInnerHTML={{ __html: task.description }}
+                            />
                           )}
-                          {task.priority.toUpperCase()}
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 align-top">
+                        <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs border ${statusClasses}`}>
+                          {task.status?.replace('_', ' ') || 'New task'}
                         </span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
+                      </td>
+                      <td className="px-4 py-3 align-top text-gray-700">
+                        {task.type || 'Operational'}
+                      </td>
+                      <td className="px-4 py-3 align-top text-gray-700">
+                        <div className="flex items-center gap-1 text-xs font-medium">
+                          <svg className="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                          </svg>
+                          <span className={isOverdue ? 'text-red-600' : 'text-gray-700'}>{dueDateText}</span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-3 align-top text-gray-700">
+                        {responsible || '—'}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
           </div>
-          
-          {tasks.length > 9 && (
-            <div className="p-4 border-t border-gray-200 text-center">
-              <p className="text-sm text-gray-600">
-                Showing 9 of {tasks.length} tasks
-              </p>
+
+          {tasks.length > 12 && (
+            <div className="p-4 border-t border-gray-200 text-center text-sm text-gray-600">
+              Showing 12 of {tasks.length} tasks
             </div>
           )}
         </div>
