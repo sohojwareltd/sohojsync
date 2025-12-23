@@ -112,20 +112,23 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        // Logout and clear session
-        if (Auth::check()) {
-            Auth::guard('web')->logout();
+        // Force logout regardless of state
+        Auth::guard('web')->logout();
+        
+        // Invalidate session
+        if ($request->hasSession()) {
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+            $request->session()->flush();
         }
         
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        // Create response with cookie clearing
+        $response = response()->json(['message' => 'Logged out successfully']);
         
-        // Clear all cookies
-        $response = response()->noContent();
-        
-        // Force clear Laravel session cookie
-        $response->withCookie(cookie()->forget('laravel_session'));
-        $response->withCookie(cookie()->forget('XSRF-TOKEN'));
+        // Clear all authentication cookies
+        foreach (['laravel_session', 'XSRF-TOKEN', session()->getName()] as $cookie) {
+            $response->withCookie(cookie()->forget($cookie));
+        }
 
         return $response;
     }
