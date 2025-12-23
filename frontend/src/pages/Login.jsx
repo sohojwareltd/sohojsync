@@ -69,7 +69,7 @@ const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4 py-8" style={{background: 'linear-gradient(135deg, #4a3a5e 0%, #b56e84 100%)'}}>
+    <div className="min-h-screen flex items-center justify-center px-4 py-8" style={{background: '#f5f6fa'}}>
       {/* Subtle Background Pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0" style={{backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '40px 40px'}}></div>
@@ -80,7 +80,7 @@ const Login = () => {
         <div className="bg-white rounded-2xl shadow-xl p-8">
           {/* Simple Logo/Brand */}
           <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl mb-4" style={{background: 'linear-gradient(135deg, #4a3a5e 0%, #b56e84 100%)'}}>
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-xl mb-4" style={{background: 'rgb(89, 86, 157)'}}>
               <svg className="w-8 h-8 text-white" fill="currentColor" viewBox="0 0 20 20">
                 <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
               </svg>
@@ -132,7 +132,7 @@ const Login = () => {
               checked={formData.remember}
               onChange={handleChange}
               className="w-4 h-4 border-gray-300 rounded focus:ring-2"
-              style={{accentColor: '#b56e84'}}
+              style={{accentColor: 'rgb(89, 86, 157)'}}
             />
             <label htmlFor="remember" className="ml-2 text-sm text-gray-600">
               Remember me
@@ -143,7 +143,7 @@ const Login = () => {
               type="submit"
               disabled={loading}
               className="w-full text-white font-medium py-3 rounded-xl hover:opacity-90 transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              style={{background: 'linear-gradient(135deg, #b56e84 0%, #d48ba6 100%)'}}
+              style={{background: 'rgb(89, 86, 157)'}}
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
