@@ -9,7 +9,7 @@ export default defineConfig({
     strictPort: true,
     host: true,
   },
-  base: '/',
+    base: '/build/',
   build: {
     outDir: '../public/build',
     emptyOutDir: true,
