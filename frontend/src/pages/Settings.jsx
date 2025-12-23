@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import Card from '../components/Card';
 import PageHeader from '../components/PageHeader';
@@ -10,9 +11,11 @@ import Button from '../components/Button';
  */
 const Settings = () => {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
 
   const handleLogout = async () => {
     await logout();
+    navigate('/login');
   };
 
   return (
