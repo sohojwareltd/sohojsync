@@ -10,6 +10,11 @@ Route::get('/', function () {
     ]);
 })->name('home');
 
+// React App Route
+Route::get('/app', function () {
+    return view('react-app');
+})->name('react-app');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');

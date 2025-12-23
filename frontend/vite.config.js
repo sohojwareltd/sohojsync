@@ -10,4 +10,8 @@ export default defineConfig({
     host: true,
   },
   base: '/',
+  build: {
+    outDir: '../public/build',
+    emptyOutDir: true,
+  },
 });
