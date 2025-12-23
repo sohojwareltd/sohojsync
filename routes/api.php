@@ -32,6 +32,18 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout']); // Logout doesn't require auth
 
+// Debug route (remove in production)
+Route::get('/debug-session', function(Request $request) {
+    return response()->json([
+        'authenticated' => Auth::check(),
+        'user_id' => Auth::id(),
+        'session_id' => session()->getId(),
+        'session_name' => config('session.cookie'),
+        'session_domain' => config('session.domain'),
+        'has_session' => $request->hasSession(),
+    ]);
+});
+
 // Protected routes - require authentication via Sanctum
 Route::middleware('auth:sanctum')->group(function () {
     // Auth routes

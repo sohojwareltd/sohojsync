@@ -112,22 +112,35 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        // Force logout regardless of state
+        // Get session name before logout
+        $sessionName = config('session.cookie');
+        
+        // Force logout
         Auth::guard('web')->logout();
         
-        // Invalidate session
+        // Destroy session
         if ($request->hasSession()) {
             $request->session()->invalidate();
             $request->session()->regenerateToken();
-            $request->session()->flush();
         }
         
-        // Create response with cookie clearing
-        $response = response()->json(['message' => 'Logged out successfully']);
+        // Create response
+        $response = response()->json(['message' => 'Logged out successfully'], 200);
         
-        // Clear all authentication cookies
-        foreach (['laravel_session', 'XSRF-TOKEN', session()->getName()] as $cookie) {
-            $response->withCookie(cookie()->forget($cookie));
+        // Clear cookies - try multiple names
+        $cookiesToClear = [
+            $sessionName,
+            'laravel_session',
+            'XSRF-TOKEN',
+            config('session.cookie', 'laravel_session'),
+        ];
+        
+        $domain = config('session.domain');
+        $path = config('session.path', '/');
+        $secure = config('session.secure_cookie', false);
+        
+        foreach (array_unique($cookiesToClear) as $cookieName) {
+            $response->withCookie(cookie($cookieName, '', -1, $path, $domain, $secure, true));
         }
 
         return $response;
