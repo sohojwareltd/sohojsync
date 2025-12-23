@@ -4,16 +4,8 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
-Route::get('/', function () {
-    return Inertia::render('welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
-})->name('home');
-
-// React App Route
-Route::get('/app', function () {
-    return view('react-app');
-})->name('react-app');
+// Serve React app at root
+Route::view('/', 'react-app')->name('react-app');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
