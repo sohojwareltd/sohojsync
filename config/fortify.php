@@ -130,7 +130,8 @@ return [
     |
     */
 
-    'views' => true,
+    // Disable Fortify's Blade views so SPA can handle routes like /login
+    'views' => false,
 
     /*
     |--------------------------------------------------------------------------
