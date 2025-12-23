@@ -85,15 +85,24 @@ export const AuthProvider = ({ children }) => {
    */
   const logout = async () => {
     try {
+      // Call logout endpoint
       await axiosInstance.post('/logout');
-      setUser(null);
     } catch (error) {
+      // Even if logout fails, clear local state
       console.error('Logout error:', error);
-      setUser(null);
     } finally {
-      // Refetch to confirm user is cleared
-      const response = await axiosInstance.get('/me').catch(() => null);
-      if (!response) {
+      // Always clear user state and force re-check
+      setUser(null);
+      
+      // Clear any cached user data
+      try {
+        await axiosInstance.get('/me');
+        // If we get here, user is still authenticated somehow
+        // Force another logout attempt
+        await axiosInstance.post('/logout').catch(() => {});
+        setUser(null);
+      } catch {
+        // User is properly logged out (401 expected)
         setUser(null);
       }
     }
