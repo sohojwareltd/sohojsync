@@ -7,6 +7,9 @@ use Laravel\Fortify\Features;
 // Serve React app at root
 Route::view('/', 'react-app')->name('react-app');
 
+// Explicitly serve SPA for /login to avoid Fortify blade view
+Route::view('/login', 'react-app');
+
 // Catch-all to serve React for non-API routes (ensures login page at /)
 Route::view('/{path}', 'react-app')
     ->where('path', '^(?!api|storage|vendor|horizon|nova|telescope|_debugbar).*$');
