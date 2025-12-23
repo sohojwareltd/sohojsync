@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { MenuIcon, LogoutIcon } from '../components/Icons';
 import { getInitials } from '../utils/helpers';
@@ -13,12 +12,10 @@ import NotificationDropdown from '../components/NotificationDropdown';
  */
 const CommonHeader = ({ pageTitle }) => {
   const { user, logout } = useAuth();
-  const navigate = useNavigate();
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const handleLogout = async () => {
     await logout();
-    navigate('/login');
   };
 
   return (

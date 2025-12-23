@@ -1,5 +1,5 @@
 import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { HomeIcon, ProjectsIcon, TasksIcon, SettingsIcon, LogoutIcon, CloseIcon } from '../components/Icons';
 import clsx from 'clsx';
@@ -10,12 +10,10 @@ import clsx from 'clsx';
  */
 const DrawerMenu = ({ open, onClose }) => {
   const { logout } = useAuth();
-  const navigate = useNavigate();
 
   const handleLogout = async () => {
-    await logout();
     onClose();
-    navigate('/login');
+    await logout();
   };
 
   const navItems = [

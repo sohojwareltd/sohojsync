@@ -88,23 +88,14 @@ export const AuthProvider = ({ children }) => {
       // Call logout endpoint
       await axiosInstance.post('/logout');
     } catch (error) {
-      // Even if logout fails, clear local state
       console.error('Logout error:', error);
     } finally {
-      // Always clear user state and force re-check
+      // Force clear user state
       setUser(null);
       
-      // Clear any cached user data
-      try {
-        await axiosInstance.get('/me');
-        // If we get here, user is still authenticated somehow
-        // Force another logout attempt
-        await axiosInstance.post('/logout').catch(() => {});
-        setUser(null);
-      } catch {
-        // User is properly logged out (401 expected)
-        setUser(null);
-      }
+      // FORCE page reload to clear everything
+      // This ensures session is completely gone
+      window.location.href = '/login';
     }
   };
 
