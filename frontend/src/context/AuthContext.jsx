@@ -86,10 +86,13 @@ export const AuthProvider = ({ children }) => {
   const logout = async () => {
     try {
       await axiosInstance.post('/logout');
+      setUser(null);
+      // Ensure cookies/session are cleared on client side
+      setLoading(false);
     } catch (error) {
       console.error('Logout error:', error);
-    } finally {
       setUser(null);
+      setLoading(false);
     }
   };
 

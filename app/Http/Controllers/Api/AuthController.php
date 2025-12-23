@@ -78,6 +78,7 @@ class AuthController extends Controller
             'id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
+            'role' => $user->role,
         ]);
     }
 
@@ -107,7 +108,7 @@ class AuthController extends Controller
      */
     public function logout(Request $request)
     {
-        Auth::guard('web')->logout();
+        Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
