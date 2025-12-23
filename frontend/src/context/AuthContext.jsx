@@ -87,12 +87,15 @@ export const AuthProvider = ({ children }) => {
     try {
       await axiosInstance.post('/logout');
       setUser(null);
-      // Ensure cookies/session are cleared on client side
-      setLoading(false);
     } catch (error) {
       console.error('Logout error:', error);
       setUser(null);
-      setLoading(false);
+    } finally {
+      // Refetch to confirm user is cleared
+      const response = await axiosInstance.get('/me').catch(() => null);
+      if (!response) {
+        setUser(null);
+      }
     }
   };
 
