@@ -5,10 +5,13 @@ use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
 Route::get('/', function () {
-    return Inertia::render('welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
+    return Inertia::render('LegacyApp');
 })->name('home');
+
+// Catch-all route for legacy SPA routes (admin/*, manager/*, developer/*, client/*)
+Route::get('/{any}', function () {
+    return Inertia::render('LegacyApp');
+})->where('any', '(admin|manager|developer|client|login).*');
 
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
