@@ -158,70 +158,105 @@ const Login = () => {
           {/* Demo credentials */}
           <div className="mt-6 pt-6 border-t border-gray-100">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-xs font-semibold text-gray-600">Quick Access</p>
+              <p className="text-xs font-semibold text-gray-600 uppercase tracking-wider">Demo Credentials</p>
+              <span className="text-xs text-gray-400">Click to fill</span>
             </div>
-            
+
             <div className="grid grid-cols-2 gap-2">
-              <button 
+              <button
                 type="button"
-                onClick={() => fillDemo('admin@example.com')}
-                className="relative p-3 text-left bg-gray-50 rounded-lg border transition-all duration-200 transform hover:scale-105 active:scale-95"
+                onClick={() => fillDemo('admin@sync.sohojware.dev')}
+                className="w-full relative p-3 text-left bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border transition-all duration-200 transform hover:scale-[1.01] active:scale-95 text-sm"
                 style={{
-                  borderColor: formData.email === 'admin@example.com' ? '#f25292' : '#e5e7eb', 
-                  backgroundColor: formData.email === 'admin@example.com' ? '#fef2f2' : ''
+                  borderColor: formData.email === 'admin@sync.sohojware.dev' ? '#59569d' : '#e5e7eb',
+                  backgroundColor: formData.email === 'admin@sync.sohojware.dev' ? '#f8f6ff' : ''
                 }}
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-lg">👑</span>
-                  <p className="text-xs font-semibold text-gray-700">Admin</p>
+                  <span className="text-base">👑</span>
+                  <div>
+                    <p className="text-xs font-bold text-gray-800 leading-tight">Admin Manager</p>
+                    <p className="text-[11px] text-gray-500 leading-tight">admin@sync.sohojware.dev</p>
+                  </div>
                 </div>
               </button>
 
-              <button 
+              <button
                 type="button"
-                onClick={() => fillDemo('manager@example.com')}
-                className="relative p-3 text-left bg-gray-50 rounded-lg border transition-all duration-200 transform hover:scale-105 active:scale-95"
+                onClick={() => fillDemo('raj.khan@company.com')}
+                className="w-full relative p-3 text-left bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border transition-all duration-200 transform hover:scale-[1.01] active:scale-95 text-sm"
                 style={{
-                  borderColor: formData.email === 'manager@example.com' ? '#f25292' : '#e5e7eb', 
-                  backgroundColor: formData.email === 'manager@example.com' ? '#fef2f2' : ''
+                  borderColor: formData.email === 'raj.khan@company.com' ? '#59569d' : '#e5e7eb',
+                  backgroundColor: formData.email === 'raj.khan@company.com' ? '#f8f6ff' : ''
                 }}
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-lg">👔</span>
-                  <p className="text-xs font-semibold text-gray-700">Manager</p>
+                  <span className="text-base">👔</span>
+                  <div>
+                    <p className="text-xs font-bold text-gray-800 leading-tight">Raja Khan (PM)</p>
+                    <p className="text-[11px] text-gray-500 leading-tight">raj.khan@company.com</p>
+                  </div>
                 </div>
               </button>
 
-              <button 
+              <button
                 type="button"
-                onClick={() => fillDemo('member@example.com')}
-                className="relative p-3 text-left bg-gray-50 rounded-lg border transition-all duration-200 transform hover:scale-105 active:scale-95"
+                onClick={() => fillDemo('priya.singh@company.com')}
+                className="w-full relative p-3 text-left bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border transition-all duration-200 transform hover:scale-[1.01] active:scale-95 text-sm"
                 style={{
-                  borderColor: formData.email === 'member@example.com' ? '#f25292' : '#e5e7eb', 
-                  backgroundColor: formData.email === 'member@example.com' ? '#fef2f2' : ''
+                  borderColor: formData.email === 'priya.singh@company.com' ? '#59569d' : '#e5e7eb',
+                  backgroundColor: formData.email === 'priya.singh@company.com' ? '#f8f6ff' : ''
                 }}
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-lg">💻</span>
-                  <p className="text-xs font-semibold text-gray-700">Developer</p>
+                  <span className="text-base">👩‍💼</span>
+                  <div>
+                    <p className="text-xs font-bold text-gray-800 leading-tight">Priya Singh (PM)</p>
+                    <p className="text-[11px] text-gray-500 leading-tight">priya.singh@company.com</p>
+                  </div>
                 </div>
               </button>
 
-              <button 
+              <button
                 type="button"
-                onClick={() => fillDemo('demo.client@sohojsync.com')}
-                className="relative p-3 text-left bg-gray-50 rounded-lg border transition-all duration-200 transform hover:scale-105 active:scale-95"
+                onClick={() => fillDemo('ahmed@company.com')}
+                className="w-full relative p-3 text-left bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border transition-all duration-200 transform hover:scale-[1.01] active:scale-95 text-sm"
                 style={{
-                  borderColor: formData.email === 'demo.client@sohojsync.com' ? '#f25292' : '#e5e7eb', 
-                  backgroundColor: formData.email === 'demo.client@sohojsync.com' ? '#fef2f2' : ''
+                  borderColor: formData.email === 'ahmed@company.com' ? '#59569d' : '#e5e7eb',
+                  backgroundColor: formData.email === 'ahmed@company.com' ? '#f8f6ff' : ''
                 }}
               >
                 <div className="flex items-center gap-2">
-                  <span className="text-lg">💼</span>
-                  <p className="text-xs font-semibold text-gray-700">Client</p>
+                  <span className="text-base">💻</span>
+                  <div>
+                    <p className="text-xs font-bold text-gray-800 leading-tight">Ahmed Hassan</p>
+                    <p className="text-[11px] text-gray-500 leading-tight">ahmed@company.com</p>
+                  </div>
+                </div>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => fillDemo('contact@techinnovations.com')}
+                className="col-span-2 w-full relative p-3 text-left bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border transition-all duration-200 transform hover:scale-[1.01] active:scale-95 text-sm"
+                style={{
+                  borderColor: formData.email === 'contact@techinnovations.com' ? '#59569d' : '#e5e7eb',
+                  backgroundColor: formData.email === 'contact@techinnovations.com' ? '#f8f6ff' : ''
+                }}
+              >
+                <div className="flex items-center gap-2">
+                  <span className="text-base">🤝</span>
+                  <div>
+                    <p className="text-xs font-bold text-gray-800 leading-tight">Client Contact</p>
+                    <p className="text-[11px] text-gray-500 leading-tight">contact@techinnovations.com</p>
+                  </div>
                 </div>
               </button>
             </div>
+
+            <p className="text-xs text-gray-500 text-center mt-3 italic">
+              All passwords: <span className="font-semibold text-gray-700">password</span>
+            </p>
           </div>
         </div>
       </div>
