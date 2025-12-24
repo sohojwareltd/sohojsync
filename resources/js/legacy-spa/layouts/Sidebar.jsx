@@ -1,0 +1,162 @@
+import React, { useState, useEffect } from 'react';
+import { NavLink } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
+import { HomeIcon, ProjectsIcon, TasksIcon, SettingsIcon, ChevronLeftIcon, ChevronRightIcon } from '../components/Icons';
+import clsx from 'clsx';
+
+/**
+ * Sidebar Component
+ * Collapsible navigation sidebar for desktop
+ */
+const Sidebar = () => {
+  const { user } = useAuth();
+  const [collapsed, setCollapsed] = useState(() => {
+    // Load collapsed state from localStorage
+    const saved = localStorage.getItem('sidebarCollapsed');
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  useEffect(() => {
+    // Save collapsed state to localStorage
+    localStorage.setItem('sidebarCollapsed', JSON.stringify(collapsed));
+  }, [collapsed]);
+
+  const toggleCollapsed = () => {
+    setCollapsed(!collapsed);
+  };
+
+  const allNavItems = [
+    { path: '/dashboard', icon: HomeIcon, label: 'Dashboard', roles: ['admin', 'project_manager', 'developer', 'client'] },
+    { path: '/projects', icon: ProjectsIcon, label: 'Projects', roles: ['admin', 'project_manager', 'developer', 'client'] },
+    { path: '/tasks', icon: TasksIcon, label: 'Tasks', roles: ['admin', 'project_manager', 'developer', 'client'] },
+    { path: '/calendar', icon: () => (
+      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
+      </svg>
+    ), label: 'Calendar', roles: ['admin', 'project_manager', 'developer', 'client'] },
+    { path: '/clients', icon: () => (
+      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+      </svg>
+    ), label: 'Clients', roles: ['admin'] },
+    { path: '/employees', icon: () => (
+      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M13 6a3 3 0 11-6 0 3 3 0 016 0zM18 8a2 2 0 11-4 0 2 2 0 014 0zM14 15a4 4 0 00-8 0v3h8v-3zM6 8a2 2 0 11-4 0 2 2 0 014 0zM16 18v-3a5.972 5.972 0 00-.75-2.906A3.005 3.005 0 0119 15v3h-3zM4.75 12.094A5.973 5.973 0 004 15v3H1v-3a3 3 0 013.75-2.906z"/>
+      </svg>
+    ), label: 'Employees', roles: ['admin'] },
+    { path: '/activity-logs', icon: () => (
+      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+        <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
+      </svg>
+    ), label: 'Activity Logs', roles: ['admin', 'project_manager'] },
+    { path: '/chat', icon: () => (
+      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd"/>
+      </svg>
+    ), label: 'Chat', roles: ['admin', 'project_manager', 'developer', 'client'] },
+    { path: '/settings', icon: SettingsIcon, label: 'Settings', roles: ['admin', 'project_manager', 'developer', 'client'] },
+  ];
+
+  // Filter nav items by user role
+  const navItems = allNavItems.filter(item => !item.roles || item.roles.includes(user?.role));
+
+  return (
+    <aside 
+      className={clsx(
+        'hidden md:flex flex-col border-r transition-all duration-300',
+        collapsed ? 'w-20' : 'w-64'
+      )}
+      style={{borderRightColor: '#e3e8ef', background: '#ffffff', fontFamily: 'Inter, sans-serif', boxShadow: '2px 0 8px rgba(0,0,0,0.04)'}}
+    >
+      {/* Logo/Brand */}
+      <div className="h-16 flex items-center justify-between px-5 border-b" style={{borderColor: '#e9ecef'}}>
+        {!collapsed && (
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{background: 'rgb(89, 86, 157)'}}>
+              <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+              </svg>
+            </div>
+            <span className="text-[16px] font-semibold text-gray-900" style={{fontFamily: 'Inter, sans-serif'}}>SohojSync</span>
+          </div>
+        )}
+        {collapsed && (
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center mx-auto" style={{background: 'rgb(89, 86, 157)'}}>
+            <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
+            </svg>
+          </div>
+        )}
+        {!collapsed && (
+          <button
+            onClick={toggleCollapsed}
+            className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+            aria-label="Collapse sidebar"
+          >
+            <ChevronLeftIcon className="w-4 h-4 text-gray-500" />
+          </button>
+        )}
+      </div>
+
+      {/* Expand Button */}
+      {collapsed && (
+        <button
+          onClick={toggleCollapsed}
+          className="mx-3 mb-3 p-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+          aria-label="Expand sidebar"
+        >
+          <ChevronRightIcon className="w-4 h-4 text-gray-500 mx-auto" />
+        </button>
+      )}
+
+      {/* Navigation */}
+      <nav className="flex-1 px-3 space-y-1 mt-6">
+        {navItems.map((item) => (
+          <NavLink
+            key={item.path}
+            to={item.path}
+            className={({ isActive }) =>
+              clsx(
+                'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm',
+                isActive 
+                  ? 'text-white shadow-sm' 
+                  : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
+              )
+            }
+            style={({ isActive }) => isActive ? {
+              background: 'rgb(89, 86, 157)',
+              fontFamily: 'Inter, sans-serif'
+            } : {fontFamily: 'Inter, sans-serif'}}
+          >
+            {({ isActive }) => (
+              <>
+                <item.icon className="w-5 h-5 flex-shrink-0" />
+                {!collapsed && (
+                  <span className="font-medium">{item.label}</span>
+                )}
+              </>
+            )}
+          </NavLink>
+        ))}
+      </nav>
+
+      {/* User Info */}
+      {!collapsed && (
+        <div className="p-4 border-t" style={{borderColor: '#e9ecef'}}>
+          <div className="flex items-center gap-3 p-3 rounded-lg bg-gray-50">
+            <div className="w-9 h-9 rounded-full flex items-center justify-center text-white text-xs font-semibold" style={{background: 'rgb(89, 86, 157)'}}>
+              {user?.name?.[0]?.toUpperCase() || 'A'}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-900 truncate">{user?.name || 'Admin User'}</p>
+              <p className="text-xs text-gray-500 truncate">{user?.email || 'admin@example.com'}</p>
+            </div>
+          </div>
+        </div>
+      )}
+    </aside>
+  );
+};
+
+export default Sidebar;

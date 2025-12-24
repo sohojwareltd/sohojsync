@@ -19,6 +19,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Run realistic data seeder
+        $this->call(RealisticDataSeeder::class);
+        
         // Seed core demo data first
         // Create Admin user
         $admin = User::firstOrCreate(

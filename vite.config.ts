@@ -11,11 +11,7 @@ export default defineConfig({
             ssr: 'resources/js/ssr.tsx',
             refresh: true,
         }),
-        react({
-            babel: {
-                plugins: ['babel-plugin-react-compiler'],
-            },
-        }),
+        react(),
         tailwindcss(),
         wayfinder({
             formVariants: true,
@@ -25,9 +21,8 @@ export default defineConfig({
         jsx: 'automatic',
     },
     server: {
-        port: 5174,
-        strictPort: true,
+        host: '127.0.0.1',
+        strictPort: false,
         open: false,
-        host: true,
     },
 });
