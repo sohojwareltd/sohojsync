@@ -5,8 +5,8 @@ import CommonHeader from './CommonHeader';
 import MobileBottomNav from './MobileBottomNav';
 
 /**
- * MainLayout Component
- * Main application layout with sidebar, header, and content area
+ * MainLayout Component - H-care inspired
+ * Clean main application layout with sidebar, header, and content area
  */
 const MainLayout = () => {
   const location = useLocation();
@@ -22,7 +22,7 @@ const MainLayout = () => {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden" style={{background: '#f5f6fa'}}>
+    <div className="flex h-screen overflow-hidden" style={{background: '#fafbfc'}}>
       {/* Sidebar - Desktop */}
       <Sidebar />
 
@@ -32,7 +32,7 @@ const MainLayout = () => {
         <CommonHeader pageTitle={getPageTitle()} />
 
         {/* Content */}
-        <main className="flex-1 overflow-y-auto px-6 py-8 pb-20 md:pb-8" style={{background: '#f5f6fa', fontFamily: 'Inter, sans-serif'}}>
+        <main className="flex-1 overflow-y-auto px-4 md:px-6 py-6 pb-20 md:pb-6" style={{background: '#fafbfc', fontFamily: 'Inter, sans-serif'}}>
           <Outlet />
         </main>
       </div>

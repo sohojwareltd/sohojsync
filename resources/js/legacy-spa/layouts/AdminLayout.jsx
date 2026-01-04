@@ -4,24 +4,27 @@ import AdminSidebar from './sidebars/AdminSidebar';
 import CommonHeader from './CommonHeader';
 import MobileBottomNav from './MobileBottomNav';
 
+/**
+ * AdminLayout - H-care inspired clean layout
+ */
 const AdminLayout = () => {
   const location = useLocation();
 
   const getPageTitle = () => {
     const path = location.pathname;
-    if (path === '/dashboard') return 'Dashboard';
-    if (path === '/projects') return 'Projects';
-    if (path === '/tasks') return 'Tasks';
-    if (path === '/settings') return 'Settings';
+    if (path === '/admin/dashboard') return 'Dashboard';
+    if (path === '/admin/projects') return 'Projects';
+    if (path === '/admin/tasks') return 'Tasks';
+    if (path === '/admin/settings') return 'Settings';
     return 'SohojSync';
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-gray-900">
+    <div className="flex h-screen overflow-hidden" style={{background: '#fafbfc'}}>
       <AdminSidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <CommonHeader pageTitle={getPageTitle()} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-8 pb-20 md:pb-8 bg-gray-100">
+        <main className="flex-1 overflow-y-auto px-4 md:px-6 py-6 pb-20 md:pb-6" style={{background: '#fafbfc', fontFamily: 'Inter, sans-serif'}}>
           <Outlet />
         </main>
       </div>
