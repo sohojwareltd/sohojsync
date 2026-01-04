@@ -5,6 +5,8 @@ import Card from '../components/Card';
 import PageHeader from '../components/PageHeader';
 import Loader from '../components/Loader';
 
+const PRIMARY_COLOR = 'rgb(89, 86, 157)';
+
 /**
  * Dashboard Page
  * Main overview page showing stats and recent items
@@ -56,20 +58,20 @@ const Dashboard = () => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {/* Welcome Header */}
-      <div className="bg-white border border-gray-100 rounded-[16px] p-6 shadow-md">
+      <div className="bg-white border border-gray-200 rounded-lg p-4">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">Welcome back, {user?.name}!</h1>
-            <p className="text-sm text-gray-500">Here's your overview for today</p>
+            <h1 className="text-xl font-bold text-gray-900 mb-1">Welcome back, {user?.name}!</h1>
+            <p className="text-sm text-gray-500">Overview for today</p>
           </div>
-          <div className="hidden md:flex items-center gap-2 px-4 py-2 bg-purple-50 rounded-[10px] border border-purple-100">
-            <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+          <div className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded border border-gray-200 text-xs font-semibold text-gray-700">
+            <svg className="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/>
             </svg>
-            <span className="text-xs font-semibold text-purple-900">
-              {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+            <span>
+              {new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
             </span>
           </div>
         </div>
@@ -77,92 +79,84 @@ const Dashboard = () => {
 
       {/* Stats Section */}
       <div>
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-1 h-6 rounded-full" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}></div>
-          <h2 className="text-base font-bold text-gray-900">Quick Stats</h2>
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-1 h-6 rounded-full" style={{background: PRIMARY_COLOR}}></div>
+          <h2 className="text-sm font-semibold text-gray-900">Quick Stats</h2>
         </div>
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-          <div className="bg-white border border-gray-100 rounded-[16px] p-7 shadow-md hover:shadow-lg transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-[12px] flex items-center justify-center shadow-md" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
-                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
-                </svg>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          {[{
+            label: 'Total Projects',
+            value: stats.totalProjects,
+            icon: (
+              <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
+            )
+          }, {
+            label: 'Total Tasks',
+            value: stats.totalTasks,
+            icon: (
+              <>
+                <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
+              </>
+            )
+          }, {
+            label: 'Open Tasks',
+            value: stats.openTasks,
+            icon: (
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/>
+            )
+          }, {
+            label: 'Completed',
+            value: stats.completedTasks,
+            icon: (
+              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+            )
+          }].map((item, idx) => (
+            <div key={idx} className="bg-white border border-gray-200 rounded-lg p-4">
+              <div className="flex items-center justify-between mb-3">
+                <div className="w-10 h-10 rounded-md flex items-center justify-center" style={{background: PRIMARY_COLOR}}>
+                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    {item.icon}
+                  </svg>
+                </div>
               </div>
+              <p className="text-xs text-gray-500 mb-1 font-medium">{item.label}</p>
+              <p className="text-xl font-bold text-gray-900">{item.value}</p>
             </div>
-            <p className="text-sm text-gray-500 mb-2 font-medium">Total Projects</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.totalProjects}</p>
-          </div>
-
-          <div className="bg-white border border-gray-100 rounded-[16px] p-7 shadow-md hover:shadow-lg transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-[12px] flex items-center justify-center shadow-md" style={{background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'}}>
-                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
-                  <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
-                </svg>
-              </div>
-            </div>
-            <p className="text-sm text-gray-500 mb-2 font-medium">Total Tasks</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.totalTasks}</p>
-          </div>
-
-          <div className="bg-white border border-gray-100 rounded-[16px] p-7 shadow-md hover:shadow-lg transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-[12px] flex items-center justify-center shadow-md" style={{background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'}}>
-                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/>
-                </svg>
-              </div>
-            </div>
-            <p className="text-sm text-gray-500 mb-2 font-medium">Open Tasks</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.openTasks}</p>
-          </div>
-
-          <div className="bg-white border border-gray-100 rounded-[16px] p-7 shadow-md hover:shadow-lg transition-all">
-            <div className="flex items-center justify-between mb-4">
-              <div className="w-12 h-12 rounded-[12px] flex items-center justify-center shadow-md" style={{background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'}}>
-                <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
-                </svg>
-              </div>
-            </div>
-            <p className="text-sm text-gray-500 mb-2 font-medium">Completed</p>
-            <p className="text-2xl font-bold text-gray-900">{stats.completedTasks}</p>
-          </div>
+          ))}
         </div>
       </div>
 
       {/* Recent Activity Section */}
       <div>
-        <div className="flex items-center gap-2 mb-4">
-          <div className="w-1 h-6 rounded-full" style={{background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'}}></div>
-          <h2 className="text-base font-bold text-gray-900">Recent Activity</h2>
+        <div className="flex items-center gap-2 mb-3">
+          <div className="w-1 h-6 rounded-full" style={{background: PRIMARY_COLOR}}></div>
+          <h2 className="text-sm font-semibold text-gray-900">Recent Activity</h2>
         </div>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
           {/* Recent Projects */}
-          <div className="bg-white border border-gray-100 rounded-[16px] shadow-md">
-            <div className="border-b border-gray-200 px-6 py-5">
+          <div className="bg-white border border-gray-200 rounded-lg">
+            <div className="border-b border-gray-200 px-4 py-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-[10px] flex items-center justify-center" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
-                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <div className="w-9 h-9 rounded-md flex items-center justify-center" style={{background: PRIMARY_COLOR}}>
+                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
                   </svg>
                 </div>
-                <h3 className="text-base font-bold text-gray-900">Recent Projects</h3>
+                <h3 className="text-sm font-bold text-gray-900">Recent Projects</h3>
               </div>
             </div>
-            <div className="p-6 space-y-3">
+            <div className="p-4 space-y-2.5">
               {recentProjects.length > 0 ? (
                 recentProjects.map(project => (
-                  <div key={project.id} className="p-3 rounded-[10px] hover:bg-gray-50 transition-all border border-transparent hover:border-gray-200">
+                  <div key={project.id} className="p-3 rounded-lg border border-gray-100 hover:border-gray-200 transition-colors">
                     <h4 className="text-sm font-semibold text-gray-800 mb-1" >{project.title || project.name}</h4>
                     <div className="flex items-center gap-2">
-                      <span className={`px-2 py-1 rounded-[6px] text-[10px] font-bold shadow-sm ${
-                        project.status === 'completed' ? 'bg-green-100 text-green-700 border border-green-200' :
-                        project.status === 'in_progress' ? 'bg-blue-100 text-blue-700 border border-blue-200' :
-                        'bg-yellow-100 text-yellow-700 border border-yellow-200'
-                      }`} style={{fontFamily: 'Inter, sans-serif'}}>
+                      <span className={`px-2 py-0.5 rounded text-[11px] font-semibold ${
+                        project.status === 'completed' ? 'bg-green-50 text-green-700 border border-green-200' :
+                        project.status === 'in_progress' ? 'bg-blue-50 text-blue-700 border border-blue-200' :
+                        'bg-amber-50 text-amber-700 border border-amber-200'
+                      }`}>
                         {project.status?.replace('_', ' ').toUpperCase()}
                       </span>
                       {project.deadline && (
@@ -174,9 +168,9 @@ const Dashboard = () => {
                   </div>
                 ))
               ) : (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <svg className="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <div className="text-center py-6">
+                  <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <svg className="w-7 h-7 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                       <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
                     </svg>
                   </div>
@@ -187,39 +181,39 @@ const Dashboard = () => {
           </div>
 
           {/* Task Overview */}
-          <div className="bg-white border border-gray-100 rounded-[16px] shadow-md">
-            <div className="border-b border-gray-200 px-6 py-5">
+          <div className="bg-white border border-gray-200 rounded-lg">
+            <div className="border-b border-gray-200 px-4 py-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-[10px] flex items-center justify-center" style={{background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'}}>
-                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <div className="w-9 h-9 rounded-md flex items-center justify-center" style={{background: PRIMARY_COLOR}}>
+                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
                     <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
                   </svg>
                 </div>
-                <h3 className="text-base font-bold text-gray-900">Recent Tasks</h3>
+                <h3 className="text-sm font-bold text-gray-900">Recent Tasks</h3>
               </div>
             </div>
-            <div className="p-6 space-y-3">
+            <div className="p-4 space-y-2.5">
               {recentTasks.length > 0 ? (
                 recentTasks.map(task => (
-                  <div key={task.id} className="flex items-center justify-between p-3 rounded-[10px] hover:bg-gray-50 transition-all border border-transparent hover:border-gray-200">
+                  <div key={task.id} className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-gray-200 transition-colors">
                     <div className="flex-1 min-w-0">
                       <h4 className="text-sm font-semibold text-gray-800 truncate" >{task.title}</h4>
                       <p className="text-xs text-gray-500 truncate" >{task.project?.title}</p>
                     </div>
-                    <span className={`px-3 py-1.5 rounded-[6px] text-[11px] font-bold ml-3 shadow-sm ${
+                    <span className={`px-2.5 py-0.5 rounded text-[11px] font-semibold ml-3 ${
                       task.status === 'done' 
-                        ? 'bg-green-100 text-green-700 border border-green-200' 
-                        : 'bg-blue-100 text-blue-700 border border-blue-200'
-                    }`} style={{fontFamily: 'Inter, sans-serif'}}>
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' 
+                        : 'bg-blue-50 text-blue-700 border border-blue-200'
+                    }`}>
                       {task.status === 'done' ? 'DONE' : 'OPEN'}
                     </span>
                   </div>
                 ))
               ) : (
-                <div className="text-center py-8">
-                  <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-3">
-                    <svg className="w-8 h-8 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <div className="text-center py-6">
+                  <div className="w-14 h-14 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                    <svg className="w-7 h-7 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                       <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
                     </svg>
                   </div>
@@ -230,31 +224,31 @@ const Dashboard = () => {
           </div>
 
           {/* Calendar */}
-          <div className="bg-white border border-gray-100 rounded-[16px] shadow-md">
-            <div className="border-b border-gray-200 px-6 py-5">
+          <div className="bg-white border border-gray-200 rounded-lg">
+            <div className="border-b border-gray-200 px-4 py-3">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-[10px] flex items-center justify-center" style={{background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'}}>
-                  <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                <div className="w-9 h-9 rounded-md flex items-center justify-center" style={{background: PRIMARY_COLOR}}>
+                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
                   </svg>
                 </div>
-                <h3 className="text-base font-bold text-gray-900">Calendar</h3>
+                <h3 className="text-sm font-bold text-gray-900">Calendar</h3>
               </div>
             </div>
-            <div className="p-6">
-              <div className="text-center mb-4">
-                <p className="text-sm font-bold text-gray-900" >
+            <div className="p-4">
+              <div className="text-center mb-3">
+                <p className="text-sm font-semibold text-gray-900" >
                   {new Date().toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
                 </p>
               </div>
-              <div className="grid grid-cols-7 gap-2 mb-3">
+              <div className="grid grid-cols-7 gap-1.5 mb-2">
                 {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
-                  <div key={day} className="text-center text-xs font-bold text-gray-500 p-1" >
+                  <div key={day} className="text-center text-[11px] font-semibold text-gray-500 p-1" >
                     {day}
                   </div>
                 ))}
               </div>
-              <div className="grid grid-cols-7 gap-2">
+              <div className="grid grid-cols-7 gap-1.5">
                 {Array.from({ length: 35 }, (_, i) => {
                   const firstDay = new Date(new Date().getFullYear(), new Date().getMonth(), 1).getDay();
                   const daysInMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0).getDate();
@@ -265,14 +259,14 @@ const Dashboard = () => {
                   return (
                     <div
                       key={i}
-                      className={`text-center text-[13px] p-2 rounded-[8px] font-medium transition-all ${
+                      className={`text-center text-[12px] p-2 rounded font-medium ${
                         isToday 
-                          ? 'text-white font-bold shadow-md' 
+                          ? 'text-white font-bold' 
                           : isCurrentMonth 
                           ? 'text-gray-700 hover:bg-gray-100 cursor-pointer' 
                           : 'text-gray-300'
                       }`}
-                      style={isToday ? {background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'} : {}}
+                      style={isToday ? {background: PRIMARY_COLOR} : {}}
                     >
                       {isCurrentMonth ? day : ''}
                     </div>

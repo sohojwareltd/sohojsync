@@ -24,6 +24,9 @@ const getRolePrefix = (role) => {
   }
 };
 
+const PRIMARY_COLOR = 'rgb(89, 86, 157)';
+const ACCENT_COLOR = PRIMARY_COLOR;
+
 const Projects = () => {
   const { user } = useAuth();
   const rolePrefix = getRolePrefix(user?.role);
@@ -445,9 +448,9 @@ const Projects = () => {
       </div>
 
       {/* Action Bar */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{background: 'rgb(89, 86, 157)'}}>
+      <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between bg-white border border-gray-200 rounded-lg p-3">
+        <div className="flex items-center gap-2">
+          <div className="w-10 h-10 rounded-lg flex items-center justify-center" style={{background: PRIMARY_COLOR}}>
             <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
               <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
             </svg>
@@ -460,8 +463,11 @@ const Projects = () => {
         {(user?.role !== 'project_manager' && user?.role !== 'developer') && (
           <button 
             onClick={openCreateModal}
-            className="px-5 py-2.5 rounded-lg font-medium text-white shadow-sm hover:shadow-md hover:opacity-90 transition-all flex items-center gap-2" 
-            style={{background: 'rgb(89, 86, 157)', fontSize: '14px'}}
+            className="px-4 py-2 rounded font-medium text-white hover:opacity-90 transition-all flex items-center gap-2" 
+            style={{
+              background: PRIMARY_COLOR,
+              fontSize: '14px'
+            }}
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
@@ -472,23 +478,26 @@ const Projects = () => {
       </div>
 
       {/* Filters and View Toggle */}
-      <div className="bg-white rounded-xl p-5 border border-gray-200">
+      <div className="bg-white rounded-lg p-3 border border-gray-200">
 
         {/* Status Tabs */}
-        <div className="flex flex-wrap gap-2 mb-5">
+        <div className="flex flex-wrap gap-2 mb-3">
           {statusTabs.map((tab) => (
             <button
               key={tab.value}
               onClick={() => setFilterStatus(tab.value)}
-              className={`px-3 py-2 rounded-lg border transition-colors text-sm font-medium flex items-center gap-2 ${
+              className={`px-3 py-2 rounded border transition-all text-sm font-medium flex items-center gap-2 ${
                 filterStatus === tab.value
                   ? 'text-white border-transparent'
-                  : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                  : 'bg-white text-gray-700 border-gray-200 hover:border-gray-300 hover:bg-gray-50'
               }`}
-              style={filterStatus === tab.value ? {background: 'rgb(89, 86, 157)'} : {}}
+              style={filterStatus === tab.value ? {
+                background: PRIMARY_COLOR,
+                borderColor: PRIMARY_COLOR
+              } : {}}
             >
               <span>{tab.label}</span>
-              <span className={`text-xs px-1.5 py-0.5 rounded-md font-medium ${filterStatus === tab.value ? 'bg-white/20' : 'bg-gray-100 text-gray-600'}`}>
+              <span className={`text-xs px-2 py-0.5 rounded font-medium ${filterStatus === tab.value ? 'bg-white/20' : 'bg-gray-100 text-gray-600'}`}>
                 {getTabCount(tab.value)}
               </span>
             </button>
@@ -496,7 +505,7 @@ const Projects = () => {
         </div>
 
         {/* Search & Controls */}
-        <div className="flex flex-col md:flex-row gap-3 items-stretch md:items-center">
+        <div className="flex flex-col md:flex-row gap-2 items-stretch md:items-center">
           {/* Search */}
           <div className="flex-1">
             <div className="relative">
@@ -508,7 +517,7 @@ const Projects = () => {
                 placeholder="Search projects..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 hover:border-gray-300 transition-colors text-sm"
+                className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded focus:outline-none focus:border-gray-400 hover:border-gray-300 transition-colors text-sm"
               />
             </div>
           </div>
@@ -518,7 +527,7 @@ const Projects = () => {
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-2.5 border border-gray-200 rounded-lg focus:outline-none focus:border-gray-400 hover:border-gray-300 transition-colors text-sm bg-white"
+              className="px-3 py-2 border border-gray-200 rounded focus:outline-none focus:border-gray-400 hover:border-gray-300 transition-colors text-sm bg-white"
               style={{minWidth: '150px'}}
             >
               <option value="deadline">Deadline</option>
@@ -534,7 +543,7 @@ const Projects = () => {
                     ? 'text-white'
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
-                style={viewMode === 'grid' ? {background: 'rgb(89, 86, 157)'} : {}}
+                style={viewMode === 'grid' ? {background: ACCENT_COLOR} : {}}
                 title="Grid view"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -548,7 +557,7 @@ const Projects = () => {
                     ? 'text-white'
                     : 'text-gray-500 hover:text-gray-700'
                 }`}
-                style={viewMode === 'table' ? {background: 'rgb(89, 86, 157)'} : {}}
+                style={viewMode === 'table' ? {background: PRIMARY_COLOR} : {}}
                 title="Table view"
               >
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -609,12 +618,12 @@ const Projects = () => {
                   <div
                     key={project.id}
                     onClick={() => (window.location.href = `${rolePrefix}/projects/${project.id}`)}
-                    className="bg-white border border-gray-200 rounded-xl p-4 hover:shadow-lg transition-all duration-200 cursor-pointer group"
+                    className="bg-white border border-gray-200 rounded p-3 hover:shadow-sm transition-all duration-200 cursor-pointer group"
                     style={{fontFamily: 'Inter, sans-serif'}}
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-lg flex items-center justify-center text-white shadow-sm" style={{background: 'rgb(89, 86, 157)'}}>
+                        <div className="w-9 h-9 rounded-lg flex items-center justify-center text-white shadow-sm" style={{background: PRIMARY_COLOR}}>
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
                           </svg>
@@ -639,22 +648,22 @@ const Projects = () => {
                     )}
 
                     {project.progress !== undefined && (
-                      <div className="mb-3">
-                        <div className="flex items-center justify-between mb-1.5">
+                      <div className="mb-2">
+                        <div className="flex items-center justify-between mb-1">
                           <span className="text-xs font-medium text-gray-600">Progress</span>
-                          <span className="text-xs font-semibold" style={{color: 'rgb(89, 86, 157)'}}>{project.progress}%</span>
+                          <span className="text-xs font-semibold" style={{color: PRIMARY_COLOR}}>{project.progress}%</span>
                         </div>
                         <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
                           <div
                             className="h-full transition-all duration-500 rounded-full"
-                            style={{ width: `${project.progress || 0}%`, background: 'rgb(89, 86, 157)' }}
+                            style={{ width: `${project.progress || 0}%`, background: PRIMARY_COLOR }}
                           >
                           </div>
                         </div>
                       </div>
                     )}
 
-                    <div className="flex items-center justify-between gap-3 mb-3">
+                    <div className="flex items-center justify-between gap-2 mb-2">
                       <div className="flex items-center gap-2">
                         <div className="flex -space-x-2">
                           {avatarItems.map((item, avatarIdx) => (
@@ -697,23 +706,23 @@ const Projects = () => {
                       )}
                     </div>
 
-                    <div className="flex items-center justify-between pt-2.5 border-t border-gray-200">
+                    <div className="flex items-center justify-between pt-2 border-t border-gray-200">
                       <a 
                         href={`${rolePrefix}/projects/${project.id}/tasks`}
                         onClick={(e) => e.stopPropagation()}
-                        className="px-3 py-1.5 rounded-lg font-medium text-white shadow-sm hover:shadow-md hover:opacity-90 flex items-center gap-1.5 transition-all text-xs"
-                        style={{background: 'rgb(89, 86, 157)'}}
+                        className="px-3 py-1 rounded font-medium text-white hover:opacity-90 flex items-center gap-1.5 transition-all text-xs"
+                        style={{background: PRIMARY_COLOR}}
                       >
                         <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM15 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2h-2zM5 13a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM13 11a1 1 0 10-2 0v3.586L9.707 13.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L13 14.586V11z"/>
                         </svg>
                         View Tasks
                       </a>
-                      <div className="flex items-center gap-1.5" onClick={(e) => e.preventDefault()}>
+                      <div className="flex items-center gap-1" onClick={(e) => e.preventDefault()}>
                         <button 
                           onClick={(e) => { e.preventDefault(); openEditModal(project); }}
-                          className="p-1.5 rounded-md transition-colors border"
-                          style={{ color: 'rgb(242, 82, 146)', borderColor: 'rgb(242, 82, 146)' }}
+                          className="p-1 rounded transition-colors border"
+                          style={{ color: PRIMARY_COLOR, borderColor: PRIMARY_COLOR }}
                           title="Edit"
                         >
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -722,8 +731,8 @@ const Projects = () => {
                         </button>
                         <button 
                           onClick={(e) => { e.preventDefault(); openDeleteModal(project); }}
-                          className="p-1.5 rounded-md transition-colors border"
-                          style={{ color: 'rgb(242, 82, 146)', borderColor: 'rgb(242, 82, 146)' }}
+                          className="p-1 rounded transition-colors border"
+                          style={{ color: PRIMARY_COLOR, borderColor: PRIMARY_COLOR }}
                           title="Delete"
                         >
                           <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -740,20 +749,20 @@ const Projects = () => {
 
           {/* Table View */}
           {viewMode === 'table' && (
-            <div className="bg-white rounded-[16px] shadow-md border border-gray-100 overflow-hidden">
-              <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-[18px] font-bold text-gray-900" style={{fontFamily: 'Inter, sans-serif'}}>All Projects</h3>
+            <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
+              <div className="px-4 py-3 border-b border-gray-200">
+                <h3 className="text-lg font-bold text-gray-900" style={{fontFamily: 'Inter, sans-serif'}}>All Projects</h3>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead className="bg-gray-50">
                     <tr>
-                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Project</th>
-                      <th className="text-left py-3 px-4 text-sm font-semibold text-gray-700">Team</th>
-                      <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">Progress</th>
-                      <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">Deadline</th>
-                      <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">Status</th>
-                      <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">Actions</th>
+                      <th className="text-left py-2.5 px-4 text-xs font-semibold text-gray-700">Project</th>
+                      <th className="text-left py-2.5 px-4 text-xs font-semibold text-gray-700">Team</th>
+                      <th className="text-center py-2.5 px-4 text-xs font-semibold text-gray-700">Progress</th>
+                      <th className="text-center py-2.5 px-4 text-xs font-semibold text-gray-700">Deadline</th>
+                      <th className="text-center py-2.5 px-4 text-xs font-semibold text-gray-700">Status</th>
+                      <th className="text-center py-2.5 px-4 text-xs font-semibold text-gray-700">Actions</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y" style={{borderColor: '#e5e7eb'}}>
@@ -768,9 +777,9 @@ const Projects = () => {
                           onClick={() => window.location.href = `${rolePrefix}/projects/${project.id}`}
                           style={{cursor: 'pointer'}}
                         >
-                          <td className="py-3 px-4 border-l-2" style={{borderLeftColor: '#59569D'}}>
+                          <td className="py-3 px-4 border-l-2" style={{borderLeftColor: PRIMARY_COLOR}}>
                             <div className="flex items-center gap-2">
-                              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: '#59569D'}}>
+                              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: PRIMARY_COLOR}}>
                                 <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                                   <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
                                 </svg>
@@ -782,8 +791,8 @@ const Projects = () => {
                               </div>
                             </div>
                           </td>
-                          <td className="py-3 px-4">
-                            <div className="space-y-1.5 text-sm text-gray-600">
+                          <td className="py-2.5 px-4">
+                            <div className="space-y-1 text-xs text-gray-600">
                               {project.project_manager && (
                                 <a
                                   href={`${rolePrefix}/users/project-manager/${project.project_manager.id}`}
@@ -822,53 +831,44 @@ const Projects = () => {
                               )}
                             </div>
                           </td>
-                          <td className="py-3 px-4 text-center">
+                          <td className="py-2.5 px-4 text-center">
                             {project.progress !== undefined ? (
-                              <div className="flex flex-col items-center gap-2">
+                              <div className="flex flex-col items-center gap-1">
                                 <div className="flex items-center gap-2">
-                                  <div className="w-24 bg-gray-200 rounded-full h-3 overflow-hidden shadow-inner">
+                                  <div className="w-20 bg-gray-200 rounded-full h-2 overflow-hidden">
                                     <div 
-                                      className="bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 h-full transition-all duration-500 relative overflow-hidden"
-                                      style={{ width: `${project.progress || 0}%` }}
+                                      className="h-full transition-all duration-500"
+                                      style={{ width: `${project.progress || 0}%`, background: PRIMARY_COLOR }}
                                     >
-                                      <div className="absolute inset-0 bg-white opacity-20 animate-pulse"></div>
                                     </div>
                                   </div>
-                                  <span className="text-sm font-bold text-purple-600">{project.progress}%</span>
+                                  <span className="text-xs font-bold" style={{color: PRIMARY_COLOR}}>{project.progress}%</span>
                                 </div>
                               </div>
                             ) : (
-                              <span className="text-gray-400 text-sm">N/A</span>
+                              <span className="text-gray-400 text-xs">N/A</span>
                             )}
                           </td>
-                          <td className="py-3 px-4 text-center">
+                          <td className="py-2.5 px-4 text-center">
                             {project.deadline ? (
-                              <div className={`inline-block px-3 py-1.5 rounded-full text-xs font-semibold border ${
+                              <div className={`inline-block px-2.5 py-1 rounded text-xs font-medium border ${
                                 isOverdue 
                                   ? 'bg-red-50 text-red-700 border-red-300'
                                   : daysUntil <= 3 
                                     ? 'bg-yellow-50 text-yellow-700 border-yellow-300'
                                     : 'bg-blue-50 text-blue-700 border-blue-300'
                               }`}>
-                                <div className="flex items-center gap-1">
-                                  {isOverdue && '⚠️'}
-                                  {daysUntil <= 3 && !isOverdue && '⏰'}
-                                  {daysUntil > 3 && '📅'}
-                                  <span>
-                                    {new Date(project.deadline).toLocaleDateString('en-US', { 
-                                      month: 'short', 
-                                      day: 'numeric',
-                                      year: 'numeric'
-                                    })}
-                                  </span>
-                                </div>
+                                {new Date(project.deadline).toLocaleDateString('en-US', { 
+                                  month: 'short', 
+                                  day: 'numeric'
+                                })}
                               </div>
                             ) : (
-                              <span className="text-gray-400 text-sm">No deadline</span>
+                              <span className="text-gray-400 text-xs">No deadline</span>
                             )}
                           </td>
-                          <td className="py-3 px-4 text-center">
-                            <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${
+                          <td className="py-2.5 px-4 text-center">
+                            <span className={`inline-block px-2 py-0.5 rounded text-xs font-medium ${
                               project.status === 'completed' ? 'bg-green-100 text-green-700 border border-green-300' :
                               project.status === 'in_progress' ? 'bg-blue-100 text-blue-700 border border-blue-300' :
                               project.status === 'planning' ? 'bg-yellow-100 text-yellow-700 border border-yellow-300' :
@@ -878,25 +878,25 @@ const Projects = () => {
                               {project.status.replace('_', ' ').toUpperCase()}
                             </span>
                           </td>
-                          <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
+                          <td className="py-2.5 px-4" onClick={(e) => e.stopPropagation()}>
                             <div className="flex items-center justify-center gap-1">
                               <button 
                                 onClick={(e) => { e.stopPropagation(); openEditModal(project); }}
-                                className="p-1.5 rounded-lg transition-colors"
-                                style={{ color: 'rgb(242, 82, 146)' }}
+                                className="p-1 rounded transition-colors"
+                                style={{ color: PRIMARY_COLOR }}
                                 title="Edit"
                               >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                                 </svg>
                               </button>
                               <button 
                                 onClick={(e) => { e.stopPropagation(); openDeleteModal(project); }}
-                                className="p-1.5 rounded-lg transition-colors"
-                                style={{ color: 'rgb(242, 82, 146)' }}
+                                className="p-1 rounded transition-colors"
+                                style={{ color: PRIMARY_COLOR }}
                                 title="Delete"
                               >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
                                 </svg>
                               </button>
@@ -912,7 +912,7 @@ const Projects = () => {
           )}
         </>
       ) : (
-        <div className="bg-white rounded-xl p-16 text-center shadow-sm border border-gray-100">
+        <div className="bg-white rounded-lg p-12 text-center border border-gray-200">
           <div className="w-20 h-20 bg-purple-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg className="w-10 h-10 text-purple-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
@@ -927,8 +927,8 @@ const Projects = () => {
           {(user?.role !== 'project_manager' && user?.role !== 'developer') && (
           <button 
             onClick={openCreateModal}
-            className="px-6 py-3 rounded-xl font-medium text-white shadow-md hover:shadow-lg transition-all" 
-            style={{background: 'rgb(155 2 50 / 76%)'}}
+            className="px-6 py-2 rounded font-medium text-white hover:opacity-90 transition-all" 
+            style={{background: PRIMARY_COLOR}}
           >
             + Create Project
           </button>
@@ -939,9 +939,9 @@ const Projects = () => {
       {/* Create/Edit Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden flex flex-col">
+          <div className="bg-white rounded-lg shadow-sm w-full max-w-6xl max-h-[95vh] overflow-hidden flex flex-col">
             {/* Modal Header */}
-            <div className="px-8 py-6 border-b border-gray-200 flex-shrink-0" style={{background: '#59569D'}}>
+            <div className="px-8 py-6 border-b border-gray-200 flex-shrink-0" style={{background: PRIMARY_COLOR}}>
               <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-bold text-white">
                   {editingProject ? 'Edit Project' : 'Create New Project'}
@@ -1201,7 +1201,7 @@ const Projects = () => {
                   
                   {/* Upload Area */}
                   <div 
-                    className="border-2 border-dashed border-purple-300 rounded-xl p-6 text-center cursor-pointer hover:border-purple-500 hover:bg-purple-50 transition-all"
+                    className="border-2 border-dashed border-gray-300 rounded p-6 text-center cursor-pointer hover:border-gray-400 hover:bg-gray-50 transition-all"
                     onClick={() => fileInputRef.current?.click()}
                   >
                     <input
@@ -1334,7 +1334,7 @@ const Projects = () => {
                           type="date"
                           value={formData.deadline}
                           onChange={(e) => setFormData({ ...formData, deadline: e.target.value })}
-                          className="w-full px-4 py-3 pr-12 border-2 border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-base transition-all hover:border-purple-400 group-hover:shadow-md"
+                          className="w-full px-4 py-2 pr-12 border-2 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 text-base transition-all hover:border-gray-400"
                           style={{
                             cursor: 'pointer'
                           }}
@@ -1417,15 +1417,15 @@ const Projects = () => {
                 <button
                   type="button"
                   onClick={closeModal}
-                  className="px-8 py-3 border-2 border-gray-300 rounded-xl font-semibold text-gray-700 hover:bg-gray-100 transition-colors text-base"
+                  className="px-6 py-2 border-2 border-gray-300 rounded font-medium text-gray-700 hover:bg-gray-100 transition-colors"
                   disabled={submitting}
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleSubmit}
-                  className="px-8 py-3 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed text-base"
-                  style={{background: 'rgb(155 2 50 / 76%)'}}
+                  className="px-6 py-2 rounded font-medium text-white hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  style={{background: PRIMARY_COLOR}}
                   disabled={submitting}
                 >
                   {submitting ? 'Saving...' : editingProject ? 'Update Project' : 'Create Project'}
@@ -1439,7 +1439,7 @@ const Projects = () => {
       {/* Delete Confirmation Modal */}
       {deleteModal.show && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden animate-scale-in">
+          <div className="bg-white rounded-lg shadow-sm max-w-sm w-full overflow-hidden">
             {/* Modal Header */}
             <div className="px-6 py-6 border-b border-gray-200">
               <div className="flex items-start gap-4">
@@ -1477,7 +1477,7 @@ const Projects = () => {
               <button
                 onClick={handleDelete}
                 className="px-5 py-2.5 rounded-lg font-medium text-white transition-colors"
-                style={{background: 'rgb(155 2 50 / 76%)'}}
+                style={{background: PRIMARY_COLOR}}
               >
                 Delete Project
               </button>

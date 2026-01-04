@@ -4,6 +4,8 @@ import { useAuth } from '../hooks/useAuth';
 import axiosInstance from '../utils/axiosInstance';
 import Loader from '../components/Loader';
 
+const PRIMARY_COLOR = 'rgb(89, 86, 157)';
+
 /**
  * Project Details Page
  * Enhanced with analytics, charts, deadline alerts, and chat functionality
@@ -233,7 +235,10 @@ const ProjectDetails = () => {
               />
             )}
           </div>
-          <span className="px-3 py-1 rounded-lg text-sm font-medium text-white" style={{background: project.status === 'completed' ? 'rgb(107, 114, 128)' : '#F25292'}}>
+          <span
+            className="px-3 py-1 rounded-lg text-sm font-semibold border border-gray-200"
+            style={{ color: PRIMARY_COLOR, background: '#f5f3ff' }}
+          >
             {project.status.replace('_', ' ')}
           </span>
         </div>
@@ -293,30 +298,15 @@ const ProjectDetails = () => {
             </div>
           )}
           {project.deadline && (
-            <div className={`p-4 rounded-lg border-2 relative overflow-hidden ${
-              isOverdue 
-                ? 'bg-gradient-to-br from-red-50 to-red-100 border-red-300'
-                : daysUntil <= 3 
-                  ? 'bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-300'
-                  : 'bg-gradient-to-br from-blue-50 to-blue-100 border-blue-300'
-            }`}>
-              <div className={`absolute top-0 right-0 w-16 h-16 rounded-full -mr-8 -mt-8 opacity-50 ${
-                isOverdue ? 'bg-red-200' : daysUntil <= 3 ? 'bg-yellow-200' : 'bg-blue-200'
-              }`}></div>
-              <p className={`text-xs font-bold mb-1 uppercase tracking-wide flex items-center gap-1 ${
-                isOverdue ? 'text-red-700' : daysUntil <= 3 ? 'text-yellow-700' : 'text-blue-700'
-              }`}>
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <div className="p-4 rounded-lg border border-gray-200 bg-white">
+              <p className="text-xs font-semibold text-gray-600 mb-1 flex items-center gap-1 uppercase tracking-wide">
+                <svg className="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
                   <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
                 </svg>
                 Deadline
               </p>
-              <p className={`text-base font-bold ${
-                isOverdue ? 'text-red-900' : daysUntil <= 3 ? 'text-yellow-900' : 'text-blue-900'
-              }`}>{new Date(project.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
-              <p className={`text-xs mt-1 font-semibold ${
-                isOverdue ? 'text-red-600' : daysUntil <= 3 ? 'text-yellow-600' : 'text-blue-600'
-              }`}>
+              <p className="text-base font-bold text-gray-900">{new Date(project.deadline).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+              <p className="text-xs mt-1 font-medium text-gray-600">
                 {isOverdue ? `${Math.abs(daysUntil)} days overdue` : daysUntil <= 0 ? 'Today!' : `${daysUntil} days left`}
               </p>
             </div>
@@ -333,47 +323,47 @@ const ProjectDetails = () => {
 
       {/* Analytics Cards Row */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <div className="bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg p-5 text-white shadow-lg">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium opacity-90">Total Tasks</h3>
-            <svg className="w-8 h-8 opacity-80" fill="currentColor" viewBox="0 0 20 20">
+            <h3 className="text-xs font-semibold text-gray-600">Total Tasks</h3>
+            <svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
               <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
               <path fillRule="evenodd" d="M4 5a2 2 0 012-2 3 3 0 003 3h2a3 3 0 003-3 2 2 0 012 2v11a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 000 2h.01a1 1 0 100-2H7zm3 0a1 1 0 000 2h3a1 1 0 100-2h-3zm-3 4a1 1 0 100 2h.01a1 1 0 100-2H7zm3 0a1 1 0 100 2h3a1 1 0 100-2h-3z" clipRule="evenodd"/>
             </svg>
           </div>
-          <p className="text-3xl font-bold">{stats.total}</p>
+          <p className="text-2xl font-bold text-gray-900">{stats.total}</p>
         </div>
 
-        <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-lg p-5 text-white shadow-lg">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium opacity-90">Pending Tasks</h3>
-            <svg className="w-8 h-8 opacity-80" fill="currentColor" viewBox="0 0 20 20">
+            <h3 className="text-xs font-semibold text-gray-600">Pending Tasks</h3>
+            <svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/>
             </svg>
           </div>
-          <p className="text-3xl font-bold">{stats.pending + stats.inProgress}</p>
-          <p className="text-xs opacity-90 mt-1">{todaysPending} due today</p>
+          <p className="text-2xl font-bold text-gray-900">{stats.pending + stats.inProgress}</p>
+          <p className="text-xs text-gray-500 mt-1">{todaysPending} due today</p>
         </div>
 
-        <div className="bg-gradient-to-br from-green-500 to-green-600 rounded-lg p-5 text-white shadow-lg">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium opacity-90">Completed</h3>
-            <svg className="w-8 h-8 opacity-80" fill="currentColor" viewBox="0 0 20 20">
+            <h3 className="text-xs font-semibold text-gray-600">Completed</h3>
+            <svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
             </svg>
           </div>
-          <p className="text-3xl font-bold">{stats.completed}</p>
-          <p className="text-xs opacity-90 mt-1">{progress}% completion</p>
+          <p className="text-2xl font-bold text-gray-900">{stats.completed}</p>
+          <p className="text-xs text-gray-500 mt-1">{progress}% completion</p>
         </div>
 
-        <div className="bg-gradient-to-br from-red-500 to-red-600 rounded-lg p-5 text-white shadow-lg">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
           <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-medium opacity-90">Overdue</h3>
-            <svg className="w-8 h-8 opacity-80" fill="currentColor" viewBox="0 0 20 20">
+            <h3 className="text-xs font-semibold text-gray-600">Overdue</h3>
+            <svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd"/>
             </svg>
           </div>
-          <p className="text-3xl font-bold">{analytics?.overdueTasks || 0}</p>
+          <p className="text-2xl font-bold text-gray-900">{analytics?.overdueTasks || 0}</p>
         </div>
       </div>
 
@@ -402,15 +392,15 @@ const ProjectDetails = () => {
           {/* Task Status Breakdown Cards */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
             {[
-              { label: 'Total', value: stats.total, color: 'bg-gray-100 border-gray-300', textColor: 'text-gray-800', icon: '📊' },
-              { label: 'Completed', value: stats.completed, color: 'bg-green-50 border-green-300', textColor: 'text-green-800', icon: '✅' },
-              { label: 'In Progress', value: stats.inProgress, color: 'bg-blue-50 border-blue-300', textColor: 'text-blue-800', icon: '🔄' },
-              { label: 'Pending', value: stats.pending, color: 'bg-yellow-50 border-yellow-300', textColor: 'text-yellow-800', icon: '⏳' },
-              { label: 'On Hold', value: stats.onHold, color: 'bg-orange-50 border-orange-300', textColor: 'text-orange-800', icon: '⏸️' }
+              { label: 'Total', value: stats.total, icon: '📊' },
+              { label: 'Completed', value: stats.completed, icon: '✅' },
+              { label: 'In Progress', value: stats.inProgress, icon: '🔄' },
+              { label: 'Pending', value: stats.pending, icon: '⏳' },
+              { label: 'On Hold', value: stats.onHold, icon: '⏸️' }
             ].map((stat, idx) => (
-              <div key={idx} className={`${stat.color} border-2 rounded-lg p-4 text-center transform hover:scale-105 transition-transform`}>
-                <p className="text-2xl mb-1">{stat.icon}</p>
-                <p className={`text-2xl font-bold ${stat.textColor}`}>{stat.value}</p>
+              <div key={idx} className="bg-white border border-gray-200 rounded-lg p-4 text-center shadow-sm">
+                <p className="text-xl mb-1">{stat.icon}</p>
+                <p className="text-xl font-bold text-gray-900">{stat.value}</p>
                 <p className="text-xs text-gray-600 mt-1 font-medium">{stat.label}</p>
               </div>
             ))}
@@ -455,60 +445,69 @@ const ProjectDetails = () => {
             </div>
           </div>
 
-          {/* User Analytics Section */}
+          {/* Team Analytics */}
           {project.members && project.members.length > 0 && (
             <div className="mt-6 pt-6 border-t border-gray-200">
               <h3 className="text-sm font-semibold text-gray-700 mb-4 flex items-center gap-2">
-                <svg className="w-5 h-5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" style={{ color: PRIMARY_COLOR }}>
                   <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
                 </svg>
-                Team Member Analytics
+                Team Members
               </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {project.members.slice(0, 4).map((member, idx) => {
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {project.members.map((member, idx) => {
                   const memberTasks = tasks.filter(t => t.assigned_to?.id === member.user_id);
                   const memberPending = memberTasks.filter(t => t.status !== 'completed').length;
                   const memberCompleted = memberTasks.filter(t => t.status === 'completed').length;
-                  const memberRatio = memberTasks.length > 0 ? ((memberCompleted / memberTasks.length) * 100).toFixed(1) : 0;
+                  const memberRatio = memberTasks.length > 0 ? ((memberCompleted / memberTasks.length) * 100).toFixed(0) : 0;
                   
                   return (
-                    <div key={idx} className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg border border-gray-200">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                            {(member.user?.name || 'D').charAt(0).toUpperCase()}
-                          </div>
-                          <div>
-                            <p className="font-semibold text-gray-800 text-sm">{member.user?.name || 'Developer'}</p>
-                            <p className="text-xs text-gray-500">{memberTasks.length} tasks</p>
-                          </div>
+                    <div
+                      key={idx}
+                      className="p-3 bg-white rounded-lg border border-gray-200 hover:border-gray-300 transition-all group"
+                    >
+                      <div className="flex items-center gap-3 mb-2">
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center text-white font-bold flex-shrink-0" style={{ background: PRIMARY_COLOR }}>
+                          {(member.user?.name || 'D').charAt(0).toUpperCase()}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <a 
+                            href={`${rolePrefix}/users/developer/${member.user_id}`}
+                            className="font-semibold text-gray-900 text-sm truncate hover:text-purple-700 block"
+                          >
+                            {member.user?.name || 'Developer'}
+                          </a>
+                          <p className="text-xs text-gray-500">{memberTasks.length} task{memberTasks.length !== 1 ? 's' : ''}</p>
                         </div>
                         <button
-                          onClick={() => startChatConversation(member.user_id, member.user?.name)}
-                          className="p-2 bg-white hover:bg-purple-50 rounded-lg transition-colors border border-gray-200"
-                          title="Start Chat"
+                          onClick={(e) => { e.preventDefault(); startChatConversation(member.user_id, member.user?.name); }}
+                          className="p-2 rounded-lg transition-colors border border-gray-200 hover:border-purple-300 hover:bg-purple-50 flex-shrink-0"
+                          title="Send Message"
                         >
-                          <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
+                          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20" style={{ color: PRIMARY_COLOR }}>
                             <path d="M2 5a2 2 0 012-2h7a2 2 0 012 2v4a2 2 0 01-2 2H9l-3 3v-3H4a2 2 0 01-2-2V5z"/>
+                            <path d="M15 7v2a4 4 0 01-4 4H9.828l-1.766 1.767c.28.149.599.233.938.233h2l3 3v-3h2a2 2 0 002-2V9a2 2 0 00-2-2h-1z"/>
                           </svg>
                         </button>
                       </div>
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-gray-600">Pending</span>
-                          <span className="font-semibold text-yellow-600">{memberPending}</span>
+                      <div className="flex items-center gap-2 text-xs">
+                        <div className="flex-1">
+                          <div className="w-full bg-gray-200 rounded-full h-1.5">
+                            <div 
+                              className="h-full rounded-full transition-all"
+                              style={{ width: `${memberRatio}%`, background: PRIMARY_COLOR }}
+                            ></div>
+                          </div>
                         </div>
-                        <div className="flex items-center justify-between text-xs">
-                          <span className="text-gray-600">Completed</span>
-                          <span className="font-semibold text-green-600">{memberCompleted}</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2 mt-2">
-                          <div 
-                            className="bg-gradient-to-r from-green-400 to-green-600 h-full rounded-full"
-                            style={{ width: `${memberRatio}%` }}
-                          ></div>
-                        </div>
-                        <p className="text-xs text-gray-500 text-center">{memberRatio}% completion</p>
+                        <span className="font-semibold text-gray-700 text-xs">{memberRatio}%</span>
+                      </div>
+                      <div className="flex items-center justify-between mt-2 text-xs">
+                        <span className="text-gray-500">
+                          <span className="text-green-600 font-semibold">{memberCompleted}</span> done
+                        </span>
+                        <span className="text-gray-500">
+                          <span className="text-yellow-600 font-semibold">{memberPending}</span> pending
+                        </span>
                       </div>
                     </div>
                   );
