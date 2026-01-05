@@ -3,7 +3,7 @@ import { useAuth } from '../hooks/useAuth';
 import axiosInstance from '../utils/axiosInstance';
 import Loader from '../components/Loader';
 
-const PRIMARY_COLOR = 'rgb(89, 86, 157)';
+const PRIMARY_COLOR = 'rgb(99, 102, 241)';
 
 const AdminDashboard = () => {
   const { user } = useAuth();

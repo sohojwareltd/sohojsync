@@ -2,7 +2,7 @@ import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { HomeIcon, TasksIcon, SettingsIcon } from '../components/Icons';
 
-const PRIMARY_COLOR = 'rgb(89, 86, 157)';
+const PRIMARY_COLOR = 'rgb(99, 102, 241)';
 
 /**
  * MobileBottomNav Component - H-care inspired

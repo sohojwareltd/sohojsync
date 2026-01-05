@@ -12,8 +12,9 @@ export default {
       colors: {
         background: '#f5f6fa',
         foreground: '#1a1a1a',
-        primary: 'rgb(89, 86, 157)',
-        secondary: 'rgb(242, 82, 146)',
+        primary: 'rgb(99, 102, 241)',
+        primary: 'rgb(242, 82, 146)',
+        secondary: 'rgb(99, 102, 241)',
         success: '#10b981',
         warning: '#f59e0b',
         error: '#ef4444',

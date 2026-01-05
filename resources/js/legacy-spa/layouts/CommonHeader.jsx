@@ -5,7 +5,7 @@ import { getInitials } from '../utils/helpers';
 import DrawerMenu from './DrawerMenu';
 import NotificationDropdown from '../components/NotificationDropdown';
 
-const PRIMARY_COLOR = 'rgb(89, 86, 157)';
+const PRIMARY_COLOR = 'rgb(99, 102, 241)';
 
 /**
  * CommonHeader Component - H-care inspired minimalistic design

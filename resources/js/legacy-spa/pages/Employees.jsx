@@ -15,6 +15,8 @@ registerPlugin(FilePondPluginFileValidateType, FilePondPluginFileValidateSize);
  */
 const Employees = () => {
   const APP_URL = import.meta.env.VITE_APP_URL || '';
+  const PRIMARY_COLOR = 'rgb(242, 82, 146)';
+  const ACCENT_COLOR = 'rgb(99, 102, 241)';
   const [employees, setEmployees] = useState([]);
   const [statistics, setStatistics] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -224,7 +226,7 @@ const Employees = () => {
         <button
           onClick={openCreateModal}
           className="flex items-center gap-2 px-4 py-2.5 rounded-lg text-white text-sm font-medium transition-all shadow-md hover:shadow-lg"
-          style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}
+          style={{background: PRIMARY_COLOR}}
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -238,7 +240,7 @@ const Employees = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
           <div className="bg-white rounded-[16px] p-5 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-[10px] flex items-center justify-center" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
+              <div className="w-10 h-10 rounded-[10px] flex items-center justify-center" style={{background: ACCENT_COLOR}}>
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                 </svg>
@@ -251,7 +253,7 @@ const Employees = () => {
           </div>
           <div className="bg-white rounded-[16px] p-5 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-[10px] flex items-center justify-center" style={{background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)'}}>
+              <div className="w-10 h-10 rounded-[10px] flex items-center justify-center" style={{background: PRIMARY_COLOR}}>
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
                 </svg>
@@ -264,7 +266,7 @@ const Employees = () => {
           </div>
           <div className="bg-white rounded-[16px] p-5 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-[10px] flex items-center justify-center" style={{background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)'}}>
+              <div className="w-10 h-10 rounded-[10px] flex items-center justify-center" style={{background: PRIMARY_COLOR}}>
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                 </svg>
@@ -277,7 +279,7 @@ const Employees = () => {
           </div>
           <div className="bg-white rounded-[16px] p-5 shadow-md border border-gray-100 hover:shadow-lg transition-shadow">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-[10px] flex items-center justify-center" style={{background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)'}}>
+              <div className="w-10 h-10 rounded-[10px] flex items-center justify-center" style={{background: ACCENT_COLOR}}>
                 <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                 </svg>
@@ -293,25 +295,12 @@ const Employees = () => {
 
       {/* View Controls */}
       <div className="bg-white rounded-[16px] p-5 shadow-sm border border-gray-100 mb-6">
-        <div className="flex flex-col sm:flex-row items-center gap-4">
-          <div className="flex-1 w-full relative">
-            <svg className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-            </svg>
-            <input
-              type="text"
-              placeholder="Search employees..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-            />
-          </div>
-          
-          {/* View Toggle */}
-          <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
+        <div className="flex flex-col md:flex-row items-stretch md:items-center gap-3 justify-between">
+          {/* View Toggle (left) */}
+          <div className="flex items-center gap-1 bg-gray-100 rounded-lg p-1 w-fit">
             <button
               onClick={() => setViewMode('grid')}
-              className={`px-3 py-2 rounded-lg transition-all ${
+              className={`p-2 rounded-lg transition-all ${
                 viewMode === 'grid'
                   ? 'bg-white text-gray-700 shadow-sm'
                   : 'text-gray-600 hover:text-gray-800'
@@ -324,7 +313,7 @@ const Employees = () => {
             </button>
             <button
               onClick={() => setViewMode('table')}
-              className={`px-3 py-2 rounded-lg transition-all ${
+              className={`p-2 rounded-lg transition-all ${
                 viewMode === 'table'
                   ? 'bg-white text-gray-700 shadow-sm'
                   : 'text-gray-600 hover:text-gray-800'
@@ -335,6 +324,22 @@ const Employees = () => {
                 <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"/>
               </svg>
             </button>
+          </div>
+
+          {/* Search (right) */}
+          <div className="flex-1 md:flex md:justify-end" style={{maxWidth: '320px'}}>
+            <div className="relative w-full">
+              <svg className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search employees..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent"
+              />
+            </div>
           </div>
         </div>
       </div>
@@ -366,7 +371,7 @@ const Employees = () => {
                         className="w-20 h-20 rounded-full object-cover border-4 border-gray-100 mb-3"
                       />
                     ) : (
-                      <div className="w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-2xl mb-3 border-4 border-gray-100" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
+                      <div className="w-20 h-20 rounded-full flex items-center justify-center text-white font-bold text-2xl mb-3 border-4 border-gray-100" style={{background: ACCENT_COLOR}}>
                         {employee.user.name.charAt(0).toUpperCase()}
                       </div>
                     )}
@@ -405,13 +410,14 @@ const Employees = () => {
                     <button
                       onClick={() => goToUserDetails(employee)}
                       className="flex-1 px-3 py-2 text-xs font-medium rounded-lg transition-all"
-                      style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', color: 'white'}}
+                      style={{background: ACCENT_COLOR, color: 'white'}}
                     >
                       View Profile
                     </button>
                     <button
                       onClick={() => openEditModal(employee)}
-                      className="p-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                      className="p-2 rounded-lg transition-colors border"
+                      style={{color: ACCENT_COLOR, borderColor: ACCENT_COLOR}}
                       title="Edit"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -420,7 +426,8 @@ const Employees = () => {
                     </button>
                     <button
                       onClick={() => handleDelete(employee)}
-                      className="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                      className="p-2 rounded-lg transition-colors border"
+                      style={{color: PRIMARY_COLOR, borderColor: PRIMARY_COLOR}}
                       title="Delete"
                     >
                       <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -469,7 +476,7 @@ const Employees = () => {
                               className="w-9 h-9 rounded-full object-cover border-2 border-gray-200"
                             />
                           ) : (
-                            <div className="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold text-sm" style={{background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)'}}>
+                            <div className="w-9 h-9 rounded-full flex items-center justify-center text-white font-semibold text-sm" style={{background: ACCENT_COLOR}}>
                               {employee.user.name.charAt(0).toUpperCase()}
                             </div>
                           )}
@@ -495,19 +502,22 @@ const Employees = () => {
                         <div className="flex gap-2 justify-end">
                           <button
                             onClick={() => goToUserDetails(employee)}
-                            className="px-2 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                            className="px-3 py-2 text-xs font-semibold rounded-lg transition-colors text-white"
+                            style={{background: ACCENT_COLOR}}
                           >
                             Profile
                           </button>
                           <button
                             onClick={() => openEditModal(employee)}
-                            className="px-2 py-1.5 text-xs bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+                            className="px-3 py-2 text-xs font-semibold rounded-lg transition-colors border"
+                            style={{color: ACCENT_COLOR, borderColor: ACCENT_COLOR}}
                           >
                             Edit
                           </button>
                           <button
                             onClick={() => handleDelete(employee)}
-                            className="px-2 py-1.5 text-xs bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
+                            className="px-3 py-2 text-xs font-semibold rounded-lg transition-colors border"
+                            style={{color: PRIMARY_COLOR, borderColor: PRIMARY_COLOR}}
                           >
                             Delete
                           </button>

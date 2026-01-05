@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import { useAuth } from '../../hooks/useAuth';
 import { HomeIcon, ProjectsIcon, TasksIcon, SettingsIcon } from '../../components/Icons';
 
-const PRIMARY_COLOR = 'rgb(89, 86, 157)';
+const PRIMARY_COLOR = 'rgb(99, 102, 241)';
 
 /**
  * AdminSidebar - H-care inspired minimalistic design

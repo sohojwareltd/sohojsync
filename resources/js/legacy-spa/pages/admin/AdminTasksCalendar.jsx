@@ -22,6 +22,8 @@ const getRolePrefix = (role) => {
 
 const AdminTasksCalendar = () => {
     const { user } = useAuth();
+    const PRIMARY_COLOR = 'rgb(242, 82, 146)';
+    const ACCENT_COLOR = 'rgb(99, 102, 241)';
     const [tasks, setTasks] = useState([]);
     const [loading, setLoading] = useState(true);
     const [currentDate, setCurrentDate] = useState(new Date());
@@ -164,7 +166,7 @@ const AdminTasksCalendar = () => {
                     <button
                         onClick={() => { setSelectedDate(new Date()); setShowModal(true); }}
                         className="px-4 py-2 rounded-lg text-sm font-medium text-white shadow-sm hover:shadow-md transition-all flex items-center gap-2"
-                        style={{ background: 'rgb(89, 86, 157)' }}
+                        style={{ background: PRIMARY_COLOR }}
                     >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -213,7 +215,7 @@ const AdminTasksCalendar = () => {
                                 ? 'text-white'
                                 : 'text-gray-700 hover:bg-gray-100'
                         }`}
-                        style={viewMode === 'month' ? { background: 'rgb(89, 86, 157)' } : {}}
+                        style={viewMode === 'month' ? { background: 'rgb(99, 102, 241)' } : {}}
                     >
                         month
                     </button>
@@ -224,7 +226,7 @@ const AdminTasksCalendar = () => {
                                 ? 'text-white'
                                 : 'text-gray-700 hover:bg-gray-100'
                         }`}
-                        style={viewMode === 'week' ? { background: 'rgb(89, 86, 157)' } : {}}
+                        style={viewMode === 'week' ? { background: 'rgb(99, 102, 241)' } : {}}
                     >
                         week
                     </button>
@@ -235,7 +237,7 @@ const AdminTasksCalendar = () => {
                                 ? 'text-white'
                                 : 'text-gray-700 hover:bg-gray-100'
                         }`}
-                        style={viewMode === 'day' ? { background: 'rgb(89, 86, 157)' } : {}}
+                        style={viewMode === 'day' ? { background: 'rgb(99, 102, 241)' } : {}}
                     >
                         day
                     </button>
@@ -410,7 +412,7 @@ const AdminTasksCalendar = () => {
                                 <button
                                     onClick={handleCreateEvent}
                                     className="flex-1 px-4 py-2 rounded-lg text-sm font-medium text-white shadow-sm hover:shadow-md transition-all"
-                                    style={{ background: 'rgb(89, 86, 157)' }}
+                                    style={{ background: 'rgb(99, 102, 241)' }}
                                 >
                                     Create Event
                                 </button>

@@ -5,7 +5,7 @@ import Card from '../components/Card';
 import PageHeader from '../components/PageHeader';
 import Loader from '../components/Loader';
 
-const PRIMARY_COLOR = 'rgb(89, 86, 157)';
+const PRIMARY_COLOR = 'rgb(99, 102, 241)';
 
 /**
  * Dashboard Page

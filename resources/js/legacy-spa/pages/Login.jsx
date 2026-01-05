@@ -76,15 +76,15 @@ const Login = () => {
           {/* Logo with animation */}
           <div className="mb-8 flex items-center gap-3">
             <div className="relative group">
-              <div className="absolute inset-0 rounded-xl blur-md opacity-30 group-hover:opacity-50 transition-opacity duration-300" style={{background: '#59569d'}}></div>
-              <div className="relative w-12 h-12 rounded-xl flex items-center justify-center transform transition-all duration-300 group-hover:scale-105" style={{background: '#59569d'}}>
+              <div className="absolute inset-0 rounded-xl blur-md opacity-30 group-hover:opacity-50 transition-opacity duration-300" style={{background: 'rgb(99, 102, 241)'}}></div>
+              <div className="relative w-12 h-12 rounded-xl flex items-center justify-center transform transition-all duration-300 group-hover:scale-105" style={{background: 'rgb(99, 102, 241)'}}>
                 <svg className="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z"/>
                 </svg>
               </div>
             </div>
             <div>
-              <h1 className="text-2xl font-bold" style={{color: '#59569d'}}>SohojSync</h1>
+              <h1 className="text-2xl font-bold" style={{color: 'rgb(99, 102, 241)'}}>SohojSync</h1>
               <p className="text-gray-500 text-sm">Welcome back!</p>
             </div>
           </div>
@@ -129,7 +129,7 @@ const Login = () => {
               checked={formData.remember}
               onChange={handleChange}
               className="w-4 h-4 border-gray-300 rounded focus:ring-2 focus:ring-purple-500 focus:ring-offset-0 transition-all"
-              style={{accentColor: '#59569d'}}
+              style={{accentColor: 'rgb(99, 102, 241)'}}
             />
             <label htmlFor="remember" className="ml-2 text-sm text-gray-700">
               Remember me
@@ -140,7 +140,7 @@ const Login = () => {
               type="submit"
               disabled={loading}
               className="relative w-full text-white font-semibold py-3 rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed transform hover:scale-[1.02] active:scale-[0.98] shadow-lg hover:shadow-xl overflow-hidden group"
-              style={{background: 'linear-gradient(135deg, #59569d, #8b86d4)'}}
+              style={{background: 'linear-gradient(135deg, rgb(99, 102, 241), rgb(129, 140, 248))'}}
             >
               <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
               <span className="relative flex items-center justify-center gap-2">
@@ -168,7 +168,7 @@ const Login = () => {
                 onClick={() => fillDemo('admin@sync.sohojware.dev')}
                 className="w-full relative p-3 text-left bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border transition-all duration-200 transform hover:scale-[1.01] active:scale-95 text-sm"
                 style={{
-                  borderColor: formData.email === 'admin@sync.sohojware.dev' ? '#59569d' : '#e5e7eb',
+                  borderColor: formData.email === 'admin@sync.sohojware.dev' ? 'rgb(99, 102, 241)' : '#e5e7eb',
                   backgroundColor: formData.email === 'admin@sync.sohojware.dev' ? '#f8f6ff' : ''
                 }}
               >
@@ -186,7 +186,7 @@ const Login = () => {
                 onClick={() => fillDemo('raj.khan@company.com')}
                 className="w-full relative p-3 text-left bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border transition-all duration-200 transform hover:scale-[1.01] active:scale-95 text-sm"
                 style={{
-                  borderColor: formData.email === 'raj.khan@company.com' ? '#59569d' : '#e5e7eb',
+                  borderColor: formData.email === 'raj.khan@company.com' ? 'rgb(99, 102, 241)' : '#e5e7eb',
                   backgroundColor: formData.email === 'raj.khan@company.com' ? '#f8f6ff' : ''
                 }}
               >
@@ -204,7 +204,7 @@ const Login = () => {
                 onClick={() => fillDemo('priya.singh@company.com')}
                 className="w-full relative p-3 text-left bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border transition-all duration-200 transform hover:scale-[1.01] active:scale-95 text-sm"
                 style={{
-                  borderColor: formData.email === 'priya.singh@company.com' ? '#59569d' : '#e5e7eb',
+                  borderColor: formData.email === 'priya.singh@company.com' ? 'rgb(99, 102, 241)' : '#e5e7eb',
                   backgroundColor: formData.email === 'priya.singh@company.com' ? '#f8f6ff' : ''
                 }}
               >
@@ -222,7 +222,7 @@ const Login = () => {
                 onClick={() => fillDemo('ahmed@company.com')}
                 className="w-full relative p-3 text-left bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border transition-all duration-200 transform hover:scale-[1.01] active:scale-95 text-sm"
                 style={{
-                  borderColor: formData.email === 'ahmed@company.com' ? '#59569d' : '#e5e7eb',
+                  borderColor: formData.email === 'ahmed@company.com' ? 'rgb(99, 102, 241)' : '#e5e7eb',
                   backgroundColor: formData.email === 'ahmed@company.com' ? '#f8f6ff' : ''
                 }}
               >
@@ -240,7 +240,7 @@ const Login = () => {
                 onClick={() => fillDemo('contact@techinnovations.com')}
                 className="col-span-2 w-full relative p-3 text-left bg-gradient-to-r from-gray-50 to-gray-100 rounded-lg border transition-all duration-200 transform hover:scale-[1.01] active:scale-95 text-sm"
                 style={{
-                  borderColor: formData.email === 'contact@techinnovations.com' ? '#59569d' : '#e5e7eb',
+                  borderColor: formData.email === 'contact@techinnovations.com' ? 'rgb(99, 102, 241)' : '#e5e7eb',
                   backgroundColor: formData.email === 'contact@techinnovations.com' ? '#f8f6ff' : ''
                 }}
               >

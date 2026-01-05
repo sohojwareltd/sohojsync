@@ -24,9 +24,9 @@ const getRolePrefix = (role) => {
   }
 };
 
-const PRIMARY_COLOR = 'rgb(89, 86, 157)';
-const ACCENT_COLOR = PRIMARY_COLOR;
-const ACTION_COLOR = 'rgb(242, 82, 146)';
+const PRIMARY_COLOR = 'rgb(242, 82, 146)';
+const ACCENT_COLOR = 'rgb(99, 102, 241)';
+const ACTION_COLOR = PRIMARY_COLOR;
 
 const Projects = () => {
   const { user } = useAuth();
@@ -70,14 +70,14 @@ const Projects = () => {
       const response = await axiosInstance.get('/projects');
       // Laravel paginate returns data in response.data.data
       let projectsData = response.data.data || response.data;
-      
+
       // Ensure it's an array
       if (!Array.isArray(projectsData)) {
         projectsData = Array.isArray(projectsData.data) ? projectsData.data : [];
       }
-      
+
       console.log('=== FULL API RESPONSE ===', response.data);
-      
+
       // Calculate progress for each project
       const projectsWithProgress = projectsData.map(project => {
         // Prefer tasks array if present; fallback to counts from API
@@ -87,7 +87,7 @@ const Projects = () => {
           ? tasks.filter(t => ['completed', 'done', 'resolved'].includes(String(t.status || '').toLowerCase())).length
           : (project.completed_tasks_count || 0);
         const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
-        
+
         // Debug logging - show raw field values
         console.log(`Project: "${project.name || project.title}"`, {
           tasks_count: project.tasks_count,
@@ -98,7 +98,7 @@ const Projects = () => {
           hasProgressField: 'progress' in project,
           apiProgress: project.progress
         });
-        
+
         return {
           ...project,
           progress,
@@ -138,9 +138,9 @@ const Projects = () => {
 
   const openCreateModal = () => {
     setEditingProject(null);
-    setFormData({ 
-      title: '', 
-      description: '', 
+    setFormData({
+      title: '',
+      description: '',
       status: 'planning',
       project_manager_id: '',
       client_id: '',
@@ -159,7 +159,7 @@ const Projects = () => {
     try {
       const response = await axiosInstance.get(`/projects/${project.id}`);
       const fullProject = response.data;
-      
+
       setEditingProject(fullProject);
       setFormData({
         title: fullProject.title || fullProject.name,
@@ -184,9 +184,9 @@ const Projects = () => {
   const closeModal = () => {
     setShowModal(false);
     setEditingProject(null);
-    setFormData({ 
-      title: '', 
-      description: '', 
+    setFormData({
+      title: '',
+      description: '',
       status: 'planning',
       project_manager_id: '',
       client_id: '',
@@ -247,20 +247,20 @@ const Projects = () => {
     if (fileType.startsWith('image/')) {
       return (
         <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z"/>
+          <path d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" />
         </svg>
       );
     }
     if (fileType.includes('pdf')) {
       return (
         <svg className="w-5 h-5 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-          <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
+          <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
         </svg>
       );
     }
     return (
       <svg className="w-5 h-5 text-gray-600" fill="currentColor" viewBox="0 0 20 20">
-        <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z"/>
+        <path d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" />
       </svg>
     );
   };
@@ -323,7 +323,7 @@ const Projects = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) return;
 
     setSubmitting(true);
@@ -414,7 +414,7 @@ const Projects = () => {
 
   const filteredProjects = projects.filter(project => {
     const matchesSearch = (project.name || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-                         (project.description || '').toLowerCase().includes(searchQuery.toLowerCase());
+      (project.description || '').toLowerCase().includes(searchQuery.toLowerCase());
     const matchesStatus = statusMatchesTab(project, filterStatus);
     return matchesSearch && matchesStatus;
   });
@@ -439,7 +439,7 @@ const Projects = () => {
   }
 
   return (
-    <div className="space-y-4" style={{fontFamily: 'Inter, sans-serif'}}>
+    <div className="space-y-4" style={{ fontFamily: 'Inter, sans-serif' }}>
       {/* Header */}
       <div>
         <h1 className="text-xl font-bold text-gray-900">
@@ -450,9 +450,9 @@ const Projects = () => {
       {/* Action Bar */}
       <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between bg-white border border-gray-100 rounded-lg p-3">
         <div className="flex items-center gap-2">
-          <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{background: ACCENT_COLOR}}>
+          <div className="w-9 h-9 rounded-lg flex items-center justify-center" style={{ background: ACCENT_COLOR }}>
             <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-              <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
+              <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
             </svg>
           </div>
           <div>
@@ -461,15 +461,15 @@ const Projects = () => {
           </div>
         </div>
         {(user?.role !== 'project_manager' && user?.role !== 'developer') && (
-          <button 
+          <button
             onClick={openCreateModal}
-            className="px-4 py-2 rounded-lg font-medium text-white transition-all flex items-center gap-2 text-sm" 
+            className="px-6 py-2.5 rounded-lg font-semibold text-white transition-all flex items-center gap-2 text-base"
             style={{
               background: ACTION_COLOR
             }}
           >
-            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4"/>
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
             New
           </button>
@@ -478,89 +478,84 @@ const Projects = () => {
 
       {/* Filters and View Toggle */}
       <div className="bg-white rounded-lg p-3 border border-gray-100">
-
-        {/* Status Tabs */}
-        <div className="flex flex-wrap gap-1.5 mb-3">
-          {statusTabs.map((tab) => (
-            <button
-              key={tab.value}
-              onClick={() => setFilterStatus(tab.value)}
-              className={`px-3 py-1.5 rounded-lg border transition-all text-xs font-medium flex items-center gap-1.5 ${
-                filterStatus === tab.value
+        {/* Filters and Controls */}
+        <div className="flex flex-col md:flex-row gap-2 md:items-center justify-between">
+          {/* Status Tabs (left) */}
+          <div className="flex flex-wrap gap-1.5">
+            {statusTabs.map((tab) => (
+              <button
+                key={tab.value}
+                onClick={() => setFilterStatus(tab.value)}
+                className={`px-3 py-1.5 rounded-lg border transition-all text-xs font-medium flex items-center gap-1.5 ${filterStatus === tab.value
                   ? 'text-white border-transparent'
                   : 'bg-white text-gray-600 border-gray-100 hover:border-gray-200'
-              }`}
-              style={filterStatus === tab.value ? {
-                background: ACCENT_COLOR,
-                borderColor: ACCENT_COLOR
-              } : {}}
-            >
-              <span>{tab.label}</span>
-              <span className={`text-xs px-1 py-0 rounded-sm font-medium ${filterStatus === tab.value ? 'bg-white/30' : 'bg-gray-100 text-gray-600'}`}>
-                {getTabCount(tab.value)}
-              </span>
-            </button>
-          ))}
-        </div>
-
-        {/* Search & Controls */}
-        <div className="flex flex-col md:flex-row gap-2 items-stretch md:items-center">
-          {/* Search */}
-          <div className="flex-1">
-            <div className="relative">
-              <svg className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-              </svg>
-              <input
-                type="text"
-                placeholder="Search..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-8 pr-3 py-2 border border-gray-100 rounded-lg focus:outline-none focus:border-gray-300 hover:border-gray-200 transition-colors text-sm"
-              />
-            </div>
+                  }`}
+                style={filterStatus === tab.value ? {
+                  background: ACCENT_COLOR,
+                  borderColor: ACCENT_COLOR
+                } : {}}
+              >
+                <span>{tab.label}</span>
+                <span className={`text-xs px-1 py-0 rounded-sm font-medium ${filterStatus === tab.value ? 'bg-white/30' : 'bg-gray-100 text-gray-600'}`}>
+                  {getTabCount(tab.value)}
+                </span>
+              </button>
+            ))}
           </div>
 
-          {/* Sort & View Controls */}
-          <div className="flex items-center gap-1.5">
+          {/* Controls (right) */}
+          <div className="flex items-center gap-2 flex-wrap justify-end">
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-2.5 py-1.5 border border-gray-100 rounded-lg focus:outline-none focus:border-gray-300 hover:border-gray-200 transition-colors text-xs bg-white"
-              style={{minWidth: '120px'}}
+              className="px-3 py-2 border border-gray-100 rounded-lg focus:outline-none focus:border-gray-300 hover:border-gray-200 transition-colors text-sm bg-white"
+              style={{ minWidth: '130px' }}
             >
               <option value="deadline">Deadline</option>
               <option value="progress">Progress</option>
               <option value="name">Name</option>
             </select>
 
-            <div className="flex gap-0.5 bg-gray-100 rounded-lg p-0.5">
+            <div className="flex-1 md:flex md:justify-end" style={{ maxWidth: '300px' }}>
+              <div className="relative w-full">
+                <svg className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-8 pr-3 py-2 border border-gray-100 rounded-lg focus:outline-none focus:border-gray-300 hover:border-gray-200 transition-colors text-sm"
+                />
+              </div>
+            </div>
+
+            <div className="flex gap-1 bg-gray-100 rounded-lg p-1">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded-md transition-colors ${
-                  viewMode === 'grid'
-                    ? 'text-white'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-                style={viewMode === 'grid' ? {background: ACTION_COLOR} : {}}
+                className={`p-2 rounded-md transition-colors ${viewMode === 'grid'
+                  ? 'text-white'
+                  : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                style={viewMode === 'grid' ? { background: ACTION_COLOR } : {}}
                 title="Grid view"
               >
-                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
                 </svg>
               </button>
               <button
                 onClick={() => setViewMode('table')}
-                className={`p-1.5 rounded-md transition-colors ${
-                  viewMode === 'table'
-                    ? 'text-white'
-                    : 'text-gray-500 hover:text-gray-700'
-                }`}
-                style={viewMode === 'table' ? {background: ACTION_COLOR} : {}}
+                className={`p-2 rounded-md transition-colors ${viewMode === 'table'
+                  ? 'text-white'
+                  : 'text-gray-500 hover:text-gray-700'
+                  }`}
+                style={viewMode === 'table' ? { background: ACTION_COLOR } : {}}
                 title="Table view"
               >
-                <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd"/>
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clipRule="evenodd" />
                 </svg>
               </button>
             </div>
@@ -579,52 +574,52 @@ const Projects = () => {
                 const isOverdue = project.deadline && new Date(project.deadline) < new Date();
                 const avatarItems = [];
                 if (project.project_manager) {
-                  avatarItems.push({ 
-                    name: project.project_manager.name, 
+                  avatarItems.push({
+                    name: project.project_manager.name,
                     id: project.project_manager.id,
                     role: 'project-manager',
                     roleLabel: 'Project Manager',
-                    from: '#7c3aed', 
-                    to: '#6366f1' 
+                    from: '#7c3aed',
+                    to: '#6366f1'
                   });
                 }
                 if (project.client) {
-                  avatarItems.push({ 
-                    name: project.client.name, 
+                  avatarItems.push({
+                    name: project.client.name,
                     id: project.client.id,
                     role: 'client',
                     roleLabel: 'Client',
-                    from: '#059669', 
-                    to: '#10b981' 
+                    from: '#059669',
+                    to: '#10b981'
                   });
                 }
                 if (project.members && project.members.length > 0) {
                   project.members.slice(0, 2).forEach((member) => {
-                    avatarItems.push({ 
-                      name: member.name || member.full_name || member.username || 'Dev', 
+                    avatarItems.push({
+                      name: member.name || member.full_name || member.username || 'Dev',
                       id: member.user_id || member.id,
                       role: 'developer',
                       roleLabel: 'Developer',
-                      from: '#111827', 
-                      to: '#1f2937' 
+                      from: '#111827',
+                      to: '#1f2937'
                     });
                   });
                 }
                 const extraMembers = Math.max(0, (project.members?.length || 0) - 2);
                 const totalTeam = avatarItems.length + (extraMembers > 0 ? extraMembers : 0);
-                
+
                 return (
                   <div
                     key={project.id}
                     onClick={() => (window.location.href = `${rolePrefix}/projects/${project.id}`)}
                     className="bg-white border border-gray-150 rounded-lg p-3 hover:shadow-md transition-all duration-200 cursor-pointer group"
-                    style={{fontFamily: 'Inter, sans-serif'}}
+                    style={{ fontFamily: 'Inter, sans-serif' }}
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white" style={{background: ACCENT_COLOR}}>
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white" style={{ background: ACCENT_COLOR }}>
                           <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
-                            <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
+                            <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
                           </svg>
                         </div>
                         <div>
@@ -639,7 +634,7 @@ const Projects = () => {
                     </div>
 
                     {project.description && (
-                      <div 
+                      <div
                         className="text-xs text-gray-600 mb-2 line-clamp-2"
                         dangerouslySetInnerHTML={{ __html: project.description }}
                       />
@@ -649,7 +644,7 @@ const Projects = () => {
                       <div className="mb-2">
                         <div className="flex items-center justify-between mb-1">
                           <span className="text-xs font-medium text-gray-600">Progress</span>
-                          <span className="text-xs font-semibold" style={{color: ACCENT_COLOR}}>{project.progress}%</span>
+                          <span className="text-xs font-semibold" style={{ color: ACCENT_COLOR }}>{project.progress}%</span>
                         </div>
                         <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
                           <div
@@ -684,16 +679,15 @@ const Projects = () => {
                       </div>
 
                       {project.deadline && (
-                        <div className={`px-2 py-1 rounded-lg border text-xs font-medium ${
-                          isOverdue
-                            ? 'bg-rose-50 text-rose-700 border-rose-200'
-                            : daysUntil <= 3
-                              ? 'bg-amber-50 text-amber-700 border-amber-200'
-                              : 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                        }`}>
+                        <div className={`px-2 py-1 rounded-lg border text-xs font-medium ${isOverdue
+                          ? 'bg-rose-50 text-rose-700 border-rose-200'
+                          : daysUntil <= 3
+                            ? 'bg-amber-50 text-amber-700 border-amber-200'
+                            : 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                          }`}>
                           <div className="flex items-center gap-1">
                             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
+                              <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
                             </svg>
                             <span className="text-xs">{isOverdue ? 'Overdue' : daysUntil <= 3 ? 'Due soon' : 'Deadline'}</span>
                           </div>
@@ -702,36 +696,36 @@ const Projects = () => {
                     </div>
 
                     <div className="flex items-center justify-between pt-2 border-t border-gray-100">
-                      <a 
+                      <a
                         href={`${rolePrefix}/projects/${project.id}/tasks`}
                         onClick={(e) => e.stopPropagation()}
-                        className="px-3 py-1 rounded-lg font-medium text-white transition-all flex items-center gap-1 text-xs"
-                        style={{background: ACCENT_COLOR}}
+                        className="px-4 py-1.5 rounded-lg font-semibold text-white transition-all flex items-center gap-1.5 text-sm"
+                        style={{ background: ACCENT_COLOR }}
                       >
-                        <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                          <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM15 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2h-2zM5 13a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM13 11a1 1 0 10-2 0v3.586L9.707 13.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L13 14.586V11z"/>
+                        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM15 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2h-2zM5 13a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM13 11a1 1 0 10-2 0v3.586L9.707 13.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L13 14.586V11z" />
                         </svg>
                         Tasks
                       </a>
-                      <div className="flex items-center gap-1" onClick={(e) => e.preventDefault()}>
-                        <button 
+                      <div className="flex items-center gap-1.5" onClick={(e) => e.preventDefault()}>
+                        <button
                           onClick={(e) => { e.preventDefault(); e.stopPropagation(); openEditModal(project); }}
-                          className="p-1 rounded-md transition-colors border"
+                          className="p-1.5 rounded-md transition-colors border"
                           style={{ color: ACCENT_COLOR, borderColor: ACCENT_COLOR }}
                           title="Edit"
                         >
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                           </svg>
                         </button>
-                        <button 
+                        <button
                           onClick={(e) => { e.preventDefault(); e.stopPropagation(); openDeleteModal(project); }}
-                          className="p-1 rounded-md transition-colors border"
+                          className="p-1.5 rounded-md transition-colors border"
                           style={{ color: ACTION_COLOR, borderColor: ACTION_COLOR }}
                           title="Delete"
                         >
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                           </svg>
                         </button>
                       </div>
@@ -746,7 +740,7 @@ const Projects = () => {
           {viewMode === 'table' && (
             <div className="bg-white rounded-[16px] shadow-md border border-gray-100 overflow-hidden">
               <div className="px-6 py-4 border-b border-gray-200">
-                <h3 className="text-[18px] font-bold text-gray-900" style={{fontFamily: 'Inter, sans-serif'}}>All Projects</h3>
+                <h3 className="text-[18px] font-bold text-gray-900" style={{ fontFamily: 'Inter, sans-serif' }}>All Projects</h3>
               </div>
               <div className="overflow-x-auto">
                 <table className="w-full">
@@ -760,23 +754,23 @@ const Projects = () => {
                       <th className="text-center py-3 px-4 text-sm font-semibold text-gray-700">Actions</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y" style={{borderColor: '#e5e7eb'}}>
+                  <tbody className="divide-y" style={{ borderColor: '#e5e7eb' }}>
                     {sortedProjects.map((project, idx) => {
                       const daysUntil = project.deadline ? Math.ceil((new Date(project.deadline) - new Date()) / (1000 * 60 * 60 * 24)) : null;
                       const isOverdue = project.deadline && new Date(project.deadline) < new Date();
-                      
+
                       return (
-                        <tr 
-                          key={project.id} 
+                        <tr
+                          key={project.id}
                           className="hover:bg-gray-50 transition-colors group"
                           onClick={() => window.location.href = `${rolePrefix}/projects/${project.id}`}
-                          style={{cursor: 'pointer'}}
+                          style={{ cursor: 'pointer' }}
                         >
-                          <td className="py-3 px-4 border-l-2" style={{borderLeftColor: ACCENT_COLOR}}>
+                          <td className="py-3 px-4 border-l-2" style={{ borderLeftColor: ACCENT_COLOR }}>
                             <div className="flex items-center gap-2">
-                              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{background: ACCENT_COLOR}}>
+                              <div className="w-7 h-7 rounded-lg flex items-center justify-center" style={{ background: ACCENT_COLOR }}>
                                 <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
-                                  <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"/>
+                                  <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
                                 </svg>
                               </div>
                               <div>
@@ -795,7 +789,7 @@ const Projects = () => {
                                   className="flex items-center gap-1 group"
                                 >
                                   <svg className="w-3.5 h-3.5 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0z"/>
+                                    <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0z" />
                                   </svg>
                                   <div>
                                     <span className="text-xs text-gray-500">PM:</span>
@@ -810,7 +804,7 @@ const Projects = () => {
                                   className="flex items-center gap-1 group"
                                 >
                                   <svg className="w-3.5 h-3.5 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd"/>
+                                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                                   </svg>
                                   <div>
                                     <span className="text-xs text-gray-500">Client:</span>
@@ -831,7 +825,7 @@ const Projects = () => {
                               <div className="flex flex-col items-center gap-2">
                                 <div className="flex items-center gap-2">
                                   <div className="w-24 bg-gray-200 rounded-full h-3 overflow-hidden shadow-inner">
-                                    <div 
+                                    <div
                                       className="bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 h-full transition-all duration-500 relative overflow-hidden"
                                       style={{ width: `${project.progress || 0}%` }}
                                     >
@@ -847,20 +841,19 @@ const Projects = () => {
                           </td>
                           <td className="py-3 px-4 text-center">
                             {project.deadline ? (
-                              <div className={`inline-block px-3 py-1.5 rounded-full text-xs font-semibold border ${
-                                isOverdue 
-                                  ? 'bg-red-50 text-red-700 border-red-300'
-                                  : daysUntil <= 3 
-                                    ? 'bg-yellow-50 text-yellow-700 border-yellow-300'
-                                    : 'bg-blue-50 text-blue-700 border-blue-300'
-                              }`}>
+                              <div className={`inline-block px-3 py-1.5 rounded-full text-xs font-semibold border ${isOverdue
+                                ? 'bg-red-50 text-red-700 border-red-300'
+                                : daysUntil <= 3
+                                  ? 'bg-yellow-50 text-yellow-700 border-yellow-300'
+                                  : 'bg-blue-50 text-blue-700 border-blue-300'
+                                }`}>
                                 <div className="flex items-center gap-1">
                                   {isOverdue && '⚠️'}
                                   {daysUntil <= 3 && !isOverdue && '⏰'}
                                   {daysUntil > 3 && '📅'}
                                   <span>
-                                    {new Date(project.deadline).toLocaleDateString('en-US', { 
-                                      month: 'short', 
+                                    {new Date(project.deadline).toLocaleDateString('en-US', {
+                                      month: 'short',
                                       day: 'numeric',
                                       year: 'numeric'
                                     })}
@@ -872,36 +865,35 @@ const Projects = () => {
                             )}
                           </td>
                           <td className="py-3 px-4 text-center">
-                            <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${
-                              project.status === 'completed' ? 'bg-green-100 text-green-700 border border-green-300' :
+                            <span className={`inline-block px-2 py-0.5 rounded text-xs font-semibold ${project.status === 'completed' ? 'bg-green-100 text-green-700 border border-green-300' :
                               project.status === 'in_progress' ? 'bg-blue-100 text-blue-700 border border-blue-300' :
-                              project.status === 'planning' ? 'bg-yellow-100 text-yellow-700 border border-yellow-300' :
-                              project.status === 'on_hold' ? 'bg-gray-100 text-gray-700 border border-gray-300' :
-                              'bg-purple-100 text-purple-700 border border-purple-300'
-                            }`}>
+                                project.status === 'planning' ? 'bg-yellow-100 text-yellow-700 border border-yellow-300' :
+                                  project.status === 'on_hold' ? 'bg-gray-100 text-gray-700 border border-gray-300' :
+                                    'bg-purple-100 text-purple-700 border border-purple-300'
+                              }`}>
                               {project.status.replace('_', ' ').toUpperCase()}
                             </span>
                           </td>
                           <td className="py-3 px-4" onClick={(e) => e.stopPropagation()}>
-                            <div className="flex items-center justify-center gap-1">
-                              <button 
+                            <div className="flex items-center justify-center gap-2">
+                              <button
                                 onClick={(e) => { e.stopPropagation(); openEditModal(project); }}
-                                className="p-1.5 rounded-lg transition-colors"
+                                className="p-2 rounded-lg transition-colors"
                                 style={{ color: ACCENT_COLOR }}
                                 title="Edit"
                               >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                                 </svg>
                               </button>
-                              <button 
+                              <button
                                 onClick={(e) => { e.stopPropagation(); openDeleteModal(project); }}
-                                className="p-1.5 rounded-lg transition-colors"
+                                className="p-2 rounded-lg transition-colors"
                                 style={{ color: ACTION_COLOR }}
                                 title="Delete"
                               >
-                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                                 </svg>
                               </button>
                             </div>
@@ -924,18 +916,18 @@ const Projects = () => {
           </div>
           <h3 className="text-xl font-bold text-gray-800 mb-2">No Projects Found</h3>
           <p className="text-gray-500 mb-6">
-            {searchQuery || filterStatus !== 'all' 
-              ? 'Try adjusting your filters' 
+            {searchQuery || filterStatus !== 'all'
+              ? 'Try adjusting your filters'
               : 'Get started by creating your first project'}
           </p>
           {(user?.role !== 'project_manager' && user?.role !== 'developer') && (
-          <button 
-            onClick={openCreateModal}
-            className="px-6 py-3 rounded-xl font-medium text-white shadow-md hover:shadow-lg transition-all" 
-            style={{background: ACTION_COLOR}}
-          >
-            + Create Project
-          </button>
+            <button
+              onClick={openCreateModal}
+              className="px-8 py-3 rounded-xl font-semibold text-white shadow-md hover:shadow-lg transition-all text-base"
+              style={{ background: ACTION_COLOR }}
+            >
+              + Create Project
+            </button>
           )}
         </div>
       )}
@@ -945,7 +937,7 @@ const Projects = () => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-2xl shadow-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden flex flex-col">
             {/* Modal Header */}
-            <div className="px-8 py-6 border-b border-gray-200 flex-shrink-0" style={{background: ACCENT_COLOR}}>
+            <div className="px-8 py-6 border-b border-gray-200 flex-shrink-0" style={{ background: ACCENT_COLOR }}>
               <div className="flex items-center justify-between">
                 <h2 className="text-3xl font-bold text-white">
                   {editingProject ? 'Edit Project' : 'Create New Project'}
@@ -955,7 +947,7 @@ const Projects = () => {
                   className="p-2 hover:bg-white hover:bg-opacity-10 rounded-lg transition-colors"
                 >
                   <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                   </svg>
                 </button>
               </div>
@@ -1000,9 +992,8 @@ const Projects = () => {
                     type="text"
                     value={formData.title}
                     onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-base ${
-                      formErrors.title ? 'border-red-500' : 'border-gray-300'
-                    }`}
+                    className={`w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 text-base ${formErrors.title ? 'border-red-500' : 'border-gray-300'
+                      }`}
                     placeholder="Enter project title"
                   />
                   {formErrors.title && (
@@ -1015,14 +1006,14 @@ const Projects = () => {
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Description
                   </label>
-                  <ReactQuill 
+                  <ReactQuill
                     value={formData.description}
                     onChange={(value) => setFormData({ ...formData, description: value })}
                     modules={{
                       toolbar: [
                         [{ 'header': [1, 2, 3, false] }],
                         ['bold', 'italic', 'underline', 'strike'],
-                        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
                         ['link'],
                         ['clean']
                       ]
@@ -1072,7 +1063,7 @@ const Projects = () => {
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Assign Developers
                   </label>
-                  
+
                   {/* Selected Developers Display */}
                   {formData.developer_ids.length > 0 && (
                     <div className="mb-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
@@ -1101,7 +1092,7 @@ const Projects = () => {
                                 className="ml-1 text-gray-400 hover:text-red-600 transition-colors"
                               >
                                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                                 </svg>
                               </button>
                             </span>
@@ -1136,11 +1127,10 @@ const Projects = () => {
                           {usersForAssignment.developers.map(dev => {
                             const isSelected = formData.developer_ids.includes(dev.id);
                             return (
-                              <label 
-                                key={dev.id} 
-                                className={`flex items-center gap-3 cursor-pointer px-4 py-3 hover:bg-purple-50 transition-colors ${
-                                  isSelected ? 'bg-purple-50' : ''
-                                }`}
+                              <label
+                                key={dev.id}
+                                className={`flex items-center gap-3 cursor-pointer px-4 py-3 hover:bg-purple-50 transition-colors ${isSelected ? 'bg-purple-50' : ''
+                                  }`}
                               >
                                 <input
                                   type="checkbox"
@@ -1161,7 +1151,7 @@ const Projects = () => {
                                     </span>
                                     {isSelected && (
                                       <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
                                       </svg>
                                     )}
                                   </div>
@@ -1202,9 +1192,9 @@ const Projects = () => {
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
                     Project Attachments
                   </label>
-                  
+
                   {/* Upload Area */}
-                  <div 
+                  <div
                     className="border-2 border-dashed border-purple-300 rounded-xl p-6 text-center cursor-pointer hover:border-purple-500 hover:bg-purple-50 transition-all"
                     onClick={() => fileInputRef.current?.click()}
                   >
@@ -1251,7 +1241,7 @@ const Projects = () => {
                               title="Download file"
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                               </svg>
                             </a>
                           </div>
@@ -1287,7 +1277,7 @@ const Projects = () => {
                               <p className="text-xs text-gray-500">{formatFileSize(attachment.size)}</p>
                               {uploadProgress[attachment.id] && uploadProgress[attachment.id] < 100 && (
                                 <div className="mt-1 w-full bg-gray-200 rounded-full h-1.5 overflow-hidden">
-                                  <div 
+                                  <div
                                     className="bg-purple-500 h-full transition-all"
                                     style={{ width: `${uploadProgress[attachment.id]}%` }}
                                   ></div>
@@ -1301,7 +1291,7 @@ const Projects = () => {
                               title="Remove file"
                             >
                               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                               </svg>
                             </button>
                           </div>
@@ -1347,7 +1337,7 @@ const Projects = () => {
                         <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
                           <div className="w-10 h-10 rounded-lg bg-purple-50 flex items-center justify-center group-hover:bg-purple-100 transition-colors">
                             <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                             </svg>
                           </div>
                         </div>
@@ -1358,17 +1348,17 @@ const Projects = () => {
                         <div className="flex items-center gap-2">
                           <div className="w-8 h-8 rounded-lg bg-white flex items-center justify-center">
                             <svg className="w-4 h-4 text-purple-600" fill="currentColor" viewBox="0 0 20 20">
-                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/>
+                              <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
                             </svg>
                           </div>
                           <div className="flex-1">
                             <p className="text-xs font-medium text-purple-900">Selected Deadline</p>
                             <p className="text-sm font-semibold text-purple-700">
-                              {new Date(formData.deadline).toLocaleDateString('en-US', { 
+                              {new Date(formData.deadline).toLocaleDateString('en-US', {
                                 weekday: 'long',
-                                year: 'numeric', 
-                                month: 'long', 
-                                day: 'numeric' 
+                                year: 'numeric',
+                                month: 'long',
+                                day: 'numeric'
                               })}
                             </p>
                           </div>
@@ -1379,7 +1369,7 @@ const Projects = () => {
                             title="Clear deadline"
                           >
                             <svg className="w-4 h-4 text-gray-400 hover:text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12"/>
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
                           </button>
                         </div>
@@ -1429,7 +1419,7 @@ const Projects = () => {
                 <button
                   onClick={handleSubmit}
                   className="px-8 py-3 rounded-xl font-semibold text-white shadow-lg hover:shadow-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed text-base"
-                  style={{background: ACTION_COLOR}}
+                  style={{ background: ACTION_COLOR }}
                   disabled={submitting}
                 >
                   {submitting ? 'Saving...' : editingProject ? 'Update Project' : 'Create Project'}
@@ -1449,7 +1439,7 @@ const Projects = () => {
               <div className="flex items-start gap-4">
                 <div className="w-12 h-12 rounded-lg bg-red-50 flex items-center justify-center flex-shrink-0">
                   <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
                 </div>
                 <div className="flex-1">
@@ -1481,7 +1471,7 @@ const Projects = () => {
               <button
                 onClick={handleDelete}
                 className="px-5 py-2.5 rounded-lg font-medium text-white transition-colors"
-                style={{background: ACTION_COLOR}}
+                style={{ background: ACTION_COLOR }}
               >
                 Delete Project
               </button>
