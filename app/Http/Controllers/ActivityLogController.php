@@ -86,6 +86,37 @@ class ActivityLogController extends Controller
         ]);
     }
 
+    /**
+     * Track screen time - receives duration from frontend.
+     */
+    public function trackScreenTime(Request $request)
+    {
+        $validated = $request->validate([
+            'duration' => 'required|integer|min:1|max:7200',
+        ]);
+
+        $user = $request->user();
+
+        if (!$user) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
+
+        ActivityLog::create([
+            'user_id' => $user->id,
+            'user_role' => $user->role ?? 'client',
+            'action' => 'active',
+            'model' => null,
+            'model_id' => null,
+            'description' => "{$user->name} was active on the platform",
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'event_type' => 'screen_time',
+            'screen_time' => $validated['duration'],
+        ]);
+
+        return response()->json(['success' => true]);
+    }
+
     protected function formatSeconds(int $seconds): string
     {
         if ($seconds <= 0) {

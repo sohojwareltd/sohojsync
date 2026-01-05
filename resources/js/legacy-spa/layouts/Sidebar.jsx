@@ -43,6 +43,11 @@ const Sidebar = () => {
     };
 
     fetchScreenTime();
+    
+    // Refresh screen time every 30 seconds
+    const intervalId = setInterval(fetchScreenTime, 30000);
+    
+    return () => clearInterval(intervalId);
   }, [user?.id]);
 
   const toggleCollapsed = () => {

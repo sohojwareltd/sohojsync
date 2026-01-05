@@ -1,5 +1,6 @@
 import React, { createContext, useState, useEffect } from 'react';
 import axiosInstance, { ensureCsrf } from '../utils/axiosInstance';
+import screenTimeTracker from '../utils/screenTimeTracker';
 
 export const AuthContext = createContext(null);
 
@@ -22,6 +23,9 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await axiosInstance.get('/me');
       setUser(response.data);
+      
+      // Start tracking screen time when user is authenticated
+      screenTimeTracker.start();
     } catch (error) {
       // User is not authenticated (401) or other error - silently set to null
       // Don't log 401 errors as they're expected when not logged in
@@ -29,6 +33,9 @@ export const AuthProvider = ({ children }) => {
         console.error('Error fetching user:', error);
       }
       setUser(null);
+      
+      // Stop tracking when not authenticated
+      screenTimeTracker.stop();
     } finally {
       setLoading(false);
     }
@@ -46,6 +53,9 @@ export const AuthProvider = ({ children }) => {
       // Attempt login
       const response = await axiosInstance.post('/login', credentials);
       setUser(response.data);
+      
+      // Start tracking screen time after successful login
+      screenTimeTracker.start();
       
       return { success: true, user: response.data };
     } catch (error) {
@@ -82,7 +92,10 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * Logout the current user
-   */
+   */// Stop tracking before logout
+      screenTimeTracker.stop();
+      
+      
   const logout = async () => {
     try {
       await axiosInstance.post('/logout');
