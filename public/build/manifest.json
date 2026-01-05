@@ -1,15 +1,15 @@
 {
-  "_app-sidebar-layout-glO4CVsP.js": {
-    "file": "assets/app-sidebar-layout-glO4CVsP.js",
+  "_app-sidebar-layout-DKtT9p8w.js": {
+    "file": "assets/app-sidebar-layout-DKtT9p8w.js",
     "name": "app-sidebar-layout",
     "imports": [
       "resources/js/app.tsx",
-      "_x-Cwb-9-dt.js",
+      "_x-CSTkAX1S.js",
       "_index-DvAh2EAg.js"
     ]
   },
-  "_dnd.esm-5FVqyR8T.js": {
-    "file": "assets/dnd.esm-5FVqyR8T.js",
+  "_dnd.esm-CRhknSdI.js": {
+    "file": "assets/dnd.esm-CRhknSdI.js",
     "name": "dnd.esm",
     "imports": [
       "resources/js/app.tsx"
@@ -19,8 +19,8 @@
     "file": "assets/index-DvAh2EAg.js",
     "name": "index"
   },
-  "_x-Cwb-9-dt.js": {
-    "file": "assets/x-Cwb-9-dt.js",
+  "_x-CSTkAX1S.js": {
+    "file": "assets/x-CSTkAX1S.js",
     "name": "x",
     "imports": [
       "resources/js/app.tsx"
@@ -32,7 +32,7 @@
     "isEntry": true
   },
   "resources/js/app.tsx": {
-    "file": "assets/app-DKDCl4-o.js",
+    "file": "assets/app-DZpL_gQd.js",
     "name": "app",
     "src": "resources/js/app.tsx",
     "isEntry": true,
@@ -47,46 +47,46 @@
     ]
   },
   "resources/js/pages/LegacyApp.tsx": {
-    "file": "assets/LegacyApp-Ctp-tg_v.js",
+    "file": "assets/LegacyApp-wlXdf9Wi.js",
     "name": "LegacyApp",
     "src": "resources/js/pages/LegacyApp.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_x-Cwb-9-dt.js",
-      "_dnd.esm-5FVqyR8T.js"
+      "_x-CSTkAX1S.js",
+      "_dnd.esm-CRhknSdI.js"
     ],
     "css": [
       "assets/LegacyApp-Cc7DChRR.css"
     ]
   },
   "resources/js/pages/TaskBoard.tsx": {
-    "file": "assets/TaskBoard-BLtQd12j.js",
+    "file": "assets/TaskBoard-f0J6JAZv.js",
     "name": "TaskBoard",
     "src": "resources/js/pages/TaskBoard.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_app-sidebar-layout-glO4CVsP.js",
-      "_dnd.esm-5FVqyR8T.js",
-      "_x-Cwb-9-dt.js",
+      "_app-sidebar-layout-DKtT9p8w.js",
+      "_dnd.esm-CRhknSdI.js",
+      "_x-CSTkAX1S.js",
       "_index-DvAh2EAg.js"
     ]
   },
   "resources/js/pages/dashboard.tsx": {
-    "file": "assets/dashboard-DZxJgBoS.js",
+    "file": "assets/dashboard-Cp4Ijrfn.js",
     "name": "dashboard",
     "src": "resources/js/pages/dashboard.tsx",
     "isDynamicEntry": true,
     "imports": [
       "resources/js/app.tsx",
-      "_app-sidebar-layout-glO4CVsP.js",
+      "_app-sidebar-layout-DKtT9p8w.js",
       "_index-DvAh2EAg.js",
-      "_x-Cwb-9-dt.js"
+      "_x-CSTkAX1S.js"
     ]
   },
   "resources/js/pages/welcome.tsx": {
-    "file": "assets/welcome-BKcV-Z4r.js",
+    "file": "assets/welcome-DScxVlEB.js",
     "name": "welcome",
     "src": "resources/js/pages/welcome.tsx",
     "isDynamicEntry": true,

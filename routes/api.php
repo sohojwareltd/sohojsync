@@ -97,6 +97,7 @@ Route::middleware('auth:sanctum')->group(function () {
     
     // Activity Log routes
     Route::get('/activity-logs', [ActivityLogController::class, 'index']);
+    Route::get('/activity-logs/screen-time-today', [ActivityLogController::class, 'screenTimeToday']);
     Route::get('/activity-logs/statistics', [ActivityLogController::class, 'statistics']);
     
     // Employee routes

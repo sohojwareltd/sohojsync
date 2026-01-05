@@ -61,4 +61,48 @@ class ActivityLogController extends Controller
 
         return response()->json($stats);
     }
+
+    /**
+     * Get the authenticated user's screen time for today.
+     */
+    public function screenTimeToday(Request $request)
+    {
+        $userId = $request->user()?->id;
+
+        if (!$userId) {
+            return response()->json([
+                'screen_time_seconds' => 0,
+                'formatted' => '0m',
+            ]);
+        }
+
+        $seconds = (int) ActivityLog::where('user_id', $userId)
+            ->whereDate('created_at', today())
+            ->sum('screen_time');
+
+        return response()->json([
+            'screen_time_seconds' => $seconds,
+            'formatted' => $this->formatSeconds($seconds),
+        ]);
+    }
+
+    protected function formatSeconds(int $seconds): string
+    {
+        if ($seconds <= 0) {
+            return '0m';
+        }
+
+        $hours = intdiv($seconds, 3600);
+        $minutes = intdiv($seconds % 3600, 60);
+
+        if ($hours > 0 && $minutes > 0) {
+            return sprintf('%dh %dm', $hours, $minutes);
+        }
+
+        if ($hours > 0) {
+            return sprintf('%dh', $hours);
+        }
+
+        return sprintf('%dm', $minutes);
+    }
 }
