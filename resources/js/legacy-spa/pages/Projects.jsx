@@ -617,14 +617,14 @@ const Projects = () => {
                   >
                     <div className="flex items-start justify-between mb-2">
                       <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white" style={{ background: ACCENT_COLOR }}>
+                        <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white" style={{ background: "rgb(99 102 241 / 20%)", color: ACCENT_COLOR  }}>
                           <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 20 20">
                             <path d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
                           </svg>
                         </div>
                         <div>
                           <p className="text-xs text-gray-400 font-medium uppercase tracking-wide\">Project</p>
-                          <h3 className="font-semibold text-gray-900 text-sm group-hover:opacity-80 transition-opacity\">\n                            {project.name || project.title}
+                          <h3 className="font-semibold text-gray-900 text-sm group-hover:opacity-80 transition-opacity\">                          {project.name || project.title}
                           </h3>
                         </div>
                       </div>
@@ -700,7 +700,7 @@ const Projects = () => {
                         href={`${rolePrefix}/projects/${project.id}/tasks`}
                         onClick={(e) => e.stopPropagation()}
                         className="px-4 py-1.5 rounded-lg font-semibold text-white transition-all flex items-center gap-1.5 text-sm"
-                        style={{ background: ACCENT_COLOR }}
+                        style={{ background: "rgb(99 102 241 / 20%)",color: ACCENT_COLOR }}
                       >
                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                           <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM15 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2h-2zM5 13a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM13 11a1 1 0 10-2 0v3.586L9.707 13.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l3-3a1 1 0 00-1.414-1.414L13 14.586V11z" />

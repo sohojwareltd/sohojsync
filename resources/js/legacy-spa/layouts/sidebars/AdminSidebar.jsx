@@ -7,6 +7,29 @@ import { HomeIcon, ProjectsIcon, TasksIcon, SettingsIcon } from '../../component
 const PRIMARY_COLOR = 'rgb(99, 102, 241)';
 
 /**
+ * Logout Button Component - Uses POST request via auth context
+ */
+const LogoutButton = () => {
+  const { logout } = useAuth();
+  
+  const handleLogout = async () => {
+    await logout();
+  };
+
+  return (
+    <button
+      onClick={handleLogout}
+      className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-white hover:bg-gray-50 rounded-xl transition-colors text-sm font-semibold text-gray-700 shadow-sm"
+    >
+      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
+      </svg>
+      Logout
+    </button>
+  );
+};
+
+/**
  * AdminSidebar - H-care inspired minimalistic design
  * Clean and modern navigation sidebar with collapse feature
  */
@@ -32,9 +55,12 @@ const AdminSidebar = () => {
   }, [collapsed]);
 
   useEffect(() => {
+    if (!user?.id) return;
+
     const fetchScreenTime = async () => {
       try {
         const { data } = await axiosInstance.get('/activity-logs/screen-time-today');
+        console.log('[AdminSidebar] Fetched screen time data:', data);
         setScreenTime({
           formatted: data?.formatted || formatSeconds(data?.screen_time_seconds || 0),
           seconds: data?.screen_time_seconds || 0,
@@ -44,12 +70,25 @@ const AdminSidebar = () => {
       }
     };
 
+    // Fetch immediately
     fetchScreenTime();
     
-    // Refresh screen time every 30 seconds
-    const intervalId = setInterval(fetchScreenTime, 30000);
+    // Refresh screen time every 10 seconds for more dynamic updates
+    const intervalId = setInterval(fetchScreenTime, 10000);
     
-    return () => clearInterval(intervalId);
+    // Also listen for visibility changes to refresh when user returns to tab
+    const handleVisibilityChange = () => {
+      if (!document.hidden) {
+        console.log('[AdminSidebar] Page visibility changed, refetching screen time');
+        fetchScreenTime();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      clearInterval(intervalId);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [user?.id]);
 
   const toggleCollapsed = () => {
@@ -234,15 +273,7 @@ const AdminSidebar = () => {
           </div>
 
           {/* Logout Button */}
-          <button
-            onClick={() => window.location.href = '/logout'}
-            className="w-full flex items-center justify-center gap-2 py-2.5 px-4 bg-white hover:bg-gray-50 rounded-xl transition-colors text-sm font-semibold text-gray-700 shadow-sm"
-          >
-            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clipRule="evenodd" />
-            </svg>
-            Logout
-          </button>
+          <LogoutButton />
         </div>
       </div>
       )}

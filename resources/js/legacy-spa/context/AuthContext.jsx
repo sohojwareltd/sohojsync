@@ -23,6 +23,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await axiosInstance.get('/me');
       setUser(response.data);
+      console.log('[AuthContext] User authenticated, starting screen time tracker:', response.data);
       
       // Start tracking screen time when user is authenticated
       screenTimeTracker.start();
@@ -32,6 +33,7 @@ export const AuthProvider = ({ children }) => {
       if (error.response?.status !== 401) {
         console.error('Error fetching user:', error);
       }
+      console.log('[AuthContext] No user authenticated, stopping screen time tracker');
       setUser(null);
       
       // Stop tracking when not authenticated
@@ -92,12 +94,11 @@ export const AuthProvider = ({ children }) => {
 
   /**
    * Logout the current user
-   */// Stop tracking before logout
-      screenTimeTracker.stop();
-      
-      
+   */
   const logout = async () => {
     try {
+      // Stop tracking before logout
+      screenTimeTracker.stop();
       await axiosInstance.post('/logout');
     } catch (error) {
       console.error('Logout error:', error);

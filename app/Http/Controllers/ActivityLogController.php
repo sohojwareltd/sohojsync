@@ -76,9 +76,28 @@ class ActivityLogController extends Controller
             ]);
         }
 
+        $today = now()->toDateString();
+        
         $seconds = (int) ActivityLog::where('user_id', $userId)
-            ->whereDate('created_at', today())
+            ->where('event_type', 'screen_time')
+            ->whereDate('created_at', $today)
             ->sum('screen_time');
+
+        // Log debug info
+        $totalLogs = ActivityLog::where('user_id', $userId)
+            ->whereDate('created_at', $today)
+            ->count();
+
+        \Log::debug('[ScreenTime Debug]', [
+            'user_id' => $userId,
+            'today' => $today,
+            'total_logs' => $totalLogs,
+            'screen_time_logs' => ActivityLog::where('user_id', $userId)
+                ->where('event_type', 'screen_time')
+                ->whereDate('created_at', $today)
+                ->count(),
+            'total_seconds' => $seconds,
+        ]);
 
         return response()->json([
             'screen_time_seconds' => $seconds,
@@ -101,7 +120,14 @@ class ActivityLogController extends Controller
             return response()->json(['error' => 'Unauthenticated'], 401);
         }
 
-        ActivityLog::create([
+        \Log::debug('[ScreenTime Track]', [
+            'user_id' => $user->id,
+            'user_name' => $user->name,
+            'duration' => $validated['duration'],
+            'timestamp' => now()->toDateTimeString(),
+        ]);
+
+        $log = ActivityLog::create([
             'user_id' => $user->id,
             'user_role' => $user->role ?? 'client',
             'action' => 'active',
@@ -114,7 +140,7 @@ class ActivityLogController extends Controller
             'screen_time' => $validated['duration'],
         ]);
 
-        return response()->json(['success' => true]);
+        return response()->json(['success' => true, 'log_id' => $log->id]);
     }
 
     protected function formatSeconds(int $seconds): string
